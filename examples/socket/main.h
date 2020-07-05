@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-#include "../../ebtcpclient.h"
+#include "../../src/ebtcpclient.h"
 
 using namespace std;
 using namespace EBCpp;

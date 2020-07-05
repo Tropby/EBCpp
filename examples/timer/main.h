@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-#include "../../ebtimer.h"
+#include "../../src/ebtimer.h"
 
 using namespace std;
 using namespace EBCpp;

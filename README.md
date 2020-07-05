@@ -3,6 +3,10 @@
 Event Based C++ (EBCpp) will be a framework that uses Events (Signal-Slot) to provide features to the user. This framework is designed to work with C++11 and without a special pre compiler. 
 The events are synchronised to one thread. Therefore the events are thread-safe. You can use multible threads by setting up additional `EBEventLoop`s. This should only be used by experienced users.
 
+## Table of Content
+* [Installation](#installation)
+* [Example](#example)
+
 
 ## Installation
 

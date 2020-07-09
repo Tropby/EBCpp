@@ -24,8 +24,9 @@
 
 #define USE_EXAMPLES
 
+#define EXAMPLE_FILE
 //#define EXAMPLE_TIMER
-#define EXAMPLE_SOCKET
+//#define EXAMPLE_SOCKET
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,8 +40,16 @@
 #include "socket/main.h"
 #endif
 
+#ifdef EXAMPLE_FILE
+#include "file/main.h"
+#endif
+
 int main()
 {
+
+#ifdef EXAMPLE_FILE
+	mainFileTest();
+#endif
 
 #ifdef EXAMPLE_TIMER
 	mainTimerTest();

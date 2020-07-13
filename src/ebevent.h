@@ -67,12 +67,27 @@ class EBEvent
 public:
     EBEvent(){}
 
+    /**
+     * Connect a EB_SLOT to this Event.
+     * The slot function is called if the event is emitted.
+     * This slot is called by the main loop thread.
+     *
+     * @param func Function that is called if the event is emitted
+     */
     void connect( std::function<void(args...)> func )
     {
         std::shared_ptr< EBEventFunction<args...> > f = std::make_shared<EBEventFunction<args...>>( func, EBEventLoop::getMainLoop() );
         functions.push_back( f );
     }
 
+    /**
+     * Connect a EB_SLOT to this Event.
+     * The slot function is called if the event is emitted.
+     * This slot is called by the eventLoop thread.
+     *
+     * @param eventLoop EventLoop that is used to emit this event.
+     * @param func Function that is called if the event is emitted
+     */
     void connect( EBEventLoop & eventLoop, std::function<void(args...)> func )
     {
         std::shared_ptr< EBEventFunction<args...> > f = std::make_shared<EBEventFunction<args...>>( func, eventLoop );

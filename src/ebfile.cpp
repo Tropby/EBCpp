@@ -23,7 +23,12 @@
 
 #include "ebfile.h"
 
-#include <io.h>
+#ifdef __WIN32__
+	#include <io.h>
+	#define O_RDONLY _O_RDONLY
+#else
+	#include <unistd.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -39,7 +44,7 @@ bool EBCpp::EBFile::open(std::string filename)
 	if( file == -1 )
 		return false;
 
-	int fd = ::open( filename.c_str(), _O_RDONLY );
+	int fd = ::open( filename.c_str(), O_RDONLY );
 	if( fd == -1 )
 		return false;
 

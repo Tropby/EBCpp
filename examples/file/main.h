@@ -33,5 +33,5 @@ using namespace EBCpp;
 int mainFileTest()
 {
 
-    return EBEventLoop::getMainLoop().finished();
+    return EBEventLoop::getMainLoop().exec();
 }

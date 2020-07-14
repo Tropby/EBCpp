@@ -25,58 +25,71 @@
 
 using namespace EBCpp;
 
-EBTimer::EBTimer() : timerRunning(false), threadRunning(true), autoRetrigger(false), time(time), thread( std::bind( &EBTimer::run, this ) )
+EBTimer::EBTimer() : timerRunning(true), singleShot(false), time(-1), thread( nullptr )
 {
-}
-
-void EBTimer::trigger()
-{
-	semaphore.release();
 }
 
 EBTimer::~EBTimer()
 {
-	threadRunning = false;
-	trigger();
-	thread.join();
+	stop();
 }
 
 void EBTimer::stop()
 {
-	this->timerRunning = false;
-	this->autoRetrigger = false;
-	this->semaphore.clear();
+	if( !thread ) return;
+	{
+		std::unique_lock<std::mutex> lock(mWait);
+		this->timerRunning = false;
+	}
+	cvWait.notify_one();
+	thread->join();
+	delete thread;
+	thread = nullptr;
 }
 
 void EBTimer::startSingleShot(uint32_t time)
 {
+	if( thread )
+	{
+		stop();
+	}
+
 	this->timerRunning = true;
-	this->autoRetrigger = false;
+	this->singleShot = true;
 	this->time = time;
-	trigger();
-}
-
-void EBTimer::run()
-{
-    while( threadRunning )
-    {
-		semaphore.acquire();
-
-    	if( threadRunning && timerRunning )
-    		std::this_thread::sleep_for(std::chrono::milliseconds(time));
-
-    	if( threadRunning && timerRunning )
-    		timeout.emit();
-
-    	if( autoRetrigger && timerRunning )
-    		trigger();
-    }
+	thread = new std::thread( std::bind( &EBTimer::run, this ) );
 }
 
 void EBTimer::start(uint32_t time)
 {
+	if( thread )
+	{
+		stop();
+	}
 	this->timerRunning = true;
-	this->autoRetrigger = true;
+	this->singleShot = false;
 	this->time = time;
-	trigger();
+	thread = new std::thread( std::bind( &EBTimer::run, this ) );
 }
+
+void EBTimer::run()
+{
+    while( timerRunning )
+    {
+    	// Wait for the timer run out or the timer is canceled
+    	{
+    		std::unique_lock<std::mutex> lock(mWait);
+			cvWait.wait_for(lock, std::chrono::milliseconds(time), [&]{return !timerRunning;});
+    	}
+
+    	// Emit the timeout event if the timer is still running and the thead should not end
+    	if( timerRunning )
+    	{
+    		timeout.emit();
+    	}
+
+    	// If you run a singleShot timer just stop the timer
+    	if( singleShot ) timerRunning = false;
+    }
+}
+

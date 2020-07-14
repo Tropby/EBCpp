@@ -40,7 +40,7 @@ class EBEventLoop
 public:
     EBEventLoop();
 
-    int finished();
+    int exec();
     void addEvent( std::function<void()> & func );
 
     void quit();
@@ -56,8 +56,6 @@ private:
     std::mutex mutex;
 
     EBSemaphore semaphore;
-
-    void run();
 };
 
 }

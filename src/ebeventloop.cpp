@@ -29,47 +29,44 @@ using namespace EBCpp;
 
 EBEventLoop EBEventLoop::mainLoop;
 
-EBEventLoop::EBEventLoop() : running(true), thread( std::bind( &EBEventLoop::run, this ) )
+EBEventLoop::EBEventLoop() :
+		running(true)
 {
 
 }
 
-int EBEventLoop::finished()
+int EBEventLoop::exec()
 {
-    thread.join();
-    return 0;
+	while (running)
+	{
+		semaphore.acquire();
+		{
+			std::lock_guard<std::mutex> lock(mutex);
+			if (!eventList.empty())
+			{
+				eventList.front()();
+				eventList.pop_front();
+			}
+		}
+	}
+	thread.join();
+	return 0;
 }
 
-void EBEventLoop::addEvent(std::function<void ()> &func)
+void EBEventLoop::addEvent(std::function<void()> &func)
 {
-    std::lock_guard<std::mutex> lock (mutex);
-    eventList.push_back(func);
-    semaphore.release();
+	std::lock_guard<std::mutex> lock(mutex);
+	eventList.push_back(func);
+	semaphore.release();
 }
 
 void EBEventLoop::quit()
 {
-    running = false;
-    semaphore.release();
+	running = false;
+	semaphore.release();
 }
 
-EBEventLoop &EBEventLoop::getMainLoop()
+EBEventLoop& EBEventLoop::getMainLoop()
 {
-    return mainLoop;
-}
-
-void EBEventLoop::run()
-{
-    while ( running )
-    {
-        semaphore.acquire();
-        {
-            std::lock_guard<std::mutex> lock (mutex);
-            if( !eventList.empty() )
-            {
-                eventList.front()();
-                eventList.pop_front();
-            }
-        }
-    }
+	return mainLoop;
 }

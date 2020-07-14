@@ -68,7 +68,7 @@ bool EBTcpServer::acceptRaw()
 {
 	struct sockaddr_in cli;
 
-	int len = sizeof(cli);
+	socklen_t len = sizeof(cli);
 	int connfd = ::accept(socketId, reinterpret_cast<sockaddr*>(&cli), &len);
 	if (connfd < 0)
 	{

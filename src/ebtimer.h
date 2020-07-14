@@ -41,22 +41,25 @@ public:
 
 	EB_SIGNAL(timeout);
 
-	void trigger();
 	void startSingleShot( uint32_t time );
 	void start( uint32_t time );
 	void stop();
 
 private:
+
 	bool timerRunning;
-	bool threadRunning;
-	bool autoRetrigger;
+	bool singleShot;
+
 	uint32_t time;
-	std::thread thread;
-	EBSemaphore semaphore;
+	std::thread * thread;
+
+	mutable std::condition_variable cvWait;
+	mutable std::mutex mWait;
 
 	void run();
 };
 
 }
+
 
 #endif // TIMER_H

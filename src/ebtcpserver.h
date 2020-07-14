@@ -28,6 +28,10 @@
 #include "ebevent.h"
 #include "ebtcpclient.h"
 
+#ifdef __WIN32__
+	#define socklen_t int
+#endif
+
 namespace EBCpp
 {
 

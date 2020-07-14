@@ -52,5 +52,5 @@ int mainTimerTest()
 {
 	TimerTest tt;
 
-    return EBEventLoop::getMainLoop().finished();
+    return EBEventLoop::getMainLoop().exec();
 }

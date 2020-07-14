@@ -32,7 +32,7 @@
 #include "ebconfig.h"
 #include "ebeventloop.h"
 
-#define EB_SIGNAL(name, args...) 	EBEvent<args> name
+#define EB_SIGNAL(name, args...) 	EBCpp::EBEvent<args> name
 #define EB_SLOT						/* for readability */
 
 namespace EBCpp{

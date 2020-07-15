@@ -32,7 +32,6 @@ EBTcpClient::EBTcpClient(int socketId, bool connected) : EBTcpSocket(socketId, c
 
 EBTcpClient::~EBTcpClient()
 {
-	close();
 	std::cout << "EBTcpClient::~EBTcpClient()" << std::endl;
 }
 
@@ -83,7 +82,9 @@ bool EBTcpClient::readRaw()
 {
 	char buffer[1024];
 	int nbytes;
-	nbytes = ::read(socketId, buffer, sizeof(buffer));
+
+	nbytes = ::recv(socketId, buffer, sizeof(buffer),  0);
+	std::cout << "got tcp data " << socketId << "  " << nbytes << std::endl;
 
 	switch (nbytes)
 	{
@@ -146,6 +147,7 @@ bool EBCpp::EBTcpClient::runRaw()
 	while (!deleted && readRaw())
 	{
 	}
+	initialConnected = false;
 
 	return !deleted;
 }

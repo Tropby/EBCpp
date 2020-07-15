@@ -22,15 +22,20 @@
  */
 
 
-//#define USE_EXAMPLES
+#define USE_EXAMPLES
 
 //#define EXAMPLE_FILE
 //#define EXAMPLE_TIMER
 //#define EXAMPLE_SOCKET
+#define EXAMPLE_HTTP
 
 //////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef USE_EXAMPLES
+
+#ifdef EXAMPLE_HTTP
+#include "http/main.h"
+#endif
 
 #ifdef EXAMPLE_TIMER
 #include "timer/main.h"
@@ -57,6 +62,10 @@ int main()
 
 #ifdef EXAMPLE_SOCKET
 	mainSocketTest();
+#endif
+
+#ifdef EXAMPLE_HTTP
+	mainHttpTest();
 #endif
 
 }

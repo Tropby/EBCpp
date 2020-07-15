@@ -70,10 +70,13 @@ void EBCpp::EBTcpSocket::close()
 
 void EBCpp::EBTcpSocket::run()
 {
-	while (!deleted)
-	{
-		runRaw();
-	}
+	// Wait until all is inited.
+	// Otherwise the rawRun method could be "pure virtual"
+	while (!inited)
+		usleep(10000);
+
+	while (runRaw())
+		;
 }
 
 std::string EBCpp::EBTcpSocket::hostnameToIp(std::string hostname)

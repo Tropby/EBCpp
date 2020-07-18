@@ -50,6 +50,7 @@ EBTcpSocket::EBTcpSocket(int socketId, bool connected) :
 
 EBTcpSocket::~EBTcpSocket()
 {
+	std::cout << "TCP SOCKET ENDED EBTcpSocket::~EBTcpSocket()" << std::endl;
 	deleted = true;
 	close();
 	thread.join();

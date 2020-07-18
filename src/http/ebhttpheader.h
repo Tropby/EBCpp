@@ -38,10 +38,22 @@ public:
 	std::string setValue( std::string key, std::string value );
 
 	void parse( std::string data );
+	const std::string& getMethod() const;
+	const std::string& getPath() const;
+	const std::string& getProtocol() const;
 
 private:
 	std::map<std::string, std::string> data;
 
+	std::string protocol;
+
+	// Reply Header Codes
+	int statusCode;
+	std::string statusMessage;
+
+	// Request Header
+	std::string method;
+	std::string path;
 };
 
 }

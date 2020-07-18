@@ -32,7 +32,6 @@ EBTcpClient::EBTcpClient(int socketId, bool connected) : EBTcpSocket(socketId, c
 
 EBTcpClient::~EBTcpClient()
 {
-	std::cout << "EBTcpClient::~EBTcpClient()" << std::endl;
 }
 
 void EBTcpClient::connectToHost(std::string ip, uint16_t port)
@@ -42,7 +41,6 @@ void EBTcpClient::connectToHost(std::string ip, uint16_t port)
 		ip = hostIp;
 
 	struct in_addr addr;
-//	inet_aton(ip.c_str(), &addr);
 	inet_pton(AF_INET, ip.c_str(), &addr);
 	connectToHost(addr.s_addr, port);
 }
@@ -84,7 +82,6 @@ bool EBTcpClient::readRaw()
 	int nbytes;
 
 	nbytes = ::recv(socketId, buffer, sizeof(buffer),  0);
-	std::cout << "got tcp data " << socketId << "  " << nbytes << std::endl;
 
 	switch (nbytes)
 	{

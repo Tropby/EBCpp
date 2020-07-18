@@ -41,11 +41,14 @@ int EBEventLoop::exec()
 	{
 		semaphore.acquire();
 		{
-			std::lock_guard<std::mutex> lock(mutex);
 			if (!eventList.empty())
 			{
 				eventList.front()();
-				eventList.pop_front();
+
+				{
+					std::lock_guard<std::mutex> lock(mutex);
+					eventList.pop_front();
+				}
 			}
 		}
 	}

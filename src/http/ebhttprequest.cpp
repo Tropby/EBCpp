@@ -28,20 +28,24 @@
 
 using namespace EBCpp;
 
-EBCpp::EBHTTPRequest::EBHTTPRequest(std::shared_ptr<EBTcpClient> &socket) :
+EBCpp::EBHTTPRequest::EBHTTPRequest(std::shared_ptr<EBTcpClient> &socket) : enable_shared_from_this<EBHTTPRequest>(),
 		readHeader(true), socket(socket)
 {
 	socket->readReady.connect(
 			std::bind(&EBHTTPRequest::readReady, this, std::placeholders::_1));
+	readReady(socket.get());
 }
 
 EBHTTPRequest::~EBHTTPRequest()
 {
+	std::cout << "REQUEST ENDED! EBHTTPRequest::~EBHTTPRequest()" << std::endl;
 	socket->close();
 }
 
 void EBCpp::EBHTTPRequest::sendReply(std::string data)
 {
+	replyHeader.setValue("content-length", std::to_string(data.length()));
+
 	socket->write(replyHeader.getHeader());
 	socket->write("\r\n"); // Empty line after header
 	socket->write(data);
@@ -49,15 +53,20 @@ void EBCpp::EBHTTPRequest::sendReply(std::string data)
 
 void EBCpp::EBHTTPRequest::sendReply(std::vector<uint8_t> data)
 {
+	replyHeader.setValue("content-length", std::to_string(data.size()));
+
 	socket->write(replyHeader.getHeader());
 	socket->write("\r\n"); // Empty line after header
 	socket->write(reinterpret_cast<char*>(&data[0]), data.size());
 }
 
+const EBHTTPHeader& EBCpp::EBHTTPRequest::getRequestHeader() const
+{
+	return requestHeader;
+}
+
 void EBCpp::EBHTTPRequest::readReady(EBTcpClient *client)
 {
-	std::cout << "readReady" << std::endl;
-
 	// read all data read
 	std::vector<uint8_t> d = client->read();
 	data.insert(data.end(), d.begin(), d.end());
@@ -73,12 +82,19 @@ void EBCpp::EBHTTPRequest::readReady(EBTcpClient *client)
 
 			if (c1 == '\r' && c2 == '\n' && c3 == '\r' && c4 == '\n')
 			{
-				std::cout << "Line received" << std::endl;
 				std::string header = std::string(
 						reinterpret_cast<char*>(&data[0]), i);
 				requestHeader.parse(header);
 
 				data = std::vector<uint8_t>(data.begin() + i, data.end());
+
+				std::string cl = requestHeader.getValue("content-length");
+
+				if( !cl.empty() )
+					contentLength = std::stoi(cl);
+				else
+					contentLength = 0;
+
 
 				readHeader = false;
 				break;
@@ -86,8 +102,12 @@ void EBCpp::EBHTTPRequest::readReady(EBTcpClient *client)
 
 		}
 	}
-	else
-	{
 
+	if( !readHeader )
+	{
+		if( data.size() >= contentLength )
+		{
+			ready.emit( this->shared_from_this() );
+		}
 	}
 }

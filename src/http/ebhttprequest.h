@@ -27,18 +27,23 @@
 #include "../ebtcpclient.h"
 #include "ebhttpheader.h"
 
-namespace EBCpp {
+namespace EBCpp
+{
 
-class EBHTTPRequest {
+class EBHTTPRequest: public std::enable_shared_from_this<EBHTTPRequest>
+{
 public:
-	EBHTTPRequest( std::shared_ptr<EBTcpClient> & socket );
+	EBHTTPRequest(std::shared_ptr<EBTcpClient> &socket);
 	virtual ~EBHTTPRequest();
 
-	void sendReply( std::string data );
-	void sendReply( std::vector<uint8_t> data);
+	EB_SIGNAL( ready, std::shared_ptr<EBHTTPRequest> );
+
+	void sendReply(std::string data);
+	void sendReply(std::vector<uint8_t> data);
+	const EBHTTPHeader& getRequestHeader() const;
 
 private:
-	EB_SLOT void readReady(EBTcpClient* client);
+	EB_SLOT void readReady(EBTcpClient *client);
 
 	std::vector<uint8_t> data;
 
@@ -46,6 +51,7 @@ private:
 	EBHTTPHeader replyHeader;
 
 	bool readHeader;
+	unsigned int contentLength;
 
 	std::shared_ptr<EBTcpClient> socket;
 };

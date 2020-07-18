@@ -21,30 +21,117 @@
  *      Author: Carsten (Tropby)
  */
 
-#include "ebhttpheader.h"
+#include <sstream>
 #include <iostream>
+#include <algorithm>
+
+#include "ebhttpheader.h"
 
 using namespace EBCpp;
 
-EBHTTPHeader::EBHTTPHeader() {
-	// TODO Auto-generated constructor stub
-
+EBHTTPHeader::EBHTTPHeader() :
+		protocol("HTTP/1.0"), statusCode(200), statusMessage(
+				"OK"), method("GET"), path("/")
+{
 }
 
-EBHTTPHeader::~EBHTTPHeader() {
-	// TODO Auto-generated destructor stub
+EBHTTPHeader::~EBHTTPHeader()
+{
 }
 
-std::string EBCpp::EBHTTPHeader::getHeader() {
+std::string EBCpp::EBHTTPHeader::getHeader()
+{
+	std::string returnValue = protocol + " " + std::to_string(statusCode) + " "
+			+ statusMessage + "\r\n";
+
+	for (auto it : data)
+	{
+		returnValue += it.first + ": " + it.second + "\r\n";
+	}
+
+	return returnValue;
 }
 
-std::string EBCpp::EBHTTPHeader::getValue(std::string key) {
+std::string EBCpp::EBHTTPHeader::getValue(std::string key)
+{
+	return data[key];
 }
 
-std::string EBCpp::EBHTTPHeader::setValue(std::string key, std::string value) {
+std::string EBCpp::EBHTTPHeader::setValue(std::string key, std::string value)
+{
+	data[key] = value;
+	return data[key];
 }
 
 void EBCpp::EBHTTPHeader::parse(std::string data)
 {
-	std::cout << data << std::endl;
+	std::stringstream strstream(data);
+	std::string line;
+
+	bool first = true;
+
+	while (getline(strstream, line))
+	{
+
+		if (line.back() == '\r')
+			line.pop_back();
+
+		if (first)
+		{
+			std::stringstream linesplit(line);
+			int i = 0;
+			std::string l;
+			while (getline(linesplit, l, ' '))
+			{
+				switch (i++)
+				{
+				case 0:
+					method = l;
+					break;
+				case 1:
+					path = l;
+					break;
+				case 2:
+					protocol = l;
+					break;
+				default:
+					// ???
+					break;
+				}
+			}
+
+			first = false;
+		}
+		else
+		{
+			int delimiter = line.find(':');
+
+			if (delimiter >= 0)
+			{
+				std::string key = line.substr(0, delimiter);
+				std::string value = line.substr(delimiter + 2);
+
+				std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+
+				std::pair<std::string, std::string> p(key, value);
+
+				this->data.insert(p);
+			}
+		}
+	}
+}
+
+const std::string& EBCpp::EBHTTPHeader::getMethod() const
+{
+	return method;
+}
+
+const std::string& EBCpp::EBHTTPHeader::getPath() const
+{
+	return path;
+}
+
+const std::string& EBCpp::EBHTTPHeader::getProtocol() const
+{
+	return protocol;
 }

@@ -51,12 +51,10 @@ bool EBTcpServer::bind(uint16_t port)
 	if ((::bind(socketId, reinterpret_cast<sockaddr*>(&servaddr),
 			sizeof(servaddr))) != 0)
 	{
-		printf("socket bind failed... %d\n", socketId);
 		return false;
 	}
 	if ((listen(socketId, 5)) != 0)
 	{
-		printf("Listen failed...\n");
 		return false;
 	}
 
@@ -72,14 +70,11 @@ bool EBTcpServer::acceptRaw()
 	int connfd = ::accept(socketId, reinterpret_cast<sockaddr*>(&cli), &len);
 	if (connfd < 0)
 	{
-		printf("server acccept failed...\n");
 		return false;
 	}
 
 	std::shared_ptr<EBTcpClient> socket = std::make_shared<EBTcpClient>(connfd,
 			true);
-
-	clients.push_back( socket );
 
 	newConnection.emit(socket);
 

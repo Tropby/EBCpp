@@ -40,25 +40,17 @@ int EBEventLoop::exec()
 	while (running)
 	{
 		semaphore.acquire();
-		{
-			if (!eventList.empty())
-			{
-				eventList.front()();
-
-				{
-					std::lock_guard<std::mutex> lock(mutex);
-					eventList.pop_front();
-				}
-			}
-		}
+		auto f = eventList.front();
+		f();
+		eventList.pop_front();
 	}
+
 	thread.join();
 	return 0;
 }
 
 void EBEventLoop::addEvent(std::function<void()> &func)
 {
-	std::lock_guard<std::mutex> lock(mutex);
 	eventList.push_back(func);
 	semaphore.release();
 }

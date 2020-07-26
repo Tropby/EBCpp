@@ -41,7 +41,7 @@ public:
 
 	EB_SIGNAL(readReady, EBSerialPort*);
 
-	virtual bool open(std::__cxx11::string filename);
+	virtual bool open(std::string filename);
 	virtual bool close();
 	bool setInterfaceAttributes(int speed, int parity);
 

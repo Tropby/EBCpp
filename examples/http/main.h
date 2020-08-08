@@ -5,9 +5,10 @@
 class HTTPTest
 {
 public:
-	HTTPTest() : server( 44554 )
+	HTTPTest() : server()
 	{
 		server.newRequest.connect(std::bind(&HTTPTest::newRequest, this, std::placeholders::_1 ));
+		server.bind(44544);
 	}
 
 	~HTTPTest()
@@ -27,7 +28,7 @@ private:
 			data += std::to_string(i) + "<br />";
 		}
 
-		request->sendReply("<html><head></head><body>" + data + "</body></html>");
+		request->sendReply("<html><head><meta http-equiv=\"refresh\" content=\"1\"></head><body>" + data + "</body></html>");
 	}
 
 	EBCpp::EBHTTPServer server;
@@ -40,10 +41,11 @@ int mainHttpTest()
 		HTTPTest tt;
 		return EBCpp::EBEventLoop::getMainLoop().exec();
 	}
-	catch( ... )
+	catch( std::exception & ex )
 	{
-		std::cout << "ERROR" << std::endl;
-		return 1;
+		std::cout << "EXCEPTION " << ex.what() << std::endl;
 	}
+	std::cout << "MAIN ENDED" << std::endl;
+	return 0;
 }
 

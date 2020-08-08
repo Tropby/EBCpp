@@ -25,11 +25,9 @@
 
 using namespace EBCpp;
 
-EBHTTPServer::EBHTTPServer(uint16_t port)
+EBHTTPServer::EBHTTPServer()
 {
 	server.newConnection.connect( std::bind( &EBHTTPServer::newConnection, this, std::placeholders::_1 ) );
-
-	server.bind(port);
 }
 
 EBHTTPServer::~EBHTTPServer()
@@ -37,11 +35,17 @@ EBHTTPServer::~EBHTTPServer()
 
 }
 
-void EBCpp::EBHTTPServer::newConnection(std::shared_ptr< EBTcpClient > client)
+void EBCpp::EBHTTPServer::newConnection(std::shared_ptr< EBTcpServerSocket > client)
 {
 	std::shared_ptr< EBHTTPRequest > request = std::make_shared<EBHTTPRequest>( client );
 	request->ready.connect(std::bind( &EBHTTPServer::requestReady, this, std::placeholders::_1 ));
 	requests.push_back( request );
+	request->start();
+}
+
+bool EBCpp::EBHTTPServer::bind(uint16_t port)
+{
+	return server.bind(port);
 }
 
 void EBCpp::EBHTTPServer::requestReady(std::shared_ptr<EBHTTPRequest> request)

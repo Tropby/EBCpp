@@ -34,13 +34,15 @@ namespace EBCpp {
 
 class EBHTTPServer {
 public:
-	EBHTTPServer( uint16_t port );
+	EBHTTPServer();
 	virtual ~EBHTTPServer();
 
 	EB_SIGNAL(newRequest, std::shared_ptr<EBHTTPRequest>);
 
+	bool bind(uint16_t port);
+
 private:
-	EB_SLOT void newConnection(std::shared_ptr< EBTcpClient > client);
+	EB_SLOT void newConnection(std::shared_ptr< EBTcpServerSocket > client);
 	EB_SLOT void requestReady(std::shared_ptr<EBHTTPRequest> request);
 
 	EBTcpServer server;

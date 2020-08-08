@@ -28,13 +28,22 @@
 using namespace EBCpp;
 
 EBTcpServer::EBTcpServer() :
-		EBTcpSocket()
+		thread(nullptr), deleted(false), socketId(-1)
 {
+#ifdef __WIN32__
+	WORD versionWanted = MAKEWORD(1, 1);
+	WSADATA wsaData;
+	WSAStartup(versionWanted, &wsaData);
+#endif
+
+	socketId = socket( AF_INET, SOCK_STREAM, 0);
 }
 
 EBTcpServer::~EBTcpServer()
 {
-	close();
+	std::cout << "EBTcpServer::~EBTcpServer() -> unbind" << std::endl;
+	unbind();
+	std::cout << "EBTcpServer::~EBTcpServer() -> finished" << std::endl;
 }
 
 bool EBTcpServer::bind(uint16_t port)
@@ -53,44 +62,39 @@ bool EBTcpServer::bind(uint16_t port)
 	{
 		return false;
 	}
-	if ((listen(socketId, 5)) != 0)
+	if ((::listen(socketId, 5)) != 0)
 	{
 		return false;
 	}
 
-	processConnect.release();
+	deleted = false;
+	thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpServer::acceptConnections, this)));
 	return true;
 }
 
-bool EBTcpServer::acceptRaw()
+void EBCpp::EBTcpServer::unbind()
+{
+	deleted = true;
+	::close(socketId);
+	if (thread.get() != nullptr)
+		thread->join();
+}
+
+void EBTcpServer::acceptConnections()
 {
 	struct sockaddr_in cli;
-
 	socklen_t len = sizeof(cli);
-	int connfd = ::accept(socketId, reinterpret_cast<sockaddr*>(&cli), &len);
-	if (connfd < 0)
+
+	while (!deleted)
 	{
-		return false;
+		int connfd = ::accept(socketId, reinterpret_cast<sockaddr*>(&cli),
+				&len);
+		if (connfd >= 0)
+		{
+			std::shared_ptr<EBTcpServerSocket> socket = std::make_shared<
+					EBTcpServerSocket>(connfd);
+			socket->start();
+			newConnection.emit(socket);
+		}
 	}
-
-	std::shared_ptr<EBTcpClient> socket = std::make_shared<EBTcpClient>(connfd,
-			true);
-
-	newConnection.emit(socket);
-
-	return true;
-}
-
-bool EBTcpServer::runRaw()
-{
-	state = false;
-	processConnect.acquire();
-	if (deleted)
-		return false;
-
-	state = true;
-	while (!deleted && acceptRaw())
-	{
-	}
-	return true;
 }

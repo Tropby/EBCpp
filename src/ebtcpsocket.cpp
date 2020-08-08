@@ -30,8 +30,8 @@ using namespace EBCpp;
 bool EBTcpSocket::inited = false;
 
 EBTcpSocket::EBTcpSocket(int socketId, bool connected) :
-		socketId(socketId), thread(std::bind(&EBTcpSocket::run, this)), deleted(
-				false), state(false), initialConnected(connected)
+		socketId(socketId), deleted(false), state(false), initialConnected(
+				connected), thread(nullptr)
 {
 	if (!inited)
 	{
@@ -50,10 +50,6 @@ EBTcpSocket::EBTcpSocket(int socketId, bool connected) :
 
 EBTcpSocket::~EBTcpSocket()
 {
-	std::cout << "TCP SOCKET ENDED EBTcpSocket::~EBTcpSocket()" << std::endl;
-	deleted = true;
-	close();
-	thread.join();
 }
 
 void EBCpp::EBTcpSocket::close()
@@ -61,7 +57,7 @@ void EBCpp::EBTcpSocket::close()
 	if (isConnected())
 	{
 #ifdef __WIN32__
-		::shutdown(socketId, SD_BOTH);
+		//::shutdown(socketId, SD_BOTH);
 #else
 		::shutdown(socketId, SHUT_RDWR);
 #endif
@@ -71,13 +67,8 @@ void EBCpp::EBTcpSocket::close()
 
 void EBCpp::EBTcpSocket::run()
 {
-	// Wait until all is inited.
-	// Otherwise the rawRun method could be "pure virtual"
-	while (!inited)
-		usleep(10000);
-
-	while (runRaw())
-		;
+	while (!deleted)
+		runRaw();
 }
 
 std::string EBCpp::EBTcpSocket::hostnameToIp(std::string hostname)
@@ -121,4 +112,22 @@ bool EBCpp::EBTcpSocket::connectRaw()
 bool EBCpp::EBTcpSocket::readRaw()
 {
 	return false;
+}
+
+void EBCpp::EBTcpSocket::startThread()
+{
+	thread = std::make_shared<std::thread>(std::bind(&EBTcpSocket::run, this));
+}
+
+void EBCpp::EBTcpSocket::stopThread()
+{
+	deleted = true;
+	close();
+	if( thread )
+		thread->join();
+}
+
+bool EBCpp::EBTcpSocket::runRaw()
+{
+	return true;
 }

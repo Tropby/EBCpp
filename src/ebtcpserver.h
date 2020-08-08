@@ -24,34 +24,37 @@
 #ifndef DEP_EBCPP_EBTCPSERVER_H_
 #define DEP_EBCPP_EBTCPSERVER_H_
 
+#include <atomic>
+
 #include "ebconfig.h"
 #include "ebevent.h"
-#include "ebtcpclient.h"
 
-#ifdef __WIN32__
-	#define socklen_t int
-#endif
+#include "tcp/tcp.h"
+#include "tcp/ebtcpserversocket.h"
 
 namespace EBCpp
 {
 
-class EBTcpServer: public EBTcpSocket
+class EBTcpServer
 {
 public:
 	EBTcpServer();
 	virtual ~EBTcpServer();
 
-	EB_SIGNAL( newConnection, std::shared_ptr< EBTcpClient > );
+	EB_SIGNAL( newConnection, std::shared_ptr< EBTcpServerSocket > );
 
 	bool bind(uint16_t port);
+	void unbind();
 
 protected:
-	virtual bool acceptRaw();
-	virtual bool runRaw();
+	void acceptConnections();
 
-	std::list< std::shared_ptr< EBTcpClient > > clients;
+	std::list< std::shared_ptr< EBTcpServerSocket > > clients;
 
 private:
+	std::unique_ptr<std::thread> thread;
+	std::atomic<bool> deleted;
+	SOCKET socketId;
 
 };
 

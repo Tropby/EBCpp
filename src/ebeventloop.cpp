@@ -41,7 +41,14 @@ int EBEventLoop::exec()
 	{
 		semaphore.acquire();
 		auto f = eventList.front();
-		f();
+		try
+		{
+			f();
+		}
+		catch( std::exception & ex )
+		{
+			std::cout << "ERROR in Signal Function!: " << ex.what() << std::endl;
+		}
 		eventList.pop_front();
 	}
 

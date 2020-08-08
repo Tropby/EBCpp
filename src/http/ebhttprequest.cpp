@@ -23,22 +23,19 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "ebhttprequest.h"
 
 using namespace EBCpp;
 
-EBCpp::EBHTTPRequest::EBHTTPRequest(std::shared_ptr<EBTcpClient> &socket) : enable_shared_from_this<EBHTTPRequest>(),
-		readHeader(true), socket(socket)
+EBCpp::EBHTTPRequest::EBHTTPRequest(std::shared_ptr<EBTcpServerSocket> &socket) : enable_shared_from_this<EBHTTPRequest>(),
+		readHeader(true), socket(socket), contentLength(0)
 {
-	socket->readReady.connect(
-			std::bind(&EBHTTPRequest::readReady, this, std::placeholders::_1));
-	readReady(socket.get());
 }
 
 EBHTTPRequest::~EBHTTPRequest()
 {
-	std::cout << "REQUEST ENDED! EBHTTPRequest::~EBHTTPRequest()" << std::endl;
 	socket->close();
 }
 
@@ -49,6 +46,7 @@ void EBCpp::EBHTTPRequest::sendReply(std::string data)
 	socket->write(replyHeader.getHeader());
 	socket->write("\r\n"); // Empty line after header
 	socket->write(data);
+	socket->close();
 }
 
 void EBCpp::EBHTTPRequest::sendReply(std::vector<uint8_t> data)
@@ -58,6 +56,7 @@ void EBCpp::EBHTTPRequest::sendReply(std::vector<uint8_t> data)
 	socket->write(replyHeader.getHeader());
 	socket->write("\r\n"); // Empty line after header
 	socket->write(reinterpret_cast<char*>(&data[0]), data.size());
+	socket->close();
 }
 
 const EBHTTPHeader& EBCpp::EBHTTPRequest::getRequestHeader() const
@@ -65,7 +64,14 @@ const EBHTTPHeader& EBCpp::EBHTTPRequest::getRequestHeader() const
 	return requestHeader;
 }
 
-void EBCpp::EBHTTPRequest::readReady(EBTcpClient *client)
+void EBCpp::EBHTTPRequest::start()
+{
+	socket->readReady.connect(
+			std::bind(&EBHTTPRequest::readReady, this, std::placeholders::_1));
+	readReady(socket);
+}
+
+void EBCpp::EBHTTPRequest::readReady(std::shared_ptr<EBTcpServerSocket> client)
 {
 	// read all data read
 	std::vector<uint8_t> d = client->read();

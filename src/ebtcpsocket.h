@@ -67,25 +67,29 @@ public:
 protected:
     SOCKET socketId;
 
-    EBSemaphore processConnect;
+
     uint32_t ip;
     uint16_t port;
 
     std::vector<uint8_t> data;
 
-    std::thread thread;
+    void startThread();
+    void stopThread();
+
     void run();
 
     virtual bool connectRaw();
     virtual bool readRaw();
     virtual bool acceptRaw();
-    virtual bool runRaw() = 0;
+    virtual bool runRaw();
 
     bool deleted;
     bool state;
     bool initialConnected;
 
     static bool inited;
+
+    std::shared_ptr<std::thread> thread;
 };
 
 }

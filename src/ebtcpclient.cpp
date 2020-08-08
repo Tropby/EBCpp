@@ -23,15 +23,18 @@
 
 #include "ebtcpclient.h"
 
-
 using namespace EBCpp;
 
-EBTcpClient::EBTcpClient(int socketId, bool connected) : EBTcpSocket(socketId, connected)
+EBTcpClient::EBTcpClient(int socketId, bool connected) :
+		EBTcpSocket(socketId, connected)
 {
+	if( connected )
+		startThread();
 }
 
 EBTcpClient::~EBTcpClient()
 {
+	stopThread();
 }
 
 void EBTcpClient::connectToHost(std::string ip, uint16_t port)
@@ -49,7 +52,7 @@ void EBTcpClient::connectToHost(uint32_t ip, uint16_t port)
 {
 	this->ip = ip;
 	this->port = port;
-	processConnect.release();
+	startThread();
 }
 
 std::vector<uint8_t> EBTcpClient::read()
@@ -62,7 +65,7 @@ std::vector<uint8_t> EBTcpClient::read()
 std::string EBTcpClient::readString()
 {
 	std::vector<uint8_t> r = this->read();
-	r.insert( r.end(), 0x00);
+	r.insert(r.end(), 0x00);
 	return std::string(reinterpret_cast<char*>(r.data()));
 }
 
@@ -71,7 +74,7 @@ void EBTcpClient::write(std::string data)
 	send(socketId, data.c_str(), data.length(), 0);
 }
 
-void EBTcpClient::write(char * data, int size )
+void EBTcpClient::write(char *data, int size)
 {
 	send(socketId, data, size, 0);
 }
@@ -81,20 +84,22 @@ bool EBTcpClient::readRaw()
 	char buffer[1024];
 	int nbytes;
 
-	nbytes = ::recv(socketId, buffer, sizeof(buffer),  0);
+	nbytes = ::recv(socketId, buffer, sizeof(buffer), 0);
 
 	switch (nbytes)
 	{
 	case 0:
-		disconnected.emit(this);
+		if( !deleted )
+			disconnected.emit(this->shared_from_this());
 		return false;
 	case -1:
-		error.emit(2);
+		if( !deleted )
+			error.emit(2);
 		return false;
 	default:
 		std::vector<uint8_t> b(buffer, buffer + nbytes);
 		data.insert(data.end(), std::begin(b), std::end(b));
-		readReady.emit(this);
+		readReady.emit(this->shared_from_this());
 		return true;
 	}
 }
@@ -118,7 +123,7 @@ bool EBTcpClient::connectRaw()
 
 bool EBCpp::EBTcpClient::runRaw()
 {
-	if( !initialConnected )
+	if (!initialConnected)
 	{
 		state = false;
 
@@ -134,7 +139,7 @@ bool EBCpp::EBTcpClient::runRaw()
 		}
 
 		state = true;
-		connected.emit(this);
+		connected.emit(this->shared_from_this());
 	}
 	else
 	{

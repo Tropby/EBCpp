@@ -22,12 +22,12 @@
  */
 
 
-//#define USE_EXAMPLES
+#define USE_EXAMPLES
 
 //#define EXAMPLE_FILE
 //#define EXAMPLE_TIMER
 //#define EXAMPLE_SOCKET
-//#define EXAMPLE_HTTP
+#define EXAMPLE_HTTP
 
 //////////////////////////////////////////////////////////////////////////////////////
 

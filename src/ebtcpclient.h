@@ -26,19 +26,20 @@
 #define DEP_EBCPP_EBTCPCLIENT_H_
 
 #include "ebtcpsocket.h"
+#include "ebsemaphore.h"
 
 namespace EBCpp
 {
 
-class EBTcpClient: public EBTcpSocket
+class EBTcpClient: public EBTcpSocket, public std::enable_shared_from_this<EBTcpClient>
 {
 public:
 	EBTcpClient(int socketId = -1, bool connected = false);
 	virtual ~EBTcpClient();
 
-    EB_SIGNAL(connected, EBTcpClient*);
-    EB_SIGNAL(disconnected, EBTcpClient*);
-    EB_SIGNAL(readReady, EBTcpClient*);
+    EB_SIGNAL(connected, std::shared_ptr<EBTcpClient>);
+    EB_SIGNAL(disconnected, std::shared_ptr<EBTcpClient>);
+    EB_SIGNAL(readReady, std::shared_ptr<EBTcpClient>);
 
 	void connectToHost(std::string ip, uint16_t port);
 	void connectToHost(uint32_t ip, uint16_t port);
@@ -52,6 +53,9 @@ protected:
 	virtual bool connectRaw();
 	virtual bool readRaw();
 	virtual bool runRaw();
+
+private:
+    EBSemaphore processConnect;
 };
 
 }

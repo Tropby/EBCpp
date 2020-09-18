@@ -77,7 +77,12 @@ void EBCpp::EBTcpServer::unbind()
 	deleted = true;
 	::close(socketId);
 	if (thread.get() != nullptr)
+	{
 		thread->join();
+		std::thread * t = thread.release();
+		thread.get_deleter() ( t );
+		thread = nullptr;
+	}
 }
 
 void EBTcpServer::acceptConnections()

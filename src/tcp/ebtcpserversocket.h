@@ -55,11 +55,14 @@ public:
 	std::vector<uint8_t> read();
 	std::string readString();
 
+	SOCKET getSocketId();
+
 private:
 	SOCKET socketId;
 	std::vector<uint8_t> data;
 	std::atomic<bool> deleted;
-	std::unique_ptr<std::thread> thread;
+	std::shared_ptr<std::thread> thread;
+	std::atomic<bool> opened;
 
 	void readLoop();
 };

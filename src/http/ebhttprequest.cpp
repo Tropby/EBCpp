@@ -32,10 +32,13 @@ using namespace EBCpp;
 EBCpp::EBHTTPRequest::EBHTTPRequest(std::shared_ptr<EBTcpServerSocket> &socket) : enable_shared_from_this<EBHTTPRequest>(),
 		readHeader(true), socket(socket), contentLength(0)
 {
+	EB_DEBUG( socket->getSocketId() );
 }
 
 EBHTTPRequest::~EBHTTPRequest()
 {
+	EB_DEBUG( socket->getSocketId() );
+
 	socket->close();
 }
 

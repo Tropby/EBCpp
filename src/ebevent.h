@@ -25,6 +25,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include <iostream>
 #include <functional>
 #include <list>
 #include <memory>
@@ -34,6 +35,8 @@
 
 #define EB_SIGNAL(name, args...) 	EBCpp::EBEvent<args> name
 #define EB_SLOT						/* for readability */
+
+#define EB_DEBUG(msg) std::cout << std::hex << "0x" << reinterpret_cast<int>(this) << std::dec << "(" << __PRETTY_FUNCTION__ << " " << __FILE__ << " @ " << __LINE__ << ") " << " " << msg << std::endl;
 
 namespace EBCpp{
 

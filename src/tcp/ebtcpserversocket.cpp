@@ -29,19 +29,37 @@ namespace EBCpp
 {
 
 EBTcpServerSocket::EBTcpServerSocket(SOCKET socketId) :
-		enable_shared_from_this<EBTcpServerSocket>(), socketId(socketId), deleted(false), thread(nullptr)
+		enable_shared_from_this<EBTcpServerSocket>(), socketId(socketId), data(
+		{ }), deleted(false), thread(nullptr), opened(true)
 {
+	EB_DEBUG(socketId);
 
+	linger l;
+	l.l_onoff = 1;
+	l.l_linger = 10;
+	::setsockopt(socketId, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&l),
+			sizeof(l));
 }
 
 EBTcpServerSocket::~EBTcpServerSocket()
 {
+	EB_DEBUG(socketId);
+
+#ifdef __WIN32__
+	::closesocket(socketId);
+#else
+	::close(socketId);
+#endif
 }
 
 std::vector<uint8_t> EBTcpServerSocket::read()
 {
-	std::vector<uint8_t> ret = data;
-	data.clear();
+	std::vector<uint8_t> ret;
+	if (data.size())
+	{
+		ret = data;
+		data.clear();
+	}
 	return ret;
 }
 
@@ -54,34 +72,36 @@ std::string EBTcpServerSocket::readString()
 
 void EBTcpServerSocket::write(std::string data)
 {
-	send(socketId, data.c_str(), data.length(), 0);
+	::send(socketId, data.c_str(), data.length(), 0);
 }
 
 void EBTcpServerSocket::write(char *data, int size)
 {
-	send(socketId, data, size, 0);
+	::send(socketId, data, size, 0);
 }
 
 void EBTcpServerSocket::close()
 {
-	this->deleted = true;
-
-	::close(socketId);
-	if( thread.get() != nullptr )
+	if (opened.exchange(false))
 	{
+		::shutdown(socketId, SD_SEND);
 		thread->join();
-		thread = nullptr;
 	}
 }
 
 void EBTcpServerSocket::start()
 {
-	if( thread.get() != nullptr )
+	if (thread.get() != nullptr)
 	{
-		std::cerr << "DO NOT START SOCKET"  << std::endl;
 		return;
 	}
-	thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpServerSocket::readLoop, this)));
+	thread = std::make_shared<std::thread>(
+			std::bind(&EBTcpServerSocket::readLoop, this));
+}
+
+SOCKET EBTcpServerSocket::getSocketId()
+{
+	return socketId;
 }
 
 void EBTcpServerSocket::readLoop()
@@ -90,27 +110,29 @@ void EBTcpServerSocket::readLoop()
 
 	char buffer[1024];
 	int nbytes;
-	while(!deleted)
+	while (!deleted)
 	{
 		nbytes = ::recv(socketId, buffer, sizeof(buffer), 0);
-		if( deleted )
-			return;
+		if (deleted)
+			break;
 
 		switch (nbytes)
 		{
 		case 0:
 			disconnected.emit(pthis);
-			return;
+			deleted = true;
+			break;
 		case -1:
 			error.emit(pthis);
-			return;
+			deleted = true;
+			break;
 		default:
 			std::vector<uint8_t> b(buffer, buffer + nbytes);
 			data.insert(data.end(), std::begin(b), std::end(b));
 			readReady.emit(pthis);
+			break;
 		}
 	}
-	std::cout << "Thread ENDED!" << std::endl;
 }
 
 } /* namespace EBCpp */

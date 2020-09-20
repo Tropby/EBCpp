@@ -17,39 +17,45 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- *  Created on: Jul 15, 2020
+ *  Created on: Jul 3, 2020
  *      Author: Carsten (Tropby)
  */
 
-#ifndef SRC_EBHTTPSERVER_H_
-#define SRC_EBHTTPSERVER_H_
 
-#include <list>
+#ifndef DEP_EBCPP_EBSSLCLIENT_H_
+#define DEP_EBCPP_EBSSLCLIENT_H_
 
-#include "ebtcpserver.h"
-#include "http/ebhttprequest.h"
+#include "../../../ebconfig.h"
 
-namespace EBCpp {
+#ifdef EB_OPENSSL
 
+#include "../ebtcpclient.h"
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
-class EBHTTPServer {
+namespace EBCpp{
+
+class EBSSLClient : public EBTcpClient
+{
 public:
-	EBHTTPServer();
-	virtual ~EBHTTPServer();
+	EBSSLClient();
+	virtual ~EBSSLClient();
 
-	EB_SIGNAL(newRequest, std::shared_ptr<EBHTTPRequest>);
+    virtual void write( std::string data );
 
-	bool bind(uint16_t port);
+protected:
+    SSL *ssl;
+    int sslSock;
+
+	virtual bool readRaw();
+	virtual bool connectRaw();
 
 private:
-	EB_SLOT void newConnection(std::shared_ptr< EBTcpServerSocket > client);
-	EB_SLOT void requestReady(std::shared_ptr<EBHTTPRequest> request);
-
-	EBTcpServer server;
-
-	std::list<std::shared_ptr<EBHTTPRequest>> requests;
+	void logSslErrors();
 };
 
 }
 
-#endif /* SRC_EBHTTPSERVER_H_ */
+#endif
+
+#endif /* DEP_EBCPP_EBSSLCLIENT_H_ */

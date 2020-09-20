@@ -97,6 +97,11 @@ public:
         functions.push_back( f );
     }
 
+    /**
+     * @fn void emit(args...)
+     * @brief emit the event. the event is added to the event loop registered for this event
+     * @param p Event arguments
+     */
     void emit( args... p ) // Emit and Wait for finished
     {
         for( auto it : functions )

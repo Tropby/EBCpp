@@ -21,35 +21,26 @@
  *      Author: Carsten (Tropby)
  */
 
-#include "ebhttpserver.h"
+#include "ebplainhttpserver.h"
 
 using namespace EBCpp;
 
-EBHTTPServer::EBHTTPServer()
+EBPlainHTTPServer::EBPlainHTTPServer()
 {
-	server.newConnection.connect( std::bind( &EBHTTPServer::newConnection, this, std::placeholders::_1 ) );
+	server.newConnection.connect( std::bind( &EBPlainHTTPServer::newConnection, this, std::placeholders::_1 ) );
 }
 
-EBHTTPServer::~EBHTTPServer()
+EBPlainHTTPServer::~EBPlainHTTPServer()
 {
 
 }
 
-void EBCpp::EBHTTPServer::newConnection(std::shared_ptr< EBTcpServerSocket > client)
-{
-	std::shared_ptr< EBHTTPRequest > request = std::make_shared<EBHTTPRequest>( client );
-	request->ready.connect(std::bind( &EBHTTPServer::requestReady, this, std::placeholders::_1 ));
-	requests.push_back( request );
-	request->start();
-}
-
-bool EBCpp::EBHTTPServer::bind(uint16_t port)
+bool EBCpp::EBPlainHTTPServer::bind(uint16_t port)
 {
 	return server.bind(port);
 }
 
-void EBCpp::EBHTTPServer::requestReady(std::shared_ptr<EBHTTPRequest> request)
+void EBCpp::EBPlainHTTPServer::unbind()
 {
-	requests.remove(request);
-	newRequest.emit(request);
+	server.unbind();
 }

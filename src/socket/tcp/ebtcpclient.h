@@ -21,43 +21,43 @@
  *      Author: Carsten (Tropby)
  */
 
-#ifndef DEP_EBCPP_EBTCPSERVER_H_
-#define DEP_EBCPP_EBTCPSERVER_H_
 
-#include <atomic>
+#ifndef DEP_EBCPP_EBTCPCLIENT_H_
+#define DEP_EBCPP_EBTCPCLIENT_H_
 
-#include "ebconfig.h"
-#include "ebevent.h"
-
-#include "tcp/tcp.h"
-#include "tcp/ebtcpserversocket.h"
+#include "ebtcpsocket.h"
+#include "../../ebsemaphore.h"
 
 namespace EBCpp
 {
 
-class EBTcpServer
+class EBTcpClient: public EBTcpSocket, public std::enable_shared_from_this<EBTcpClient>
 {
 public:
-	EBTcpServer();
-	virtual ~EBTcpServer();
+	EBTcpClient(int socketId = -1, bool connected = false);
+	virtual ~EBTcpClient();
 
-	EB_SIGNAL( newConnection, std::shared_ptr< EBTcpServerSocket > );
+    EB_SIGNAL(connected, std::shared_ptr<EBTcpClient>);
+    EB_SIGNAL(disconnected, std::shared_ptr<EBTcpClient>);
+    EB_SIGNAL(readReady, std::shared_ptr<EBTcpClient>);
 
-	bool bind(uint16_t port);
-	void unbind();
+	void connectToHost(std::string ip, uint16_t port);
+	void connectToHost(uint32_t ip, uint16_t port);
+
+	virtual void write(std::string data);
+	virtual void write(char * data, int size );
+	virtual std::vector<uint8_t> read();
+	virtual std::string readString();
 
 protected:
-	void acceptConnections();
-
-	std::list< std::shared_ptr< EBTcpServerSocket > > clients;
+	virtual bool connectRaw();
+	virtual bool readRaw();
+	virtual bool runRaw();
 
 private:
-	std::unique_ptr<std::thread> thread;
-	std::atomic<bool> deleted;
-	SOCKET socketId;
-
+    EBSemaphore processConnect;
 };
 
 }
 
-#endif /* DEP_EBCPP_EBTCPSERVER_H_ */
+#endif /* DEP_EBCPP_EBTCPCLIENT_H_ */

@@ -37,7 +37,7 @@
  * 			copy "{OPENSSL_PATH}/bin/libcrypto-1_1-*.dll" to output directory (exe path)
  *
  */
-// #define EB_OPENSSL
+#define EB_OPENSSL
 
 
 //////////////////////////////////////////////////////////////////////////

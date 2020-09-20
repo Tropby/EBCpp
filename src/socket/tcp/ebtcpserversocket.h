@@ -22,61 +22,42 @@
  */
 
 
-#define USE_EXAMPLES
+#ifndef SRC_TCP_EBTCPSERVERSOCKET_H_
+#define SRC_TCP_EBTCPSERVERSOCKET_H_
 
-//#define EXAMPLE_FILE
-//#define EXAMPLE_TIMER
-//#define EXAMPLE_SOCKET
-//#define EXAMPLE_HTTP
-#define EXAMPLE_HTTPS
+#include <string>
+#include <vector>
+#include <atomic>
+#include <memory>
 
-//////////////////////////////////////////////////////////////////////////////////////
+#include "../ebserversocket.h"
 
-#ifdef USE_EXAMPLES
-
-#ifdef EXAMPLE_HTTP
-#include "http/main.h"
-#endif
-
-#ifdef EXAMPLE_HTTPS
-#include "https/main.h"
-#endif
-
-#ifdef EXAMPLE_TIMER
-#include "timer/main.h"
-#endif
-
-#ifdef EXAMPLE_SOCKET
-#include "socket/main.h"
-#endif
-
-#ifdef EXAMPLE_FILE
-#include "file/main.h"
-#endif
-
-int main()
+namespace EBCpp
 {
 
-#ifdef EXAMPLE_FILE
-	mainFileTest();
-#endif
+class EBTcpServerSocket : public EBServerSocket
+{
+public:
+	EBTcpServerSocket( SOCKET socketId );
+	virtual ~EBTcpServerSocket();
 
-#ifdef EXAMPLE_TIMER
-	mainTimerTest();
-#endif
+    void close();
+    void start();
 
-#ifdef EXAMPLE_SOCKET
-	mainSocketTest();
-#endif
+	void write(std::string data);
+	void write(char * data, int size );
+	std::vector<uint8_t> read();
+	std::string readString();
 
-#ifdef EXAMPLE_HTTP
-	mainHttpTest();
-#endif
+private:
+	std::vector<uint8_t> data;
+	std::atomic<bool> deleted;
+	std::shared_ptr<std::thread> thread;
+	std::atomic<bool> opened;
 
-#ifdef EXAMPLE_HTTPS
-	mainHttpsTest();
-#endif
+	void readLoop();
+};
 
-}
+} /* namespace EBCpp */
 
-#endif
+#endif /* SRC_TCP_EBTCPSERVERSOCKET_H_ */

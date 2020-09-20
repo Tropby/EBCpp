@@ -1,17 +1,17 @@
 
 #include "../../src/ebeventloop.h"
-#include "../../src/http/ebplainhttpserver.h"
+#include "../../src/http/ebhttpsserver.h"
 
-class HTTPTest
+class HTTPSTest
 {
 public:
-	HTTPTest() : server()
+	HTTPSTest() : server()
 	{
-		server.newRequest.connect(std::bind(&HTTPTest::newRequest, this, std::placeholders::_1 ));
+		server.newRequest.connect(std::bind(&HTTPSTest::newRequest, this, std::placeholders::_1 ));
 		server.bind(44544);
 	}
 
-	~HTTPTest()
+	~HTTPSTest()
 	{
 
 	}
@@ -31,14 +31,14 @@ private:
 		request->sendReply("<html><head><meta http-equiv=\"refresh\" content=\"1\"></head><body>" + data + "</body></html>");
 	}
 
-	EBCpp::EBPlainHTTPServer server;
+	EBCpp::EBHTTPSServer server;
 };
 
-int mainHttpTest()
+int mainHttpsTest()
 {
 	try
 	{
-		HTTPTest tt;
+		HTTPSTest tt;
 		return EBCpp::EBEventLoop::getMainLoop().exec();
 	}
 	catch( std::exception & ex )

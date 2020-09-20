@@ -45,8 +45,8 @@
 
 
 
-#include "ebconfig.h"
-#include "ebevent.h"
+#include "../../ebconfig.h"
+#include "../../ebevent.h"
 
 namespace EBCpp{
 

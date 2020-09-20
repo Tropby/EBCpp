@@ -23,14 +23,16 @@
 
 #include <thread>
 #include <memory>
-#include "ebtcpserversocket.h"
+#include "ebsslserversocket.h"
+
+#ifdef EB_OPENSSL
 
 namespace EBCpp
 {
 
-EBTcpServerSocket::EBTcpServerSocket(SOCKET socketId) :
-		enable_shared_from_this<EBTcpServerSocket>(), socketId(socketId), data(
-		{ }), deleted(false), thread(nullptr), opened(true)
+EBSSLServerSocket::EBSSLServerSocket(SSL *ssl, SOCKET socketId) :
+		EBServerSocket(socketId), data(
+		{ }), deleted(false), thread(nullptr), opened(true), ssl(ssl)
 {
 	EB_DEBUG(socketId);
 
@@ -41,9 +43,12 @@ EBTcpServerSocket::EBTcpServerSocket(SOCKET socketId) :
 			sizeof(l));
 }
 
-EBTcpServerSocket::~EBTcpServerSocket()
+EBSSLServerSocket::~EBSSLServerSocket()
 {
 	EB_DEBUG(socketId);
+
+	SSL_shutdown(ssl);
+	SSL_free(ssl);
 
 #ifdef __WIN32__
 	::closesocket(socketId);
@@ -52,7 +57,7 @@ EBTcpServerSocket::~EBTcpServerSocket()
 #endif
 }
 
-std::vector<uint8_t> EBTcpServerSocket::read()
+std::vector<uint8_t> EBSSLServerSocket::read()
 {
 	std::vector<uint8_t> ret;
 	if (data.size())
@@ -63,24 +68,24 @@ std::vector<uint8_t> EBTcpServerSocket::read()
 	return ret;
 }
 
-std::string EBTcpServerSocket::readString()
+std::string EBSSLServerSocket::readString()
 {
 	std::vector<uint8_t> r = this->read();
 	r.insert(r.end(), 0x00);
 	return std::string(reinterpret_cast<char*>(r.data()));
 }
 
-void EBTcpServerSocket::write(std::string data)
+void EBSSLServerSocket::write(std::string data)
 {
-	::send(socketId, data.c_str(), data.length(), 0);
+	SSL_write(ssl, data.c_str(), data.length());
 }
 
-void EBTcpServerSocket::write(char *data, int size)
+void EBSSLServerSocket::write(char *data, int size)
 {
-	::send(socketId, data, size, 0);
+	SSL_write(ssl, data, size);
 }
 
-void EBTcpServerSocket::close()
+void EBSSLServerSocket::close()
 {
 	if (opened.exchange(false))
 	{
@@ -89,30 +94,25 @@ void EBTcpServerSocket::close()
 	}
 }
 
-void EBTcpServerSocket::start()
+void EBSSLServerSocket::start()
 {
 	if (thread.get() != nullptr)
 	{
 		return;
 	}
 	thread = std::make_shared<std::thread>(
-			std::bind(&EBTcpServerSocket::readLoop, this));
+			std::bind(&EBSSLServerSocket::readLoop, this));
 }
 
-SOCKET EBTcpServerSocket::getSocketId()
+void EBSSLServerSocket::readLoop()
 {
-	return socketId;
-}
-
-void EBTcpServerSocket::readLoop()
-{
-	std::shared_ptr<EBTcpServerSocket> pthis = this->shared_from_this();
+	std::shared_ptr<EBServerSocket> pthis = this->shared_from_this();
 
 	char buffer[1024];
 	int nbytes;
 	while (!deleted)
 	{
-		nbytes = ::recv(socketId, buffer, sizeof(buffer), 0);
+		nbytes = SSL_read(ssl, buffer, sizeof(buffer));
 		if (deleted)
 			break;
 
@@ -136,3 +136,6 @@ void EBTcpServerSocket::readLoop()
 }
 
 } /* namespace EBCpp */
+
+#endif
+

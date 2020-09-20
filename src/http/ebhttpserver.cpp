@@ -17,66 +17,37 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- *  Created on: Jul 3, 2020
+ *  Created on: Jul 15, 2020
  *      Author: Carsten (Tropby)
  */
 
+#include "ebhttpserver.h"
 
-#define USE_EXAMPLES
-
-//#define EXAMPLE_FILE
-//#define EXAMPLE_TIMER
-//#define EXAMPLE_SOCKET
-//#define EXAMPLE_HTTP
-#define EXAMPLE_HTTPS
-
-//////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef USE_EXAMPLES
-
-#ifdef EXAMPLE_HTTP
-#include "http/main.h"
-#endif
-
-#ifdef EXAMPLE_HTTPS
-#include "https/main.h"
-#endif
-
-#ifdef EXAMPLE_TIMER
-#include "timer/main.h"
-#endif
-
-#ifdef EXAMPLE_SOCKET
-#include "socket/main.h"
-#endif
-
-#ifdef EXAMPLE_FILE
-#include "file/main.h"
-#endif
-
-int main()
+namespace EBCpp
 {
 
-#ifdef EXAMPLE_FILE
-	mainFileTest();
-#endif
-
-#ifdef EXAMPLE_TIMER
-	mainTimerTest();
-#endif
-
-#ifdef EXAMPLE_SOCKET
-	mainSocketTest();
-#endif
-
-#ifdef EXAMPLE_HTTP
-	mainHttpTest();
-#endif
-
-#ifdef EXAMPLE_HTTPS
-	mainHttpsTest();
-#endif
+EBHTTPServer::EBHTTPServer()
+{
 
 }
 
-#endif
+EBHTTPServer::~EBHTTPServer()
+{
+
+}
+
+void EBHTTPServer::newConnection(std::shared_ptr< EBServerSocket > client)
+{
+	std::shared_ptr< EBHTTPRequest > request = std::make_shared<EBHTTPRequest>( client );
+	request->ready.connect(std::bind( &EBHTTPServer::requestReady, this, std::placeholders::_1 ));
+	requests.push_back( request );
+	request->start();
+}
+
+void EBHTTPServer::requestReady(std::shared_ptr< EBHTTPRequest > request)
+{
+	requests.remove(request);
+	newRequest.emit(request);
+}
+
+} /* namespace EBCpp */

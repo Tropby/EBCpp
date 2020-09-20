@@ -26,6 +26,8 @@
 
 #ifdef EB_OPENSSL
 
+#include "../ebtcpclient.h"
+
 using namespace EBCpp;
 
 EBSSLClient::EBSSLClient() :
@@ -49,13 +51,13 @@ bool EBCpp::EBSSLClient::readRaw()
 	{
 		std::vector<uint8_t> b(buf, buf + len);
 		data.insert(data.end(), std::begin(b), std::end(b));
-		readReady.emit(this);
+		readReady.emit(this->shared_from_this());
 		return true;
 	}
 
 	else if( len == 0 )
 	{
-		disconnected.emit(this);
+		disconnected.emit(this->shared_from_this());
 		return false;
 	}
 

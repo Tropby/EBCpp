@@ -29,26 +29,111 @@
 
 #include "../ebevent.h"
 #include "ebhttpheader.h"
-#include "../tcp/ebtcpserversocket.h"
+#include "../socket/tcp/ebtcpserversocket.h"
+#include "../socket/tcp/ssl/ebsslserversocket.h"
 
 namespace EBCpp
 {
 
-class EBHTTPRequest: public std::enable_shared_from_this<EBHTTPRequest>
+class EBHTTPRequest: public std::enable_shared_from_this<EBHTTPRequest >
 {
 public:
-	EBHTTPRequest(std::shared_ptr<EBTcpServerSocket> &socket);
-	virtual ~EBHTTPRequest();
+	EBHTTPRequest(std::shared_ptr<EBServerSocket> &socket) :
+		std::enable_shared_from_this<EBHTTPRequest>(),
+			readHeader(true), socket(socket), contentLength(0)
+	{
+		EB_DEBUG( socket->getSocketId() );
+	}
+
+	virtual ~EBHTTPRequest()
+	{
+		EB_DEBUG( socket->getSocketId() );
+		socket->close();
+	}
+
 
 	EB_SIGNAL( ready, std::shared_ptr<EBHTTPRequest> );
 
-	void sendReply(std::string data);
-	void sendReply(std::vector<uint8_t> data);
-	const EBHTTPHeader& getRequestHeader() const;
+	void sendReply(std::string data)
+	{
+		replyHeader.setValue("content-length", std::to_string(data.length()));
 
-	void start();
+		socket->write(replyHeader.getHeader());
+		socket->write("\r\n"); // Empty line after header
+		socket->write(data);
+		socket->close();
+	}
+
+	void sendReply(std::vector<uint8_t> data)
+	{
+		replyHeader.setValue("content-length", std::to_string(data.size()));
+
+		socket->write(replyHeader.getHeader());
+		socket->write("\r\n"); // Empty line after header
+		socket->write(reinterpret_cast<char*>(&data[0]), data.size());
+		socket->close();
+	}
+
+	const EBHTTPHeader& getRequestHeader() const
+	{
+		return requestHeader;
+	}
+
+
+	void start()
+	{
+		socket->readReady.connect(
+				std::bind(&EBHTTPRequest::readReady, this, std::placeholders::_1));
+		readReady(socket);
+	}
+
 private:
-	EB_SLOT void readReady(std::shared_ptr<EBTcpServerSocket> client);
+	EB_SLOT void readReady(std::shared_ptr<EBServerSocket> client)
+	{
+		// read all data read
+		std::vector<uint8_t> d = client->read();
+		data.insert(data.end(), d.begin(), d.end());
+
+		if (readHeader)
+		{
+			for (unsigned int i = 3; i < data.size(); i++)
+			{
+				char c1 = data[i - 3];
+				char c2 = data[i - 2];
+				char c3 = data[i - 1];
+				char c4 = data[i - 0];
+
+				if (c1 == '\r' && c2 == '\n' && c3 == '\r' && c4 == '\n')
+				{
+					std::string header = std::string(
+							reinterpret_cast<char*>(&data[0]), i);
+					requestHeader.parse(header);
+
+					data = std::vector<uint8_t>(data.begin() + i, data.end());
+
+					std::string cl = requestHeader.getValue("content-length");
+
+					if( !cl.empty() )
+						contentLength = std::stoi(cl);
+					else
+						contentLength = 0;
+
+
+					readHeader = false;
+					break;
+				}
+
+			}
+		}
+
+		if( !readHeader )
+		{
+			if( data.size() >= contentLength )
+			{
+				ready.emit( this->shared_from_this() );
+			}
+		}
+	}
 
 	std::vector<uint8_t> data;
 
@@ -56,7 +141,7 @@ private:
 	EBHTTPHeader replyHeader;
 
 	bool readHeader;
-	std::shared_ptr<EBTcpServerSocket> socket;
+	std::shared_ptr<EBServerSocket> socket;
 	unsigned int contentLength;
 };
 

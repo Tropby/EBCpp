@@ -21,31 +21,34 @@
  *      Author: Carsten (Tropby)
  */
 
+#ifndef SRC_TCP_SSL_EBSSLSERVERSOCKET_H_
+#define SRC_TCP_SSL_EBSSLSERVERSOCKET_H_
 
-#ifndef SRC_TCP_EBTCPSERVERSOCKET_H_
-#define SRC_TCP_EBTCPSERVERSOCKET_H_
+#include "../../../ebconfig.h"
+
+#ifdef EB_OPENSSL
+
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
 
 #include <string>
 #include <vector>
 #include <atomic>
 #include <memory>
 
-#include "../ebevent.h"
 
-#include "tcp.h"
+#include "../../ebserver.h"
+#include "../tcp.h"
 
 namespace EBCpp
 {
 
-class EBTcpServerSocket : public std::enable_shared_from_this<EBTcpServerSocket>
+class EBSSLServerSocket : public EBServerSocket
 {
 public:
-	EBTcpServerSocket( SOCKET socketId );
-	virtual ~EBTcpServerSocket();
-
-    EB_SIGNAL(disconnected, std::shared_ptr<EBTcpServerSocket>);
-    EB_SIGNAL(error, std::shared_ptr<EBTcpServerSocket>);
-    EB_SIGNAL(readReady, std::shared_ptr<EBTcpServerSocket>);
+	EBSSLServerSocket( SSL * ssl, SOCKET socketId );
+	virtual ~EBSSLServerSocket();
 
     void close();
     void start();
@@ -55,18 +58,19 @@ public:
 	std::vector<uint8_t> read();
 	std::string readString();
 
-	SOCKET getSocketId();
-
 private:
-	SOCKET socketId;
 	std::vector<uint8_t> data;
 	std::atomic<bool> deleted;
 	std::shared_ptr<std::thread> thread;
 	std::atomic<bool> opened;
+
+	SSL *ssl;
 
 	void readLoop();
 };
 
 } /* namespace EBCpp */
 
-#endif /* SRC_TCP_EBTCPSERVERSOCKET_H_ */
+#endif
+
+#endif /* SRC_TCP_SSL_EBSSLSERVERSOCKET_H_ */

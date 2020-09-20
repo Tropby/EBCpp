@@ -17,66 +17,38 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- *  Created on: Jul 3, 2020
+ *  Created on: Jul 15, 2020
  *      Author: Carsten (Tropby)
  */
 
+#ifndef SRC_HTTP_EBHTTPSERVER_H_
+#define SRC_HTTP_EBHTTPSERVER_H_
 
-#define USE_EXAMPLES
+#include "../ebevent.h"
+#include "ebhttprequest.h"
 
-//#define EXAMPLE_FILE
-//#define EXAMPLE_TIMER
-//#define EXAMPLE_SOCKET
-//#define EXAMPLE_HTTP
-#define EXAMPLE_HTTPS
-
-//////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef USE_EXAMPLES
-
-#ifdef EXAMPLE_HTTP
-#include "http/main.h"
-#endif
-
-#ifdef EXAMPLE_HTTPS
-#include "https/main.h"
-#endif
-
-#ifdef EXAMPLE_TIMER
-#include "timer/main.h"
-#endif
-
-#ifdef EXAMPLE_SOCKET
-#include "socket/main.h"
-#endif
-
-#ifdef EXAMPLE_FILE
-#include "file/main.h"
-#endif
-
-int main()
+namespace EBCpp
 {
 
-#ifdef EXAMPLE_FILE
-	mainFileTest();
-#endif
+class EBHTTPServer
+{
+public:
+	EBHTTPServer();
+	virtual ~EBHTTPServer();
 
-#ifdef EXAMPLE_TIMER
-	mainTimerTest();
-#endif
+	EB_SIGNAL(newRequest, std::shared_ptr< EBHTTPRequest >);
 
-#ifdef EXAMPLE_SOCKET
-	mainSocketTest();
-#endif
+	virtual bool bind(uint16_t port) = 0;
+	virtual void unbind() = 0;
 
-#ifdef EXAMPLE_HTTP
-	mainHttpTest();
-#endif
+protected:
+	EB_SLOT void requestReady(std::shared_ptr< EBHTTPRequest > request);
 
-#ifdef EXAMPLE_HTTPS
-	mainHttpsTest();
-#endif
+	EB_SLOT void newConnection(std::shared_ptr< EBServerSocket > client);
 
-}
+	std::list< std::shared_ptr< EBHTTPRequest > > requests;
+};
 
-#endif
+} /* namespace EBCpp */
+
+#endif /* SRC_HTTP_EBHTTPSERVER_H_ */

@@ -39,7 +39,9 @@ EBHTTPServer::~EBHTTPServer()
 void EBHTTPServer::newConnection(std::shared_ptr< EBServerSocket > client)
 {
 	std::shared_ptr< EBHTTPRequest > request = std::make_shared<EBHTTPRequest>( client );
-	request->ready.connect(std::bind( &EBHTTPServer::requestReady, this, std::placeholders::_1 ));
+
+	request->ready.connect( std::bind( &EBHTTPServer::requestReady, this, std::placeholders::_1 ) );
+
 	requests.push_back( request );
 	request->start();
 }

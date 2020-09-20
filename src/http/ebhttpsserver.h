@@ -24,6 +24,8 @@
 #ifndef SRC_HTTP_EBHTTPSSERVER_H_
 #define SRC_HTTP_EBHTTPSSERVER_H_
 
+#ifdef EB_OPENSSL
+
 #include "ebhttpserver.h"
 #include "../socket/tcp/ssl/ebsslserver.h"
 
@@ -44,5 +46,7 @@ private:
 };
 
 } /* namespace EBCpp */
+
+#endif
 
 #endif /* SRC_HTTP_EBHTTPSSERVER_H_ */

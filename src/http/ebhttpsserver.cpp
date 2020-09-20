@@ -23,6 +23,8 @@
 
 #include "ebhttpsserver.h"
 
+#ifdef EB_OPENSSL
+
 namespace EBCpp
 {
 
@@ -47,3 +49,5 @@ void EBHTTPSServer::unbind()
 }
 
 } /* namespace EBCpp */
+
+#endif

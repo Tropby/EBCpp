@@ -25,131 +25,135 @@
 
 using namespace EBCpp;
 
+#include "tcp.h"
+#include <ws2tcpip.h>
+
+
 EBTcpClient::EBTcpClient(int socketId, bool connected) :
-		EBTcpSocket(socketId, connected)
+        EBTcpSocket(socketId, connected)
 {
-	if( connected )
-		startThread();
+    if( connected )
+        startThread();
 }
 
 EBTcpClient::~EBTcpClient()
 {
-	stopThread();
+    stopThread();
 }
 
 void EBTcpClient::connectToHost(std::string ip, uint16_t port)
 {
-	std::string hostIp = hostnameToIp(ip);
-	if (!hostIp.empty())
-		ip = hostIp;
+    std::string hostIp = hostnameToIp(ip);
+    if (!hostIp.empty())
+        ip = hostIp;
 
-	struct in_addr addr;
-	inet_pton(AF_INET, ip.c_str(), &addr);
-	connectToHost(addr.s_addr, port);
+    struct in_addr addr;
+    inet_pton(AF_INET, ip.c_str(), &addr);
+    connectToHost(addr.s_addr, port);
 }
 
 void EBTcpClient::connectToHost(uint32_t ip, uint16_t port)
 {
-	this->ip = ip;
-	this->port = port;
-	startThread();
+    this->ip = ip;
+    this->port = port;
+    startThread();
 }
 
 std::vector<uint8_t> EBTcpClient::read()
 {
-	std::vector<uint8_t> ret = data;
-	data.clear();
-	return ret;
+    std::vector<uint8_t> ret = data;
+    data.clear();
+    return ret;
 }
 
 std::string EBTcpClient::readString()
 {
-	std::vector<uint8_t> r = this->read();
-	r.insert(r.end(), 0x00);
-	return std::string(reinterpret_cast<char*>(r.data()));
+    std::vector<uint8_t> r = this->read();
+    r.insert(r.end(), 0x00);
+    return std::string(reinterpret_cast<char*>(r.data()));
 }
 
 void EBTcpClient::write(std::string data)
 {
-	send(socketId, data.c_str(), data.length(), 0);
+    send(socketId, data.c_str(), data.length(), 0);
 }
 
 void EBTcpClient::write(char *data, int size)
 {
-	send(socketId, data, size, 0);
+    send(socketId, data, size, 0);
 }
 
 bool EBTcpClient::readRaw()
 {
-	char buffer[1024];
-	int nbytes;
+    char buffer[1024];
+    int nbytes;
 
-	nbytes = ::recv(socketId, buffer, sizeof(buffer), 0);
+    nbytes = ::recv(socketId, buffer, sizeof(buffer), 0);
 
-	switch (nbytes)
-	{
-	case 0:
-		if( !deleted )
-			disconnected.emit(this->shared_from_this());
-		return false;
-	case -1:
-		if( !deleted )
-			error.emit(2);
-		return false;
-	default:
-		std::vector<uint8_t> b(buffer, buffer + nbytes);
-		data.insert(data.end(), std::begin(b), std::end(b));
-		readReady.emit(this->shared_from_this());
-		return true;
-	}
+    switch (nbytes)
+    {
+    case 0:
+        if( !deleted )
+            disconnected.emit(this->shared_from_this());
+        return false;
+    case -1:
+        if( !deleted )
+            error.emit(2);
+        return false;
+    default:
+        std::vector<uint8_t> b(buffer, buffer + nbytes);
+        data.insert(data.end(), std::begin(b), std::end(b));
+        readReady.emit(this->shared_from_this());
+        return true;
+    }
 }
 
 bool EBTcpClient::connectRaw()
 {
-	struct sockaddr_in addr;
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = (ip);
-	addr.sin_port = htons(port);
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = (ip);
+    addr.sin_port = htons(port);
 
-	int descriptor = ::connect(socketId, reinterpret_cast<sockaddr*>(&addr),
-			sizeof(addr));
-	if (descriptor == -1)
-	{
-		return false;
-	}
-	return true;
+    int descriptor = ::connect(socketId, reinterpret_cast<sockaddr*>(&addr),
+            sizeof(addr));
+    if (descriptor == -1)
+    {
+        return false;
+    }
+    return true;
 }
 
 bool EBCpp::EBTcpClient::runRaw()
 {
-	if (!initialConnected)
-	{
-		state = false;
+    if (!initialConnected)
+    {
+        state = false;
 
-		// Wait for setup socket
-		processConnect.acquire();
-		if (deleted)
-			return false;
+        // Wait for setup socket
+        processConnect.acquire();
+        if (deleted)
+            return false;
 
-		if (!connectRaw())
-		{
-			error.emit(1);
-			return false;
-		}
+        if (!connectRaw())
+        {
+            error.emit(1);
+            return false;
+        }
 
-		state = true;
-		connected.emit(this->shared_from_this());
-	}
-	else
-	{
-		state = true;
-	}
+        state = true;
+        connected.emit(this->shared_from_this());
+    }
+    else
+    {
+        state = true;
+    }
 
-	while (!deleted && readRaw())
-	{
-	}
-	initialConnected = false;
+    while (!deleted && readRaw())
+    {
+    }
+    initialConnected = false;
 
-	return !deleted;
+    return !deleted;
 }

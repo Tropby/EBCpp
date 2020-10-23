@@ -22,10 +22,10 @@
  */
 
 
-//#define USE_EXAMPLES
+#define USE_EXAMPLES
 
 //#define EXAMPLE_FILE
-//#define EXAMPLE_TIMER
+#define EXAMPLE_TIMER
 //#define EXAMPLE_SOCKET
 //#define EXAMPLE_HTTP
 //#define EXAMPLE_HTTPS
@@ -58,23 +58,23 @@ int main()
 {
 
 #ifdef EXAMPLE_FILE
-	mainFileTest();
+    mainFileTest();
 #endif
 
 #ifdef EXAMPLE_TIMER
-	mainTimerTest();
+    mainTimerTest();
 #endif
 
 #ifdef EXAMPLE_SOCKET
-	mainSocketTest();
+    mainSocketTest();
 #endif
 
 #ifdef EXAMPLE_HTTP
-	mainHttpTest();
+    mainHttpTest();
 #endif
 
 #ifdef EXAMPLE_HTTPS
-	mainHttpsTest();
+    mainHttpsTest();
 #endif
 
 }

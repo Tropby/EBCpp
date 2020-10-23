@@ -77,7 +77,7 @@ int main()
 	EBTimer timer;
 	timer.timeout.connect( std::bind( timeout ) );
 	timer.start( 1000 );
-	return EBEventLoop::getMainLoop().finished();
+	return EBEventLoop::getMainLoop().exec();
 }
 ```
 
@@ -116,6 +116,6 @@ int main()
 {
 	TimerTest tt;
 
-    return EBEventLoop::getMainLoop().finished();
+    return EBEventLoop::getMainLoop().exec();
 }
 ```

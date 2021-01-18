@@ -48,8 +48,15 @@ void EBTcpClient::connectToHost(std::string ip, uint16_t port)
         ip = hostIp;
 
     struct in_addr addr;
+
+#ifdef __WIN32__    
+    InetPtonA(AF_INET, ip.c_str(), &addr);
+#else
     inet_pton(AF_INET, ip.c_str(), &addr);
+#endif
+
     connectToHost(addr.s_addr, port);
+
 }
 
 void EBTcpClient::connectToHost(uint32_t ip, uint16_t port)

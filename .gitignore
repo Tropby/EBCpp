@@ -34,3 +34,4 @@
 Debug/**
 /Debug/
 /Release/
+build/**

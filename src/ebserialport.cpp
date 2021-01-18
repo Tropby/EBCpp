@@ -41,7 +41,7 @@ EBCpp::EBSerialPort::~EBSerialPort() {
 bool EBCpp::EBSerialPort::setInterfaceAttributes(int speed, int parity) {
 
 #ifdef __WIN32__
-#warning "EBCpp::EBSerialPort::setInterfaceAttributes not working right now!"
+	#warning "EBCpp::EBSerialPort::setInterfaceAttributes not working right now!"
 	return false;
 #else
 	struct termios tty;

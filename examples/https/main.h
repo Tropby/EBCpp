@@ -8,7 +8,15 @@ public:
 	HTTPSTest() : server()
 	{
 		server.newRequest.connect(std::bind(&HTTPSTest::newRequest, this, std::placeholders::_1 ));
-		server.bind(44544);
+		if( server.bind(44544) )
+		{
+			std::cout << "Server started on port 44544. Use https://127.0.0.1:44544/ for tests." << std::endl;
+		}
+		else
+		{
+			std::cout << "Error binding port 44544!" << std::endl;
+			exit;
+		}
 	}
 
 	~HTTPSTest()
@@ -36,6 +44,7 @@ private:
 
 int mainHttpsTest()
 {
+	std::cout << "START HTTP SERVER" << std::endl;
 	try
 	{
 		HTTPSTest tt;

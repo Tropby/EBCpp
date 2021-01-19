@@ -32,6 +32,6 @@ using namespace EBCpp;
 
 int mainFileTest()
 {
-
+    std::cout << "Starting file test..." << std::endl;
     return EBEventLoop::getMainLoop().exec();
 }

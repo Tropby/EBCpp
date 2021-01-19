@@ -55,6 +55,7 @@
 
 int main()
 {
+    std::cout << "Starting Example Main!" << std::endl;
 
 #ifdef EXAMPLE_FILE
     mainFileTest();

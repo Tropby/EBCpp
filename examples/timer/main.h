@@ -50,6 +50,7 @@ private:
 
 int mainTimerTest()
 {
+	std::cout << "Starting timer test..." << std::endl;
 	TimerTest tt;
 
     return EBEventLoop::getMainLoop().exec();

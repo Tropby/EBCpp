@@ -23,7 +23,8 @@
 
 #include <iostream>
 
-#include <socket/tcp/ebtcpclient.h>
+#include "../../src/ebeventloop.h"
+#include "../../src/socket/tcp/ebtcpclient.h"
 
 using namespace std;
 using namespace EBCpp;
@@ -43,22 +44,22 @@ public:
 private:
     EBTcpClient socket;
 
-    void connected( EBTcpClient * socket )
+    void connected( std::shared_ptr<EBTcpClient> client )
     {
 
     }
 
-    void readReady( EBTcpClient * socket )
+    void readReady( std::shared_ptr<EBTcpClient> client )
     {
 
     }
 
-    void disconnected( EBTcpClient * socket )
+    void disconnected( std::shared_ptr<EBTcpClient> client )
     {
 
     }
 
-    void error(  EBTcpClient * socket, int err )
+    void error( std::shared_ptr<EBTcpClient> client, int err )
     {
 
     }

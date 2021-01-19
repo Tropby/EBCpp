@@ -28,6 +28,9 @@
 
 #ifdef EB_OPENSSL
 
+#include "../../ebserver.h"
+#include "../tcp.h"
+
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
@@ -38,8 +41,6 @@
 #include <memory>
 
 
-#include "../../ebserver.h"
-#include "../tcp.h"
 
 namespace EBCpp
 {

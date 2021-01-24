@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- *  Created on: Jul 3, 2020
+ *  Created on: 2021-01-23
  *      Author: Carsten (Tropby)
  */
 
@@ -32,11 +32,19 @@
 namespace EBCpp
 {
 
+/**
+ * @brief The EBTimer can provide times events
+ */
 class EBTimer : public EBObject
 {
 public:
-	EBTimer() : 
-		EBObject(),
+	/**
+	 * @brief Construct a new EBTimer object
+	 * 
+	 * @param parent Parent of the EBTimer object
+	 */
+	EBTimer(EBObject* parent) : 
+		EBObject(parent),
 		timerRunning(true), 
 		singleShot(false), 
 		time(-1), 
@@ -44,13 +52,25 @@ public:
 	{
 	}
 
+	/**
+	 * @brief Destroy the EBTimer object
+	 * 
+	 */
 	~EBTimer()
 	{
 		stop();
 	}
 
+	/**
+	 * @brief EB_SIGNAL timeout
+	 * 
+	 * Emitted every time the timer ends
+	 */
 	EB_SIGNAL(timeout);
 
+	/**
+	 * @brief Stopps the timer
+	 */
 	void stop()
 	{
 		if( !thread ) return;
@@ -64,6 +84,11 @@ public:
 		thread = nullptr;
 	}
 
+	/**
+	 * @brief Starts the timer for exactly one timeout
+	 * 
+	 * @param time Timeout time in milliseconds
+	 */
 	void startSingleShot(uint32_t time)
 	{
 		if( thread )
@@ -77,6 +102,11 @@ public:
 		thread = new std::thread( std::bind( &EBTimer::run, this ) );
 	}
 
+	/**
+	 * @brief Starts the timer for interval timeouts
+	 * 
+	 * @param time Timeout time in milliseconds
+	 */
 	void start(uint32_t time)
 	{
 		if( thread )

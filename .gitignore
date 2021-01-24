@@ -31,7 +31,4 @@
 *.out
 *.app
 
-Debug/**
-/Debug/
-/Release/
 build/**

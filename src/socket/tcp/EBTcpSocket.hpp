@@ -1,3 +1,26 @@
+/*
+ * EBCpp
+ *
+ * Copyright (C) 2020 Carsten Grings
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ *  Created on: 2021-01-23
+ *      Author: Carsten (Tropby)
+ */
+
 #pragma once
 
 #include <atomic>
@@ -12,13 +35,23 @@
 namespace EBCpp
 {
 
+/**
+ * @brief Socket to handle a tcp connection
+ * 
+ */
 class EBTcpSocket : public EBIODevice
 {
 public: 
-    EBTcpSocket() : 
-        EBIODevice(),
-        connectionState(false),
-        thread(nullptr)
+    /**
+     * @brief Construct a new EBTcpSocket object
+     * 
+     * @param parent Parent of the EBTcpSocket instance
+     */
+    EBTcpSocket( EBObject* parent ) : 
+        EBIODevice(parent),
+        socketId(-1),
+        thread(nullptr),
+        connectionState(false)
     {
         static bool inited = false;
         if (!inited)
@@ -30,18 +63,30 @@ public:
             #endif
             inited = true;
         }
-        
     }
 
+    /**
+     * @brief Destroy the EBTcpSocket object
+     * 
+     */
     virtual ~EBTcpSocket()
     {
         if( thread )
         {
-            this->close();
+            if( isOpened() )
+                this->close();
             thread->join();
         }
     }
 
+    /**
+     * @brief Connect to a host set by "setFileName"
+     * 
+     * @param direction Direction must be READ_WRITE for TCP connections
+     * @return true if the socket could be created and an ip was received (connection will be handelt ba a thread)
+     * @return false if the socket could not be created.
+     * @throws EBException if something is wrong with the connection string (fileName)
+     */
     virtual bool open( EBIODevice::DIRECTION direction )
     {
         
@@ -80,41 +125,80 @@ public:
             inet_pton(AF_INET, host.c_str(), &address);
         #endif
 
-        thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpSocket::run, this)));
+        startThread();
+
+        return true;
     }
 
+    /**
+     * @brief Returns the current connection state
+     * 
+     * @return true if the connection es established
+     * @return false if the connection is closed
+     */
     virtual bool isOpened() 
     {
         return connectionState;
     }
 
+    /**
+     * @brief Closes the current connection
+     * 
+     * @return true if the connection could be closed
+     * @return false NEVER
+     * @throws EBException if the connection was not established
+     */
     virtual bool close()
     {
         if (isOpened())
         {
+            connectionState = false;
     #ifdef __WIN32__
             ::shutdown(socketId, SD_BOTH);
     #else
             ::shutdown(socketId, SHUT_RDWR);
     #endif
             ::close(socketId);
+            socketId = -1;
         }        
         else
         {
             EB_EXCEPTION( "Can not close a unopend connection!" );
         }
+
+        return true;
     }
 
+    /**
+     * @brief Send raw binary data
+     * 
+     * @param data Pointer to the data
+     * @param length Length of the data
+     * @return int bytes written to the tcp socket
+     */
     virtual int write( char * data, int length )
     {
-        send(socketId, data, length, 0);
+        return send(socketId, data, length, 0);
     }
 
+    /**
+     * @brief Send string
+     * 
+     * @param data string to send
+     * @return int bytes written to the tcp socket
+     */
     virtual int write( std::string data )
     {
-        send(socketId, data.c_str(), data.length(), 0);
+        return send(socketId, data.c_str(), data.length(), 0);
     }
 
+    /**
+     * @brief Reads data from the tcp socket
+     * 
+     * @param data Buffer for the received data
+     * @param maxLength Buffer size
+     * @return int bytes read from the tcp socket
+     */
     virtual int read( char * data, int maxLength ) 
     {
         int size = this->data.size() < maxLength ? this->data.size() : maxLength;
@@ -125,8 +209,16 @@ public:
             data++;
             this->data.pop_front();
         }
+
+        return size;
     }
     
+    /**
+     * @brief Reads a line ending with "\\n" from the tcp socket
+     * 
+     * @return std::string Line that was read from the tcp socket
+     * @throws EBException if no line ending was found
+     */
     virtual std::string readLine() 
     {        
         bool found = (std::find(data.begin(), data.end(), '\n') != data.end());
@@ -140,48 +232,97 @@ public:
                 result += c;
                 this->data.pop_front();
             }
+            return result;
         }
         else
         {
             EB_EXCEPTION( "Can not read line. No \\n found in received data!" );
         }
+
+        return std::string();
     }
 
+    /**
+     * @brief EB_SIGNAL error
+     * 
+     * Emitted if an error occures on the TCP connection
+     */ 
     EB_SIGNAL_WITH_ARGS( error, std::string );
+
+    /**
+     * @brief EB_SIGNAL connected
+     * 
+     * Emitted if the connection was established
+     */
     EB_SIGNAL( connected );
+
+    /**
+     * @brief EB_SIGNAL diconnected
+     * 
+     * Emitted if the connection was terminated
+     */
     EB_SIGNAL( disconnected );
+
+    /**
+     * @brief EB_SIGNAL readReady
+     * 
+     * Emitted if new data is available 
+     */
     EB_SIGNAL( readReady );
 
-private:
-    bool connectionState;
-    SOCKADDR_IN address;
-    std::list<char> data;
-    std::unique_ptr<std::thread> thread;
+protected:
+    //! SocketId of the tcp connection
     SOCKET socketId;
 
+    //! Client informations
+    SOCKADDR_IN address;
+    
+    //! Starts the receiver thread
+    void startThread()
+    {
+        thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpSocket::run, this)));
+    }
+
+private:
+    std::unique_ptr<std::thread> thread;
+    bool connectionState;
+    std::list<char> data;
+    
     /**
      * This method is used for the thread.
      * Handle the connection, read events.
      **/
     void run()
     {
-        // Try to get a new socket
-        socketId = ::socket( AF_INET, SOCK_STREAM, 0);
+        EBUtils::setThreadName( "TcpSocket #???" );
+
+        // Socket is allredy known and connected (eg. server sockets)
         if( socketId == -1 )
         {
-            EB_EMIT_WITH_ARGS( error, "Can not create socket!" );
-            return;
+            // Try to get a new socket
+            socketId = ::socket( AF_INET, SOCK_STREAM, 0);
+            if( socketId == -1 )
+            {
+                EB_EMIT_WITH_ARGS( error, "Can not create socket!" );
+                return;
+            }
+
+            // Try to connect to host
+            int descriptor = ::connect(socketId, reinterpret_cast<sockaddr*>(&address), sizeof(address));
+            if (descriptor == -1)
+            {
+                EB_EMIT_WITH_ARGS( error, "Can not connect to address!" );
+                return;
+            }
+            connectionState = true;
+            EB_EMIT(connected);
+        }
+        else
+        {
+            connectionState = true;
         }
 
-        // Try to connect to host
-        int descriptor = ::connect(socketId, reinterpret_cast<sockaddr*>(&address), sizeof(address));
-        if (descriptor == -1)
-        {
-            EB_EMIT_WITH_ARGS( error, "Can not connect to address!" );
-            return;
-        }
-        connectionState = true;
-        EB_EMIT(connected);
+        EBUtils::setThreadName( std::string("TcpSocket #") + std::to_string(socketId) );
 
         // Read until the end of life
         char buffer[1024];
@@ -199,7 +340,15 @@ private:
                 return;
 
             case -1:
-                EB_EMIT_WITH_ARGS(error, "Error while reading from socket!");
+                // if not closed send error message otherwise send disconnected 
+                if( connectionState )
+                {
+                    EB_EMIT_WITH_ARGS(error, "Error while reading from socket!");
+                }
+                else
+                {
+                    EB_EMIT(disconnected);
+                }
                 return;
 
             default:

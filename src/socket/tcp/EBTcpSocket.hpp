@@ -214,6 +214,17 @@ public:
     }
     
     /**
+     * @brief Checks if the data buffer contains "\\n"
+     * 
+     * @return true if the data buffer contains "\\n"
+     * @return false if the data buffer does not contain "\\n"
+     */
+    virtual bool canReadLine()
+    {
+        return (std::find(data.begin(), data.end(), '\n') != data.end());
+    }
+
+    /**
      * @brief Reads a line ending with "\\n" from the tcp socket
      * 
      * @return std::string Line that was read from the tcp socket

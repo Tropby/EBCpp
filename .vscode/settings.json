@@ -50,6 +50,8 @@
         "algorithm": "cpp",
         "iterator": "cpp",
         "memory_resource": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "iomanip": "cpp",
+        "map": "cpp"
     }
 }

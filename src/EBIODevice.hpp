@@ -101,6 +101,14 @@ public:
     virtual int read( char * data, int maxLength ) = 0;
 
     /**
+     * @brief Checks if the data buffer contains "\\n"
+     * 
+     * @return true if the data buffer contains "\\n"
+     * @return false if the data buffer does not contain "\\n"
+     */
+    virtual bool canReadLine() = 0;
+
+    /**
      * @brief Read a line from the input device
      * 
      * @return std::string line data

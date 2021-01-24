@@ -5,12 +5,19 @@ project(EBCpp VERSION 0.1)
 # Require C++17 Standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 # Add defines for windows
 if(WIN32)
     set(WINDOWS_VERSION 0x0A00) 
     add_definitions(-DWINVER=${WINDOWS_VERSION})
     add_definitions(-D_WIN32_WINNT=${WINDOWS_VERSION})
+endif()
+
+# Compile ExampleTimer 
+add_executable(ExampleTimer examples/ExampleTimer.cpp)
+if(WIN32)
+    target_link_libraries(ExampleTimer -Wl,-subsystem,console)
 endif()
 
 # Compile ExampleTcpClient 
@@ -25,16 +32,17 @@ if(WIN32)
     target_link_libraries(ExampleTcpServer wsock32 ws2_32 -Wl,-subsystem,console)
 endif()
 
-# Compile ExampleTimer 
-add_executable(ExampleTimer examples/ExampleTimer.cpp)
+# Compile ExampleHttpServer 
+add_executable(ExampleHttpServer examples/ExampleHttpServer.cpp)
 if(WIN32)
-    target_link_libraries(ExampleTimer -Wl,-subsystem,console)
+    target_link_libraries(ExampleHttpServer wsock32 ws2_32 -Wl,-subsystem,console)
 endif()
 
 find_package(Doxygen OPTIONAL_COMPONENTS dot)
 if( DOXYGEN_FOUND )
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "README.md")
     #set(DOXYGEN_PROJECT_LOGO "${CMAKE_SOURCE_DIR}/doc/images/o2_logo.png")
+    set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../doc)
     set(DOXYGEN_GENERATE_TREEVIEW YES)
     set(DOXYGEN_HIDE_UNDOC_RELATIONS NO)
     set(DOXYGEN_HAVE_DOT YES)
@@ -65,3 +73,4 @@ if( DOXYGEN_FOUND )
 else(DOXYGEN_FOUND)
     message("doxygen not found building without doxygen documentation") 
 endif(DOXYGEN_FOUND)  
+

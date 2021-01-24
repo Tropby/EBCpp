@@ -1,0 +1,4 @@
+<map id="ExampleTimer" name="ExampleTimer">
+<area shape="rect" id="node1" title="Example to show the function of an timer." alt="" coords="6,160,131,237"/>
+<area shape="rect" id="node2" href="$class_e_b_cpp_1_1_e_b_object.html" title="The core object. Every object from EBCpp must inherit this." alt="" coords="5,5,132,112"/>
+</map>

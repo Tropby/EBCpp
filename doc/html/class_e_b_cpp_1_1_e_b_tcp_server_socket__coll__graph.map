@@ -1,0 +1,10 @@
+<map id="EBCpp::EBTcpServerSocket" name="EBCpp::EBTcpServerSocket">
+<area shape="rect" id="node1" title="Class that handles a tcp socket for the EBTcpServer." alt="" coords="258,1056,445,1148"/>
+<area shape="rect" id="node2" href="$class_e_b_cpp_1_1_e_b_tcp_socket.html" title="Socket to handle a tcp connection." alt="" coords="276,783,427,1007"/>
+<area shape="rect" id="node3" href="$class_e_b_cpp_1_1_e_b_i_o_device.html" title="Interface description of an input/output device." alt="" coords="5,321,145,545"/>
+<area shape="rect" id="node4" href="$class_e_b_cpp_1_1_e_b_object.html" title="The core object. Every object from EBCpp must inherit this." alt="" coords="157,5,284,112"/>
+<area shape="rect" id="node6" href="$class_e_b_cpp_1_1_e_b_event.html" title="This objects handles an event." alt="" coords="135,161,306,297"/>
+<area shape="rect" id="node7" href="$class_e_b_cpp_1_1_e_b_event.html" title=" " alt="" coords="276,569,427,720"/>
+<area shape="rect" id="node5" title=" " alt="" coords="451,606,566,683"/>
+<area shape="rect" id="node8" title=" " alt="" coords="590,606,651,683"/>
+</map>

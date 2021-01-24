@@ -1,0 +1,5 @@
+<map id="EBCpp::EBTimer" name="EBCpp::EBTimer">
+<area shape="rect" id="node1" title="The EBTimer can provide times events." alt="" coords="9,360,139,496"/>
+<area shape="rect" id="node2" href="$class_e_b_cpp_1_1_e_b_object.html" title="The core object. Every object from EBCpp must inherit this." alt="" coords="5,5,132,112"/>
+<area shape="rect" id="node3" href="$class_e_b_cpp_1_1_e_b_event.html" title="This objects handles an event." alt="" coords="90,161,261,297"/>
+</map>

@@ -103,7 +103,31 @@ public:
                 << std::hex << i;
         return stream.str();
     }
-} ;
+
+    /**
+     * @brief Trims a string and returns the trimmed string
+     * 
+     * @param s String that should be trimmed
+     * @return std::string trimmed string
+     */
+    static std::string trim(const std::string &s)
+    {
+        auto isWhitespace = [](const char c)
+        {
+            return c==' ' || c=='\n' || c=='\t' || c=='\r' || c==11;
+        };
+        
+        int left=0, right=s.length()-1;
+
+        while(left<=right && isWhitespace(s[left]))
+            ++left;
+
+        while(right>left && isWhitespace(s[right]))
+            --right;
+
+        return s.substr(left, 1+right-left);
+    }    
+};
 
 }
 

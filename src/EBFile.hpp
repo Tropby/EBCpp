@@ -23,7 +23,9 @@
 
 #pragma once
 
-#include "EBObject.hpp"
+#include <fstream>
+
+#include "EBIODevice.hpp"
 
 namespace EBCpp
 {
@@ -32,7 +34,7 @@ namespace EBCpp
  * @brief Interface description of an input/output device
  *
  */
-class EBIODevice : public EBObject
+class EBFile : public EBIODevice
 {
 public:
     /**
@@ -40,19 +42,9 @@ public:
      *
      * @param parent The parent of the IODevice
      */
-    EBIODevice(EBObject* parent) : EBObject(parent)
+    EBFile(EBObject* parent) : EBIODevice(parent)
     {
     }
-
-    /**
-     * @brief Direction of the device
-     */
-    typedef enum
-    {
-        READ_ONLY,
-        WRITE_ONLY,
-        READ_WRITE
-    } DIRECTION;
 
     /**
      * @brief Opens an input / output device
@@ -62,7 +54,11 @@ public:
      * @return false if the device couldn't be opened
      * @throws May throws an exception
      */
-    virtual bool open(DIRECTION direction) = 0;
+    virtual bool open(EBIODevice::DIRECTION direction)
+    {
+        file.open(getFileName());
+        return file.is_open();
+    }
 
     /**
      * @brief Returns the state of the i/o device
@@ -70,7 +66,10 @@ public:
      * @return true if the i/o device is opened
      * @return false if the i/o device is not open
      */
-    virtual bool isOpened() = 0;
+    virtual bool isOpened()
+    {
+        return file.is_open();
+    }
 
     /**
      * @brief Close the i/o device
@@ -79,7 +78,11 @@ public:
      * @return false on any error
      * @throws May throws an exception
      */
-    virtual bool close() = 0;
+    virtual bool close()
+    {
+        file.close();
+        return false;
+    }
 
     /**
      * @brief Writes data to the output device
@@ -88,7 +91,11 @@ public:
      * @param length Size of the data in bytes
      * @return int Bytes written to the output device
      */
-    virtual int write(char* data, int length) = 0;
+    virtual int write(char* data, int length)
+    {
+        file.write( data, length );
+        return length;
+    }
 
     /**
      * @brief Writes a string to the output device
@@ -96,7 +103,11 @@ public:
      * @param data String to wirte to the output device
      * @return int Bytes written to the output device
      */
-    virtual int write(std::string data) = 0;
+    virtual int write(std::string data)
+    {
+        file << data;
+        return data.size();
+    }
 
     /**
      * @brief Read data from the socket
@@ -105,15 +116,30 @@ public:
      * @param maxLength Size of the buffer
      * @return int Bytes read
      */
-    virtual int read(char* data, int maxLength) = 0;
+    virtual int read(char* data, int maxLength)
+    {        
+        file.read(data, maxLength);
+        return file.gcount();
+    }
 
     /**
-     * @brief Checks if the data buffer contains "\\n"
+     * @brief Checks if the file contains another line
      *
-     * @return true if the data buffer contains "\\n"
-     * @return false if the data buffer does not contain "\\n"
+     * @return true if the file contains "\\n"
+     * @return false if the file does not contain "\\n"
      */
-    virtual bool canReadLine() = 0;
+    virtual bool canReadLine()
+    {
+        std::string str;
+
+        std::streampos p = file.tellg();
+        bool result = false;
+        if( std::getline(file, str) )
+            result = true;
+        file.seekg(p);
+
+        return result;
+    }
 
     /**
      * @brief Read a line from the input device
@@ -121,7 +147,12 @@ public:
      * @return std::string line data
      * @throws May throws an error if no line is available
      */
-    virtual std::string readLine() = 0;
+    virtual std::string readLine()
+    {
+        std::string str;
+        std::getline(file, str);
+        return str;
+    }
 
     /**
      * @brief Returns true if the end of stream is reached
@@ -129,30 +160,13 @@ public:
      * @return true if at the end of the io stream
      * @return false otherwise
      */
-    virtual bool atEnd() = 0;
-
-    /**
-     * @brief Set the filename
-     *
-     * @param fileName device to open (eg. /home/user/test.txt, tcp://127.0.0.1:8080, ...)
-     */
-    void setFileName(std::string fileName)
+    virtual bool atEnd()
     {
-        this->fileName = fileName;
-    }
-
-    /**
-     * @brief Get the filename
-     *
-     * @return std::string filename of the device
-     */
-    std::string getFileName()
-    {
-        return fileName;
+        return file.eof();
     }
 
 private:
-    std::string fileName;
+    std::fstream file;
 };
 
 } // namespace EBCpp

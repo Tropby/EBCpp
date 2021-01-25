@@ -30,6 +30,7 @@
 #include <typeinfo>
 
 #include "EBApplication.hpp"
+#include "EBUtils.hpp"
 
 namespace EBCpp
 {
@@ -47,7 +48,7 @@ public:
      * @param parent The parent EBObject of this EBObject
      */
     EBObject(EBObject* parent) :
-        name(std::string(typeid(this).name()) + " - " + std::to_string(reinterpret_cast<long long>(this))),
+        name(std::string(typeid(this).name()) + " - " + EBUtils::intToHex(reinterpret_cast<long long>(this))),
         threadId(std::this_thread::get_id()), parent(parent)
     {
         EBApplication::getInstance().objectCreated(*this);

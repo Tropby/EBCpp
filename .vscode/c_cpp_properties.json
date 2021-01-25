@@ -3,7 +3,8 @@
         {
             "name": "Win32",
             "includePath": [
-                "D:\\Tools\\OpenSSL\\OpenSSL-Win32\\include\\"
+                "D:\\Tools\\OpenSSL\\OpenSSL-Win32\\include\\",
+                "D:\\Tools\\doctest\\doctest-2.4.4"
             ],
             "defines": [
                 "_DEBUG",

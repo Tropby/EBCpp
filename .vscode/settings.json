@@ -55,5 +55,6 @@
         "map": "cpp"
     },
     "C_Cpp.clang_format_style": "file",
-    "formatFiles.excludePattern": "[ default: '**/build, **/.vscode, **/bin' ]"
+    "formatFiles.excludePattern": "[ default: '**/build, **/.vscode, **/bin' ]",
+    "C_Cpp.errorSquiggles": "Disabled"
 }

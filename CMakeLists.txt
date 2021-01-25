@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(EBCpp VERSION 0.1)
+project(EBCpp VERSION 0.1 LANGUAGES CXX)
 
 # Require C++17 Standard
 set(CMAKE_CXX_STANDARD 17)
@@ -14,51 +14,57 @@ if(WIN32)
     add_definitions(-D_WIN32_WINNT=${WINDOWS_VERSION})
 endif()
 
-# Compile ExampleTimer 
-add_executable(ExampleTimer examples/ExampleTimer.cpp)
+# Compile EBCppExampleFile
+add_executable(EBCppExampleFile examples/ExampleFile.cpp)
 if(WIN32)
-    target_link_libraries(ExampleTimer -Wl,-subsystem,console)
+    target_link_libraries(EBCppExampleFile -Wl,-subsystem,console)
 endif()
 
-# Compile ExampleTcpClient 
-add_executable(ExampleTcpClient examples/ExampleTcpClient.cpp)
+# Compile EBCppExampleTimer 
+add_executable(EBCppExampleTimer examples/ExampleTimer.cpp)
 if(WIN32)
-    target_link_libraries(ExampleTcpClient wsock32 ws2_32 -Wl,-subsystem,console)
+    target_link_libraries(EBCppExampleTimer -Wl,-subsystem,console)
 endif()
 
-# Compile ExampleTcpServer 
-add_executable(ExampleTcpServer examples/ExampleTcpServer.cpp)
+# Compile EBCppExampleTcpClient 
+add_executable(EBCppExampleTcpClient examples/ExampleTcpClient.cpp)
 if(WIN32)
-    target_link_libraries(ExampleTcpServer wsock32 ws2_32 -Wl,-subsystem,console)
+    target_link_libraries(EBCppExampleTcpClient wsock32 ws2_32 -Wl,-subsystem,console)
 endif()
 
-# Compile ExampleHttpServer 
-add_executable(ExampleHttpServer examples/ExampleHttpServer.cpp)
+# Compile EBCppExampleTcpServer 
+add_executable(EBCppExampleTcpServer examples/ExampleTcpServer.cpp)
 if(WIN32)
-    target_link_libraries(ExampleHttpServer wsock32 ws2_32 -Wl,-subsystem,console)
+    target_link_libraries(EBCppExampleTcpServer wsock32 ws2_32 -Wl,-subsystem,console)
+endif()
+
+# Compile EBCppExampleHttpServer 
+add_executable(EBCppExampleHttpServer examples/ExampleHttpServer.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleHttpServer wsock32 ws2_32 -Wl,-subsystem,console)
 endif()
 
 find_package(OpenSSL)
 if(OPENSSL_FOUND)    
-    # Compile ExampleSSLClient 
-    add_executable(ExampleSSLClient examples/ExampleSSLClient.cpp)
-    target_include_directories(ExampleSSLClient PRIVATE ${OPENSSL_INCLUDE_DIR})
+    # Compile EBCppExampleSSLClient 
+    add_executable(EBCppExampleSSLClient examples/ExampleSSLClient.cpp)
+    target_include_directories(EBCppExampleSSLClient PRIVATE ${OPENSSL_INCLUDE_DIR})
     if(WIN32)
-        target_link_libraries(ExampleSSLClient OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+        target_link_libraries(EBCppExampleSSLClient OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     endif()
 
-    # Compile ExampleSSLServer 
-    add_executable(ExampleSSLServer examples/ExampleSSLServer.cpp)
-    target_include_directories(ExampleSSLServer PRIVATE ${OPENSSL_INCLUDE_DIR})
+    # Compile EBCppExampleSSLServer 
+    add_executable(EBCppExampleSSLServer examples/ExampleSSLServer.cpp)
+    target_include_directories(EBCppExampleSSLServer PRIVATE ${OPENSSL_INCLUDE_DIR})
     if(WIN32)
-        target_link_libraries(ExampleSSLServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+        target_link_libraries(EBCppExampleSSLServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     endif()    
 
-    # Compile ExampleHttpsServer 
-    add_executable(ExampleHttpsServer examples/ExampleHttpsServer.cpp)
-    target_include_directories(ExampleHttpsServer PRIVATE ${OPENSSL_INCLUDE_DIR})
+    # Compile EBCppExampleHttpsServer 
+    add_executable(EBCppExampleHttpsServer examples/ExampleHttpsServer.cpp)
+    target_include_directories(EBCppExampleHttpsServer PRIVATE ${OPENSSL_INCLUDE_DIR})
     if(WIN32)
-        target_link_libraries(ExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+        target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     endif()        
 endif()
 
@@ -98,3 +104,4 @@ else(DOXYGEN_FOUND)
     message("doxygen not found building without doxygen documentation") 
 endif(DOXYGEN_FOUND)  
 
+add_executable(EBCppTest test/test.cpp)

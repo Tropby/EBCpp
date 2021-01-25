@@ -52,10 +52,10 @@ public:
      * @param receiver The object that slot will be called
      * @param f The method pointer of the receiver object that will be executed
      */
-    EBSlotCall(EBObject& sender, EBObject& receiver, std::function<void()> f) :
+    EBSlotCall(EBObject * sender, EBObject * receiver, std::function<void()> f) :
         EBObject(nullptr),
-        sender(&sender),
-        receiver(&receiver),
+        sender(sender),
+        receiver(receiver),
         function(f)
     {
     }

@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_e_b_cpp_1_1_e_b_object.html" title="The core object. Every object from EBCpp must inherit this." alt="" coords="5,535,132,562"/>
+<area shape="rect" id="node1" href="$class_e_b_cpp_1_1_e_b_object.html" title="The core object. Every object from EBCpp must inherit this." alt="" coords="5,561,132,587"/>
 <area shape="rect" id="node2" href="$class_e_b_cpp_1_1_e_b_event.html" title=" " alt="" coords="195,5,345,47"/>
 <area shape="rect" id="node3" href="$class_e_b_cpp_1_1_e_b_event.html" title=" " alt="" coords="183,71,357,112"/>
 <area shape="rect" id="node4" href="$class_e_b_cpp_1_1_e_b_event.html" title=" " alt="" coords="183,136,357,177"/>
@@ -16,9 +16,10 @@
 <area shape="rect" id="node17" href="$class_e_b_cpp_1_1_e_b_tcp_server.html" title="Creates a TCP server." alt="" coords="197,738,343,765"/>
 <area shape="rect" id="node18" href="$class_e_b_cpp_1_1_e_b_timer.html" title="The EBTimer can provide times events." alt="" coords="209,789,331,815"/>
 <area shape="rect" id="node19" href="$class_example_http_server.html" title="Example to show the function of the TCP server." alt="" coords="203,839,337,866"/>
-<area shape="rect" id="node20" href="$class_example_tcp_client.html" title="Example to show the function of a tcp client." alt="" coords="207,890,333,917"/>
-<area shape="rect" id="node21" href="$class_example_tcp_server.html" title="Example to show the function of the TCP server." alt="" coords="205,941,335,967"/>
-<area shape="rect" id="node22" href="$class_example_timer.html" title="Example to show the function of an timer." alt="" coords="217,991,323,1018"/>
+<area shape="rect" id="node20" href="$class_example_s_s_l_client.html" title="Example to show the function of a tcp client." alt="" coords="205,890,335,917"/>
+<area shape="rect" id="node21" href="$class_example_tcp_client.html" title="Example to show the function of a tcp client." alt="" coords="207,941,333,967"/>
+<area shape="rect" id="node22" href="$class_example_tcp_server.html" title="Example to show the function of the TCP server." alt="" coords="205,991,335,1018"/>
+<area shape="rect" id="node23" href="$class_example_timer.html" title="Example to show the function of an timer." alt="" coords="217,1042,323,1069"/>
 <area shape="rect" id="node13" href="$class_e_b_cpp_1_1_e_b_tcp_socket.html" title="Socket to handle a tcp connection." alt="" coords="408,586,559,613"/>
 <area shape="rect" id="node14" href="$class_e_b_cpp_1_1_e_b_tcp_server_socket.html" title="Class that handles a tcp socket for the EBTcpServer." alt="" coords="607,586,793,613"/>
 </map>

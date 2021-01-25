@@ -28,6 +28,7 @@
 #include "../../EBIODevice.hpp"
 #include "../../EBException.hpp"
 #include "../../EBUtils.hpp"
+#include "../../EBEvent.hpp"
 #include "../../EBSemaphore.hpp"
 
 #include "EBTcpHeader.hpp"
@@ -201,6 +202,8 @@ public:
      */
     virtual int read( char * data, int maxLength ) 
     {
+        const std::lock_guard<std::mutex> lock(mutex);
+
         int size = this->data.size() < maxLength ? this->data.size() : maxLength;
 
         for( int i = 0; i < size; i++ )
@@ -221,6 +224,7 @@ public:
      */
     virtual bool canReadLine()
     {
+        const std::lock_guard<std::mutex> lock(mutex);
         return (std::find(data.begin(), data.end(), '\n') != data.end());
     }
 
@@ -232,6 +236,8 @@ public:
      */
     virtual std::string readLine() 
     {        
+        const std::lock_guard<std::mutex> lock(mutex);
+        
         bool found = (std::find(data.begin(), data.end(), '\n') != data.end());
         if( found )
         {
@@ -294,10 +300,51 @@ protected:
         thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpSocket::run, this)));
     }
 
+    /**
+     * @brief Creates a socket and connects to the host
+     * 
+     * @return true if the socket is connected 
+     * @return false otherwise
+     */
+    virtual bool connect()
+    {
+        // Try to get a new socket
+        socketId = ::socket( AF_INET, SOCK_STREAM, 0);
+        if( socketId == -1 )
+        {
+            EB_EMIT_WITH_ARGS( error, "Can not create socket!" );
+            return false;
+        }
+
+        // Try to connect to host
+        int descriptor = ::connect(socketId, reinterpret_cast<sockaddr*>(&address), sizeof(address));
+        if (descriptor == -1)
+        {
+            EB_EMIT_WITH_ARGS( error, "Can not connect to address!" );
+            return false;
+        }
+        connectionState = true;
+        return true;
+    }
+
+    /**
+     * @brief Receive data from the socket
+     * 
+     * @param buffer buffer for the data
+     * @param size size of the buffer
+     * @return int bytes read from the socket
+     */
+    virtual int receiveData(char * buffer, int size)
+    {
+        // Read next block of data
+        return ::recv(socketId, buffer, sizeof(buffer), 0);
+    }
+
 private:
     std::unique_ptr<std::thread> thread;
     bool connectionState;
     std::list<char> data;
+    std::mutex mutex;
     
     /**
      * This method is used for the thread.
@@ -310,23 +357,13 @@ private:
         // Socket is allredy known and connected (eg. server sockets)
         if( socketId == -1 )
         {
-            // Try to get a new socket
-            socketId = ::socket( AF_INET, SOCK_STREAM, 0);
-            if( socketId == -1 )
+            if( !connect() )
             {
-                EB_EMIT_WITH_ARGS( error, "Can not create socket!" );
                 return;
             }
+            connected.emit(this);
 
-            // Try to connect to host
-            int descriptor = ::connect(socketId, reinterpret_cast<sockaddr*>(&address), sizeof(address));
-            if (descriptor == -1)
-            {
-                EB_EMIT_WITH_ARGS( error, "Can not connect to address!" );
-                return;
-            }
-            connectionState = true;
-            EB_EMIT(connected);
+            //EB_EMIT(connected);
         }
         else
         {
@@ -340,8 +377,7 @@ private:
         int nbytes;
         while( true )
         {
-            // Read next block of data
-            nbytes = ::recv(socketId, buffer, sizeof(buffer), 0);
+            nbytes = receiveData( buffer, sizeof(buffer) );
 
             switch (nbytes)
             {
@@ -364,7 +400,9 @@ private:
 
             default:
                 std::vector<uint8_t> b(buffer, buffer + nbytes);
+                mutex.lock();
                 data.insert(data.end(), std::begin(b), std::end(b));
+                mutex.unlock();
                 EB_EMIT(readReady);
             }
         }

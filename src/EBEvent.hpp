@@ -33,10 +33,10 @@
 
 #define EB_SIGNAL(signalName) EBCpp::EBEvent<> signalName
 #define EB_SLOT(slotName) void slotName(EBCpp::EBObject* sender)
-#define EB_EMIT(signalName) signalName.emit(*this);
+#define EB_EMIT(signalName) signalName.emit(this)
 
 #define EB_SLOT_WITH_ARGS(slotName, args...) void slotName(EBCpp::EBObject* sender, args)
-#define EB_EMIT_WITH_ARGS(signalName, args...) signalName.emit(*this, args);
+#define EB_EMIT_WITH_ARGS(signalName, args...) signalName.emit(this, args)
 #define EB_SIGNAL_WITH_ARGS(signalName, args...) EBCpp::EBEvent<args> signalName
 
 namespace EBCpp
@@ -188,7 +188,7 @@ public:
      * @param sender 
      * @param p 
      */
-    void emit( EBObject& sender, args... p )
+    void emit( EBObject* sender, args... p )
     {
         for( EBConnection<args...> * c : connections )
         {

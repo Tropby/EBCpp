@@ -62,10 +62,11 @@ public:
      * @brief Binds the server socket on a port
      * 
      * @param port Port to bind the server socket
+     * @param bindIp Ip to bind the server on
      * @return true if the server socket could be bind 
      * @return false if the binding fails
      */
-    virtual bool bind( uint16_t port )
+    virtual bool bind( uint16_t port, std::string bindIp = "0.0.0.0" )
     {
 #ifdef __WIN32__
         WORD versionWanted = MAKEWORD(1, 1);
@@ -81,7 +82,7 @@ public:
 
 	    // assign IP, PORT
 	    servaddr.sin_family = AF_INET;
-    	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    	servaddr.sin_addr.s_addr = inet_addr(bindIp.c_str());
 	    servaddr.sin_port = htons(port);
 
 	    if ((::bind(socketId, reinterpret_cast<sockaddr*>(&servaddr), sizeof(servaddr))) != 0)

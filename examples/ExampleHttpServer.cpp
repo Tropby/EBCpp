@@ -50,9 +50,9 @@ public:
     {
         server.newRequest.connect(*this, &ExampleHttpServer::requestReady);
 
-        if( server.bind(8958) )
+        if( server.bind(8958, "127.0.0.1") )
         {
-            std::cout << "Http server now bound on 8958" << std::endl;
+            std::cout << "Http server now bound on 8958. You can open the test page at http://127.0.0.1:8958/" << std::endl;
         }
         else
         {

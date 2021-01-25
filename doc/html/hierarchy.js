@@ -22,6 +22,7 @@ var hierarchy =
       [ "EBCpp::EBTcpServer", "class_e_b_cpp_1_1_e_b_tcp_server.html", null ],
       [ "EBCpp::EBTimer", "class_e_b_cpp_1_1_e_b_timer.html", null ],
       [ "ExampleHttpServer", "class_example_http_server.html", null ],
+      [ "ExampleSSLClient", "class_example_s_s_l_client.html", null ],
       [ "ExampleTcpClient", "class_example_tcp_client.html", null ],
       [ "ExampleTcpServer", "class_example_tcp_server.html", null ],
       [ "ExampleTimer", "class_example_timer.html", null ]

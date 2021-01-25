@@ -100,14 +100,12 @@ $(document).ready(function(){initNavTree('class_e_b_cpp_1_1_e_b_tcp_socket.html'
 <div class="dynheader">
 Inheritance diagram for EBCpp::EBTcpSocket:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="class_e_b_cpp_1_1_e_b_tcp_socket__inherit__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="class_e_b_cpp_1_1_e_b_tcp_socket__inherit__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for EBCpp::EBTcpSocket:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="class_e_b_cpp_1_1_e_b_tcp_socket__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="class_e_b_cpp_1_1_e_b_tcp_socket__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -186,6 +184,12 @@ Protected Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html#a2a2fbc39ed7098a5693c0b441af7a5c4">startThread</a> ()</td></tr>
 <tr class="memdesc:a2a2fbc39ed7098a5693c0b441af7a5c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the receiver thread. <br /></td></tr>
 <tr class="separator:a2a2fbc39ed7098a5693c0b441af7a5c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91d3e9f9ef9d1d36e16fbc9c119bfa62"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html#a91d3e9f9ef9d1d36e16fbc9c119bfa62">connect</a> ()</td></tr>
+<tr class="memdesc:a91d3e9f9ef9d1d36e16fbc9c119bfa62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a socket and connects to the host.  <a href="class_e_b_cpp_1_1_e_b_tcp_socket.html#a91d3e9f9ef9d1d36e16fbc9c119bfa62">More...</a><br /></td></tr>
+<tr class="separator:a91d3e9f9ef9d1d36e16fbc9c119bfa62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9520e4c84affec73a1c2f8a2aaac7a34"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html#a9520e4c84affec73a1c2f8a2aaac7a34">receiveData</a> (char *buffer, int size)</td></tr>
+<tr class="memdesc:a9520e4c84affec73a1c2f8a2aaac7a34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive data from the socket.  <a href="class_e_b_cpp_1_1_e_b_tcp_socket.html#a9520e4c84affec73a1c2f8a2aaac7a34">More...</a><br /></td></tr>
+<tr class="separator:a9520e4c84affec73a1c2f8a2aaac7a34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -313,6 +317,36 @@ false NEVER </dd></dl>
 </dl>
 
 <p>Implements <a class="el" href="class_e_b_cpp_1_1_e_b_i_o_device.html#a64594c298f3702208f6c30113d35ed76">EBCpp::EBIODevice</a>.</p>
+
+</div>
+</div>
+<a id="a91d3e9f9ef9d1d36e16fbc9c119bfa62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91d3e9f9ef9d1d36e16fbc9c119bfa62">&#9670;&nbsp;</a></span>connect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool EBCpp::EBTcpSocket::connect </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a socket and connects to the host. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if the socket is connected </dd>
+<dd>
+false otherwise </dd></dl>
 
 </div>
 </div>
@@ -476,6 +510,52 @@ false if the socket could not be created. </dd></dl>
 </dl>
 
 <p>Implements <a class="el" href="class_e_b_cpp_1_1_e_b_i_o_device.html#a176d5d6b59c7964cae92791e646d2d51">EBCpp::EBIODevice</a>.</p>
+
+</div>
+</div>
+<a id="a9520e4c84affec73a1c2f8a2aaac7a34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9520e4c84affec73a1c2f8a2aaac7a34">&#9670;&nbsp;</a></span>receiveData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int EBCpp::EBTcpSocket::receiveData </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Receive data from the socket. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>buffer for the data </td></tr>
+    <tr><td class="paramname">size</td><td>size of the buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>int bytes read from the socket </dd></dl>
 
 </div>
 </div>

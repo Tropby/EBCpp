@@ -55,13 +55,14 @@ public:
      * @brief Bind the server to the port
      * 
      * @param port Server port that will be bound
+     * @param bindIp Ip to bind the server on
      * @return true if binding is successful
      * @return false if binging fails
      * @throws may throws EBException on error
      */
-    bool bind( uint16_t port )
+    bool bind( uint16_t port, std::string bindIp = "0.0.0.0" )
     {
-        return tcpServer.bind( port );
+        return tcpServer.bind( port, bindIp );
     }
 
     /**

@@ -1,9 +1,9 @@
 <map id="EBCpp::EBObject" name="EBCpp::EBObject">
-<area shape="rect" id="node1" title="The core object. Every object from EBCpp must inherit this." alt="" coords="1543,5,1669,112"/>
-<area shape="rect" id="node2" href="$class_e_b_cpp_1_1_e_b_event.html" title=" " alt="" coords="5,521,156,672"/>
-<area shape="rect" id="node3" href="$class_e_b_cpp_1_1_e_b_event.html" title=" " alt="" coords="385,521,560,672"/>
-<area shape="rect" id="node4" href="$class_e_b_cpp_1_1_e_b_event.html" title=" " alt="" coords="184,521,359,672"/>
-<area shape="rect" id="node5" href="$class_e_b_cpp_1_1_e_b_http_server.html" title=" " alt="" coords="785,536,955,657"/>
+<area shape="rect" id="node1" title="The core object. Every object from EBCpp must inherit this." alt="" coords="1629,5,1756,112"/>
+<area shape="rect" id="node2" href="$class_e_b_cpp_1_1_e_b_event.html" title=" " alt="" coords="5,536,156,687"/>
+<area shape="rect" id="node3" href="$class_e_b_cpp_1_1_e_b_event.html" title=" " alt="" coords="385,536,560,687"/>
+<area shape="rect" id="node4" href="$class_e_b_cpp_1_1_e_b_event.html" title=" " alt="" coords="184,536,359,687"/>
+<area shape="rect" id="node5" href="$class_e_b_cpp_1_1_e_b_http_server.html" title=" " alt="" coords="785,551,955,672"/>
 <area shape="rect" id="node6" href="$class_e_b_cpp_1_1_e_b_connection.html" title="Class to connect between a signal and a slot." alt="" coords="994,220,1149,327"/>
 <area shape="rect" id="node7" href="$class_e_b_cpp_1_1_e_b_event.html" title="This objects handles an event." alt="" coords="233,205,403,341"/>
 <area shape="rect" id="node8" href="$class_e_b_cpp_1_1_e_b_event_loop.html" title="Event handling class." alt="" coords="1173,198,1322,349"/>
@@ -16,9 +16,10 @@
 <area shape="rect" id="node17" href="$class_e_b_cpp_1_1_e_b_tcp_server.html" title="Creates a TCP server." alt="" coords="2214,220,2361,327"/>
 <area shape="rect" id="node18" href="$class_e_b_cpp_1_1_e_b_timer.html" title="The EBTimer can provide times events." alt="" coords="2385,205,2515,341"/>
 <area shape="rect" id="node19" href="$class_example_http_server.html" title="Example to show the function of the TCP server." alt="" coords="2540,227,2693,319"/>
-<area shape="rect" id="node20" href="$class_example_tcp_client.html" title="Example to show the function of a tcp client." alt="" coords="2718,205,2865,341"/>
-<area shape="rect" id="node21" href="$class_example_tcp_server.html" title="Example to show the function of the TCP server." alt="" coords="2889,205,3040,341"/>
-<area shape="rect" id="node22" href="$class_example_timer.html" title="Example to show the function of an timer." alt="" coords="3065,235,3190,312"/>
-<area shape="rect" id="node13" href="$class_e_b_cpp_1_1_e_b_tcp_socket.html" title="Socket to handle a tcp connection." alt="" coords="1705,448,1856,745"/>
-<area shape="rect" id="node14" href="$class_e_b_cpp_1_1_e_b_tcp_server_socket.html" title="Class that handles a tcp socket for the EBTcpServer." alt="" coords="1687,795,1874,887"/>
+<area shape="rect" id="node20" href="$class_example_s_s_l_client.html" title="Example to show the function of a tcp client." alt="" coords="2717,205,2868,341"/>
+<area shape="rect" id="node21" href="$class_example_tcp_client.html" title="Example to show the function of a tcp client." alt="" coords="2893,205,3039,341"/>
+<area shape="rect" id="node22" href="$class_example_tcp_server.html" title="Example to show the function of the TCP server." alt="" coords="3064,205,3215,341"/>
+<area shape="rect" id="node23" href="$class_example_timer.html" title="Example to show the function of an timer." alt="" coords="3239,235,3365,312"/>
+<area shape="rect" id="node13" href="$class_e_b_cpp_1_1_e_b_tcp_socket.html" title="Socket to handle a tcp connection." alt="" coords="1705,448,1856,775"/>
+<area shape="rect" id="node14" href="$class_e_b_cpp_1_1_e_b_tcp_server_socket.html" title="Class that handles a tcp socket for the EBTcpServer." alt="" coords="1687,824,1874,916"/>
 </map>

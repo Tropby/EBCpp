@@ -24,6 +24,7 @@ var annotated_dup =
       [ "is_placeholder< EBCpp::EBPlaceholder< N > >", "structstd_1_1is__placeholder_3_01_e_b_cpp_1_1_e_b_placeholder_3_01_n_01_4_01_4.html", null ]
     ] ],
     [ "ExampleHttpServer", "class_example_http_server.html", "class_example_http_server" ],
+    [ "ExampleSSLClient", "class_example_s_s_l_client.html", "class_example_s_s_l_client" ],
     [ "ExampleTcpClient", "class_example_tcp_client.html", "class_example_tcp_client" ],
     [ "ExampleTcpServer", "class_example_tcp_server.html", "class_example_tcp_server" ],
     [ "ExampleTimer", "class_example_timer.html", "class_example_timer" ]

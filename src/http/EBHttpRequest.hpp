@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+
 #include "../EBObject.hpp"
 #include "../EBEvent.hpp"
 #include "../socket/tcp/EBTcpServerSocket.hpp"
@@ -27,7 +29,8 @@ public:
         headerFinished(false),
         requestHeader(this),
         replyHeader(this),
-        responseCode(200)
+        responseCode(200),
+        firstLine(true)
     {
         tcpSocket->readReady.connect(*this, &EBHttpRequest::readReady);
     }
@@ -114,9 +117,15 @@ private:
 
     std::string requestMethod;
     std::string requestPath;
+    std::string requestProtocol;
 
     int responseCode;
+    bool firstLine;
 
+    void protocolError()
+    {
+
+    }
 
     EB_SLOT(readReady)
     {
@@ -128,7 +137,22 @@ private:
                 {
                     std::string line = EBUtils::trim(tcpSocket->readLine());
                     
-                    if( line.size() == 0 )
+                    if( firstLine )
+                    {
+                        firstLine = false;                        
+                        std::istringstream f(line);
+                        std::string s;
+
+                        if( !getline(f, s, ' ') ) protocolError();
+                        requestMethod = s;
+                        
+                        if( !getline(f, s, ' ') ) protocolError();
+                        requestPath = s;    
+
+                        if( !getline(f, s, ' ') ) protocolError();
+                        requestProtocol = s;
+                    }
+                    else if( line.size() == 0 )
                         headerFinished = true;
                     else
                         requestHeader.processLine(line);

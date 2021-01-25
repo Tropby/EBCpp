@@ -17,14 +17,15 @@ var annotated_dup =
       [ "EBHttpRequest", "class_e_b_cpp_1_1_e_b_http_request.html", "class_e_b_cpp_1_1_e_b_http_request" ],
       [ "EBHttpServer", "class_e_b_cpp_1_1_e_b_http_server.html", "class_e_b_cpp_1_1_e_b_http_server" ],
       [ "EBTcpServer", "class_e_b_cpp_1_1_e_b_tcp_server.html", "class_e_b_cpp_1_1_e_b_tcp_server" ],
-      [ "EBTcpServerSocket", "class_e_b_cpp_1_1_e_b_tcp_server_socket.html", "class_e_b_cpp_1_1_e_b_tcp_server_socket" ],
       [ "EBTcpSocket", "class_e_b_cpp_1_1_e_b_tcp_socket.html", "class_e_b_cpp_1_1_e_b_tcp_socket" ]
     ] ],
     [ "std", null, [
       [ "is_placeholder< EBCpp::EBPlaceholder< N > >", "structstd_1_1is__placeholder_3_01_e_b_cpp_1_1_e_b_placeholder_3_01_n_01_4_01_4.html", null ]
     ] ],
     [ "ExampleHttpServer", "class_example_http_server.html", "class_example_http_server" ],
+    [ "ExampleHttpsServer", "class_example_https_server.html", "class_example_https_server" ],
     [ "ExampleSSLClient", "class_example_s_s_l_client.html", "class_example_s_s_l_client" ],
+    [ "ExampleSslServer", "class_example_ssl_server.html", "class_example_ssl_server" ],
     [ "ExampleTcpClient", "class_example_tcp_client.html", "class_example_tcp_client" ],
     [ "ExampleTcpServer", "class_example_tcp_server.html", "class_example_tcp_server" ],
     [ "ExampleTimer", "class_example_timer.html", "class_example_timer" ]

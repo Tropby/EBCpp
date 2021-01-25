@@ -51,6 +51,18 @@ public:
     }
 
     /**
+     * @brief Construct a new EBSslSocket object
+     * 
+     * @param ssl Ssl structure
+     * @param parent Parent of the EBSslSocket instance
+     */
+    EBSslSocket( EBObject* parent, SSL* ssl, SOCKET socketId, struct sockaddr_in client ) : 
+        EBTcpSocket(parent, socketId, client),
+        ssl(ssl)
+    {
+    }
+
+    /**
      * @brief Destroy the EBSslSocket object
      * 
      */

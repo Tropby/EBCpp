@@ -113,6 +113,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adf75cb79c9c51ae09faeadcb94da38bf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html#adf75cb79c9c51ae09faeadcb94da38bf">EBTcpSocket</a> (<a class="el" href="class_e_b_cpp_1_1_e_b_object.html">EBObject</a> *parent)</td></tr>
 <tr class="memdesc:adf75cb79c9c51ae09faeadcb94da38bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html" title="Socket to handle a tcp connection.">EBTcpSocket</a> object.  <a href="class_e_b_cpp_1_1_e_b_tcp_socket.html#adf75cb79c9c51ae09faeadcb94da38bf">More...</a><br /></td></tr>
 <tr class="separator:adf75cb79c9c51ae09faeadcb94da38bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbbc237c75ea6472172ea7346e01c534"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html#acbbc237c75ea6472172ea7346e01c534">EBTcpSocket</a> (<a class="el" href="class_e_b_cpp_1_1_e_b_object.html">EBObject</a> *parent, int32_t <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html#a51fdb5e36f9cbc020f0020cfd614709a">socketId</a>, struct sockaddr_in client)</td></tr>
+<tr class="memdesc:acbbc237c75ea6472172ea7346e01c534"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new EBTcpServerSocket object.  <a href="class_e_b_cpp_1_1_e_b_tcp_socket.html#acbbc237c75ea6472172ea7346e01c534">More...</a><br /></td></tr>
+<tr class="separator:acbbc237c75ea6472172ea7346e01c534"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acde56fb4682ae861be1237f07df05db5"><td class="memItemLeft" align="right" valign="top"><a id="acde56fb4682ae861be1237f07df05db5"></a>
 virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html#acde56fb4682ae861be1237f07df05db5">~EBTcpSocket</a> ()</td></tr>
 <tr class="memdesc:acde56fb4682ae861be1237f07df05db5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html" title="Socket to handle a tcp connection.">EBTcpSocket</a> object. <br /></td></tr>
@@ -216,7 +219,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock"><p>Socket to handle a tcp connection. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="adf75cb79c9c51ae09faeadcb94da38bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf75cb79c9c51ae09faeadcb94da38bf">&#9670;&nbsp;</a></span>EBTcpSocket()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adf75cb79c9c51ae09faeadcb94da38bf">&#9670;&nbsp;</a></span>EBTcpSocket() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -243,6 +246,58 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">parent</td><td>Parent of the <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html" title="Socket to handle a tcp connection.">EBTcpSocket</a> instance </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="acbbc237c75ea6472172ea7346e01c534"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbbc237c75ea6472172ea7346e01c534">&#9670;&nbsp;</a></span>EBTcpSocket() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">EBCpp::EBTcpSocket::EBTcpSocket </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_e_b_cpp_1_1_e_b_object.html">EBObject</a> *&#160;</td>
+          <td class="paramname"><em>parent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>socketId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct sockaddr_in&#160;</td>
+          <td class="paramname"><em>client</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a new EBTcpServerSocket object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html" title="Creates a TCP server.">EBTcpServer</a> that have created the object </td></tr>
+    <tr><td class="paramname">socketId</td><td>socket id of the tcp connection </td></tr>
+    <tr><td class="paramname">client</td><td>client informations </td></tr>
   </table>
   </dd>
 </dl>
@@ -424,8 +479,6 @@ false if the socket could not be created. </dd></dl>
 </dl>
 
 <p>Implements <a class="el" href="class_e_b_cpp_1_1_e_b_i_o_device.html#a1bebc723da5f1211a442845ae52d8491">EBCpp::EBIODevice</a>.</p>
-
-<p>Reimplemented in <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server_socket.html#ad719025faeca366663fc5078e1f2abf3">EBCpp::EBTcpServerSocket</a>.</p>
 
 </div>
 </div>

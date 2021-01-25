@@ -85,6 +85,8 @@ $(document).ready(function(){initNavTree('class_e_b_cpp_1_1_e_b_tcp_server.html'
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="class_e_b_cpp_1_1_e_b_tcp_server-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EBCpp::EBTcpServer Class Reference</div>  </div>
@@ -98,7 +100,7 @@ $(document).ready(function(){initNavTree('class_e_b_cpp_1_1_e_b_tcp_server.html'
 <div class="dynheader">
 Inheritance diagram for EBCpp::EBTcpServer:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="class_e_b_cpp_1_1_e_b_tcp_server__inherit__graph.svg" width="158" height="272"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="class_e_b_cpp_1_1_e_b_tcp_server__inherit__graph.svg" width="158" height="302"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for EBCpp::EBTcpServer:</div>
@@ -132,9 +134,22 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:af877542c1de5f76214f0433807855ca5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_e_b_cpp_1_1_e_b_event.html">EBCpp::EBEvent</a>&lt; <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server_socket.html">EBTcpServerSocket</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html#af877542c1de5f76214f0433807855ca5">newConnection</a></td></tr>
-<tr class="memdesc:af877542c1de5f76214f0433807855ca5"><td class="mdescLeft">&#160;</td><td class="mdescRight">EB_SIGNAL newConnection.  <a href="class_e_b_cpp_1_1_e_b_tcp_server.html#af877542c1de5f76214f0433807855ca5">More...</a><br /></td></tr>
-<tr class="separator:af877542c1de5f76214f0433807855ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cadfdfc33ff3435a1691be0b84a3d03"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_e_b_cpp_1_1_e_b_event.html">EBCpp::EBEvent</a>&lt; <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html">EBTcpSocket</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html#a5cadfdfc33ff3435a1691be0b84a3d03">newConnection</a></td></tr>
+<tr class="memdesc:a5cadfdfc33ff3435a1691be0b84a3d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">EB_SIGNAL newConnection.  <a href="class_e_b_cpp_1_1_e_b_tcp_server.html#a5cadfdfc33ff3435a1691be0b84a3d03">More...</a><br /></td></tr>
+<tr class="separator:a5cadfdfc33ff3435a1691be0b84a3d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:aaa4d6f2835d76230a656ae9c0c26b0bd"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html">EBTcpSocket</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html#aaa4d6f2835d76230a656ae9c0c26b0bd">nextConnection</a> ()</td></tr>
+<tr class="memdesc:aaa4d6f2835d76230a656ae9c0c26b0bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the next connection form the socket.  <a href="class_e_b_cpp_1_1_e_b_tcp_server.html#aaa4d6f2835d76230a656ae9c0c26b0bd">More...</a><br /></td></tr>
+<tr class="separator:aaa4d6f2835d76230a656ae9c0c26b0bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a5e087d1c193caeaa118696a7153b8b89"><td class="memItemLeft" align="right" valign="top"><a id="a5e087d1c193caeaa118696a7153b8b89"></a>
+int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html#a5e087d1c193caeaa118696a7153b8b89">socketId</a></td></tr>
+<tr class="memdesc:a5e087d1c193caeaa118696a7153b8b89"><td class="mdescLeft">&#160;</td><td class="mdescRight">current socket id <br /></td></tr>
+<tr class="separator:a5e087d1c193caeaa118696a7153b8b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Creates a TCP server. </p>
@@ -222,15 +237,43 @@ false if the binding fails </dd></dl>
 
 </div>
 </div>
+<a id="aaa4d6f2835d76230a656ae9c0c26b0bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa4d6f2835d76230a656ae9c0c26b0bd">&#9670;&nbsp;</a></span>nextConnection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html">EBTcpSocket</a>* EBCpp::EBTcpServer::nextConnection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the next connection form the socket. </p>
+<dl class="section return"><dt>Returns</dt><dd>EBTcpSocket* The socket. Otherwise nullptr </dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="af877542c1de5f76214f0433807855ca5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af877542c1de5f76214f0433807855ca5">&#9670;&nbsp;</a></span>newConnection</h2>
+<a id="a5cadfdfc33ff3435a1691be0b84a3d03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cadfdfc33ff3435a1691be0b84a3d03">&#9670;&nbsp;</a></span>newConnection</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_e_b_cpp_1_1_e_b_event.html">EBCpp::EBEvent</a>&lt; <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server_socket.html">EBTcpServerSocket</a>* &gt; EBCpp::EBTcpServer::newConnection</td>
+          <td class="memname"><a class="el" href="class_e_b_cpp_1_1_e_b_event.html">EBCpp::EBEvent</a>&lt; <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html">EBTcpSocket</a>* &gt; EBCpp::EBTcpServer::newConnection</td>
         </tr>
       </table>
 </div><div class="memdoc">

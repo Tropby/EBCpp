@@ -131,6 +131,10 @@ private:
 	mutable std::condition_variable cvWait;
 	mutable std::mutex mWait;
 
+	/**
+	 * @brief Method that runs the thread
+	 * 
+	 */
 	void run()
 	{
 		while( timerRunning )

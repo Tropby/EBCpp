@@ -30,7 +30,7 @@
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"
 #include "../src/socket/tcp/EBTcpServer.hpp"
-#include "../src/socket/tcp/EBTcpServerSocket.hpp"
+#include "../src/socket/tcp/EBTcpSocket.hpp"
 
 /**
  * @brief Example to show the function of the TCP server
@@ -66,7 +66,7 @@ public:
      * @param sender The sender object
      * @param socket The new client socket
      */
-    EB_SLOT_WITH_ARGS( newConnection, EBCpp::EBTcpServerSocket* socket )
+    EB_SLOT_WITH_ARGS( newConnection, EBCpp::EBTcpSocket* socket )
     {
         std::cout << "new connection!" << std::endl;
 

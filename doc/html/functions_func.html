@@ -93,8 +93,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 
 <h3><a id="index_b"></a>- b -</h3><ul>
 <li>bind()
-: <a class="el" href="class_e_b_cpp_1_1_e_b_http_server.html#ac3b9e074191077b0e068e217e4dc94a0">EBCpp::EBHttpServer&lt; T &gt;</a>
-, <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html#a2edc812839728d0fc191a54f2252403a">EBCpp::EBTcpServer</a>
+: <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html#a2edc812839728d0fc191a54f2252403a">EBCpp::EBTcpServer</a>
 </li>
 </ul>
 
@@ -131,6 +130,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 <h3><a id="index_d"></a>- d -</h3><ul>
 <li>disconnected()
 : <a class="el" href="class_example_s_s_l_client.html#aa68e4b05938d4f315375c1cfa8d074df">ExampleSSLClient</a>
+, <a class="el" href="class_example_ssl_server.html#a39536a9ecba4a8717e0d1066dd9331df">ExampleSslServer</a>
 , <a class="el" href="class_example_tcp_client.html#aafced43b1e0fc8da98b3fe13d1ca4475">ExampleTcpClient</a>
 , <a class="el" href="class_example_tcp_server.html#a05614df9ea89d18a64b5ef62bc7f5ddd">ExampleTcpServer</a>
 </li>
@@ -157,7 +157,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 : <a class="el" href="class_e_b_cpp_1_1_e_b_http_request.html#a47a1e6cfb7a9e8cdffc8899c64df929e">EBCpp::EBHttpRequest</a>
 </li>
 <li>EBHttpServer()
-: <a class="el" href="class_e_b_cpp_1_1_e_b_http_server.html#a5d49ee6c57a723ab5e46dc8673676bd1">EBCpp::EBHttpServer&lt; T &gt;</a>
+: <a class="el" href="class_e_b_cpp_1_1_e_b_http_server.html#afe2da7d27ff1b6855d3a1320d0beb794">EBCpp::EBHttpServer</a>
 </li>
 <li>EBIODevice()
 : <a class="el" href="class_e_b_cpp_1_1_e_b_i_o_device.html#aca72073b0313b44d5e8647eea3944155">EBCpp::EBIODevice</a>
@@ -174,9 +174,6 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 <li>EBTcpServer()
 : <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html#a24cd2e1ccb35a9d5056e1c8bf067b714">EBCpp::EBTcpServer</a>
 </li>
-<li>EBTcpServerSocket()
-: <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server_socket.html#add3d7825557914971513e4fb9b120ba3">EBCpp::EBTcpServerSocket</a>
-</li>
 <li>EBTcpSocket()
 : <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html#adf75cb79c9c51ae09faeadcb94da38bf">EBCpp::EBTcpSocket</a>
 </li>
@@ -190,14 +187,21 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 </li>
 <li>error()
 : <a class="el" href="class_example_s_s_l_client.html#ad8a4b14181635053621f9a10de0607ab">ExampleSSLClient</a>
+, <a class="el" href="class_example_ssl_server.html#a3177b4c7733e2e136dd493da02a5a30f">ExampleSslServer</a>
 , <a class="el" href="class_example_tcp_client.html#a3a10c644f1347377c7aacd96919dfd04">ExampleTcpClient</a>
 , <a class="el" href="class_example_tcp_server.html#a0cd30c6451327c0b8966bd8243ea903a">ExampleTcpServer</a>
 </li>
 <li>ExampleHttpServer()
 : <a class="el" href="class_example_http_server.html#a3acc2d380e427fb3de281342576e1477">ExampleHttpServer</a>
 </li>
+<li>ExampleHttpsServer()
+: <a class="el" href="class_example_https_server.html#a579db6c02a3a8484f714a81f05e1e558">ExampleHttpsServer</a>
+</li>
 <li>ExampleSSLClient()
 : <a class="el" href="class_example_s_s_l_client.html#a202a86f1d5072695a8d4780c6e84babd">ExampleSSLClient</a>
+</li>
+<li>ExampleSslServer()
+: <a class="el" href="class_example_ssl_server.html#ae6c76ff1bcbadcbff9e2dd0eb61eceac">ExampleSslServer</a>
 </li>
 <li>ExampleTcpClient()
 : <a class="el" href="class_example_tcp_client.html#a523aeea3e399fa36fbe17083765c9e4c">ExampleTcpClient</a>
@@ -275,7 +279,11 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 
 <h3><a id="index_n"></a>- n -</h3><ul>
 <li>newConnection()
-: <a class="el" href="class_example_tcp_server.html#ad71251b6e86b830ae0ce8001682dadf3">ExampleTcpServer</a>
+: <a class="el" href="class_example_ssl_server.html#aeb8375d8f04e72d007d4130ac69fb3aa">ExampleSslServer</a>
+, <a class="el" href="class_example_tcp_server.html#a284b31f2ca5f939a5cf854d2895d9336">ExampleTcpServer</a>
+</li>
+<li>nextConnection()
+: <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html#aaa4d6f2835d76230a656ae9c0c26b0bd">EBCpp::EBTcpServer</a>
 </li>
 </ul>
 
@@ -289,7 +297,6 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 </li>
 <li>open()
 : <a class="el" href="class_e_b_cpp_1_1_e_b_i_o_device.html#a1bebc723da5f1211a442845ae52d8491">EBCpp::EBIODevice</a>
-, <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server_socket.html#ad719025faeca366663fc5078e1f2abf3">EBCpp::EBTcpServerSocket</a>
 , <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_socket.html#ae362240b5581de285356435077d82703">EBCpp::EBTcpSocket</a>
 </li>
 </ul>
@@ -316,6 +323,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 </li>
 <li>readReady()
 : <a class="el" href="class_example_s_s_l_client.html#af5d8283afcfdf924f385ec63e802dffa">ExampleSSLClient</a>
+, <a class="el" href="class_example_ssl_server.html#a715b4904fae2b75f228a6b0d05263b37">ExampleSslServer</a>
 , <a class="el" href="class_example_tcp_client.html#a9a245cc96591ef13d0e06567826fb36f">ExampleTcpClient</a>
 , <a class="el" href="class_example_tcp_server.html#a8025f44821477d7b87193ae6403809b0">ExampleTcpServer</a>
 </li>
@@ -327,6 +335,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 </li>
 <li>requestReady()
 : <a class="el" href="class_example_http_server.html#a3f314176f2bc6f4cd0390bc4538ef89b">ExampleHttpServer</a>
+, <a class="el" href="class_example_https_server.html#a841e0e3043057a0bab362e6970fa1517">ExampleHttpsServer</a>
 </li>
 </ul>
 
@@ -340,6 +349,9 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 </li>
 <li>setResponseCode()
 : <a class="el" href="class_e_b_cpp_1_1_e_b_http_request.html#afd9ca89a8759e14d5d6d2845c9aee0fe">EBCpp::EBHttpRequest</a>
+</li>
+<li>setTcpServer()
+: <a class="el" href="class_e_b_cpp_1_1_e_b_http_server.html#a3d3e1b6e96050f9e0aea197adac85dc1">EBCpp::EBHttpServer</a>
 </li>
 <li>setThreadName()
 : <a class="el" href="class_e_b_cpp_1_1_e_b_utils.html#ad49512c8515259362e20f253e368a9a8">EBCpp::EBUtils</a>
@@ -368,8 +380,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 
 <h3><a id="index_u"></a>- u -</h3><ul>
 <li>unbind()
-: <a class="el" href="class_e_b_cpp_1_1_e_b_http_server.html#aba396249404ebf95e50253163e60baca">EBCpp::EBHttpServer&lt; T &gt;</a>
-, <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html#a1e6f4ffb368334559c95ae26890c6d57">EBCpp::EBTcpServer</a>
+: <a class="el" href="class_e_b_cpp_1_1_e_b_tcp_server.html#a1e6f4ffb368334559c95ae26890c6d57">EBCpp::EBTcpServer</a>
 </li>
 </ul>
 

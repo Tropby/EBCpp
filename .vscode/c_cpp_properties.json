@@ -6,6 +6,9 @@
                 "${workspaceFolder}/**",
                 "D:/Tools/OpenSSL/OpenSSL-Win32/include/"
             ],
+            "browse": {
+                "path": ["D:/Tools/OpenSSL/OpenSSL-Win32/include/"]
+            },
             "defines": [
                 "_DEBUG",
                 "UNICODE",

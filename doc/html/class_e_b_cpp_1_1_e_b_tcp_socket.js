@@ -1,6 +1,7 @@
 var class_e_b_cpp_1_1_e_b_tcp_socket =
 [
     [ "EBTcpSocket", "class_e_b_cpp_1_1_e_b_tcp_socket.html#adf75cb79c9c51ae09faeadcb94da38bf", null ],
+    [ "EBTcpSocket", "class_e_b_cpp_1_1_e_b_tcp_socket.html#acbbc237c75ea6472172ea7346e01c534", null ],
     [ "~EBTcpSocket", "class_e_b_cpp_1_1_e_b_tcp_socket.html#acde56fb4682ae861be1237f07df05db5", null ],
     [ "canReadLine", "class_e_b_cpp_1_1_e_b_tcp_socket.html#a1eb0ca94a222c6042ac5955160ab2cda", null ],
     [ "close", "class_e_b_cpp_1_1_e_b_tcp_socket.html#a2d868e18f0d851474e73b758488188ff", null ],

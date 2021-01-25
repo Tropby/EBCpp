@@ -40,11 +40,26 @@ endif()
 
 find_package(OpenSSL)
 if(OPENSSL_FOUND)    
+    # Compile ExampleSSLClient 
     add_executable(ExampleSSLClient examples/ExampleSSLClient.cpp)
     target_include_directories(ExampleSSLClient PRIVATE ${OPENSSL_INCLUDE_DIR})
     if(WIN32)
         target_link_libraries(ExampleSSLClient OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     endif()
+
+    # Compile ExampleSSLServer 
+    add_executable(ExampleSSLServer examples/ExampleSSLServer.cpp)
+    target_include_directories(ExampleSSLServer PRIVATE ${OPENSSL_INCLUDE_DIR})
+    if(WIN32)
+        target_link_libraries(ExampleSSLServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    endif()    
+
+    # Compile ExampleHttpsServer 
+    add_executable(ExampleHttpsServer examples/ExampleHttpsServer.cpp)
+    target_include_directories(ExampleHttpsServer PRIVATE ${OPENSSL_INCLUDE_DIR})
+    if(WIN32)
+        target_link_libraries(ExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    endif()        
 endif()
 
 find_package(Doxygen OPTIONAL_COMPONENTS dot)

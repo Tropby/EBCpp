@@ -1,5 +1,4 @@
-<map id="EBCpp::EBHttpServer&lt; T &gt;" name="EBCpp::EBHttpServer&lt; T &gt;">
-<area shape="rect" id="node1" title="Implementation of a http server." alt="" coords="5,161,185,268"/>
-<area shape="rect" id="node3" href="$class_e_b_cpp_1_1_e_b_http_server.html" title=" " alt="" coords="10,331,181,452"/>
-<area shape="rect" id="node2" href="$class_e_b_cpp_1_1_e_b_object.html" title="The core object. Every object from EBCpp must inherit this." alt="" coords="32,5,159,112"/>
+<map id="EBCpp::EBHttpServer" name="EBCpp::EBHttpServer">
+<area shape="rect" id="node1" title="Implementation of a http server." alt="" coords="5,160,155,267"/>
+<area shape="rect" id="node2" href="$class_e_b_cpp_1_1_e_b_object.html" title="The core object. Every object from EBCpp must inherit this." alt="" coords="17,5,143,112"/>
 </map>

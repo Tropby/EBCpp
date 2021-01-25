@@ -32,7 +32,7 @@
 #include "../../EBEvent.hpp"
 
 #include "EBTcpHeader.hpp"
-#include "EBTcpServerSocket.hpp"
+#include "EBTcpSocket.hpp"
 
 namespace EBCpp
 {
@@ -118,27 +118,45 @@ public:
      * 
      * This signal will be called for each tcp connection that will be established
      */
-    EB_SIGNAL_WITH_ARGS( newConnection, EBTcpServerSocket* );
+    EB_SIGNAL_WITH_ARGS( newConnection, EBTcpSocket* );
+
+protected:
+    //! current socket id
+    SOCKET socketId;
+
+    /**
+     * @brief Get the next connection form the socket
+     * 
+     * @return EBTcpSocket* The socket. Otherwise nullptr
+     */
+    virtual EBTcpSocket * nextConnection()
+    {
+        struct sockaddr_in cli;
+        socklen_t len = sizeof(cli);
+
+        SOCKET connfd = ::accept(socketId, reinterpret_cast<sockaddr*>(&cli), &len);
+        if (connfd >= 0)
+        {
+            return new EBTcpSocket(this, connfd, cli);
+        }
+
+        return nullptr;
+    }
 
 private:
-    SOCKET socketId;
     bool bound;
     std::unique_ptr<std::thread> thread;
-    std::list< EBTcpServerSocket* > clients;
+    std::list< EBTcpSocket* > clients;
 
     void acceptConnections()
     {
-        EBUtils::setThreadName("EBTcpServer #" + std::to_string( socketId ) );
+        EBUtils::setThreadName("EBSslServer #" + std::to_string( socketId ) );
 
         while( bound )
         {
-            struct sockaddr_in cli;
-            socklen_t len = sizeof(cli);
-
-            SOCKET connfd = ::accept(socketId, reinterpret_cast<sockaddr*>(&cli), &len);
-		    if (connfd >= 0)
+            EBTcpSocket* socket = nextConnection();
+            if( socket != nullptr )
             {
-                EBTcpServerSocket * socket = new EBTcpServerSocket(this, connfd, cli);
                 clients.push_back(socket);
                 EB_EMIT_WITH_ARGS( newConnection, socket );
             }

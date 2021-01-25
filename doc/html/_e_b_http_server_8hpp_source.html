@@ -114,62 +114,67 @@ $(document).ready(function(){initNavTree('_e_b_http_server_8hpp_source.html','')
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;../EBObject.hpp&quot;</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;../EBEvent.hpp&quot;</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;EBHttpRequest.hpp&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">namespace </span>EBCpp</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="class_e_b_cpp_1_1_e_b_http_server.html">   39</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html">EBHttpServer</a> : <span class="keyword">public</span> <a class="code" href="class_e_b_cpp_1_1_e_b_object.html">EBObject</a></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;{</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="class_e_b_cpp_1_1_e_b_http_server.html#a5d49ee6c57a723ab5e46dc8673676bd1">   47</a></span>&#160;    <a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html#a5d49ee6c57a723ab5e46dc8673676bd1">EBHttpServer</a>(<a class="code" href="class_e_b_cpp_1_1_e_b_object.html">EBObject</a> * parent) : </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <a class="code" href="class_e_b_cpp_1_1_e_b_object.html">EBObject</a>(parent),</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        tcpServer(this)</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        tcpServer.newConnection.connect( *<span class="keyword">this</span>, &amp;EBHttpServer::newConnection );      </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="class_e_b_cpp_1_1_e_b_http_server.html#ac3b9e074191077b0e068e217e4dc94a0">   63</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html#ac3b9e074191077b0e068e217e4dc94a0">bind</a>( uint16_t port, std::string bindIp = <span class="stringliteral">&quot;0.0.0.0&quot;</span> )</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> tcpServer.bind( port, bindIp );</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="class_e_b_cpp_1_1_e_b_http_server.html#aba396249404ebf95e50253163e60baca">   75</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html#aba396249404ebf95e50253163e60baca">unbind</a>()</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keywordflow">return</span> tcpServer.unbind();</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    }</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="class_e_b_cpp_1_1_e_b_http_server.html#aa287511af058312cf768ff2a0216d670">   86</a></span>&#160;    EB_SIGNAL_WITH_ARGS( <a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html#aa287511af058312cf768ff2a0216d670">newRequest</a>, <a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html">EBHttpRequest</a>* );</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    T tcpServer;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    std::list&lt; EBHttpRequest* &gt; requests;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    EB_SLOT_WITH_ARGS(newConnection, <a class="code" href="class_e_b_cpp_1_1_e_b_tcp_socket.html">EBTcpSocket</a> * socket)</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    {</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html">EBHttpRequest</a>* request = <span class="keyword">new</span> <a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html">EBHttpRequest</a>( socket, <span class="keyword">this</span> );</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        request-&gt;<a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html#aeaf01832a9e4dcd2eddf15898dc16669">ready</a>.<a class="code" href="class_e_b_cpp_1_1_e_b_event.html#ab6960d64f1c433a7639f88029ae33531">connect</a>(*<span class="keyword">this</span>, &amp;EBHttpServer::requestReady);</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        requests.push_back(request);</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    EB_SLOT(requestReady)</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    {</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        <a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html">EBHttpRequest</a>* request = <span class="keyword">reinterpret_cast&lt;</span><a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html">EBHttpRequest</a>*<span class="keyword">&gt;</span>(sender);</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        EB_EMIT_WITH_ARGS( <a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html#aa287511af058312cf768ff2a0216d670">newRequest</a>, request );</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    }</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; </div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;};</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;../socket/tcp/EBTcpServer.hpp&quot;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">namespace </span>EBCpp</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="class_e_b_cpp_1_1_e_b_http_server.html">   38</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html">EBHttpServer</a> : <span class="keyword">public</span> <a class="code" href="class_e_b_cpp_1_1_e_b_object.html">EBObject</a></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="class_e_b_cpp_1_1_e_b_http_server.html#afe2da7d27ff1b6855d3a1320d0beb794">   46</a></span>&#160;    <a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html#afe2da7d27ff1b6855d3a1320d0beb794">EBHttpServer</a>(<a class="code" href="class_e_b_cpp_1_1_e_b_object.html">EBObject</a> * parent) : </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <a class="code" href="class_e_b_cpp_1_1_e_b_object.html">EBObject</a>(parent),</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        tcpServer(nullptr)        </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html">EBHttpServer</a>()</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordflow">if</span>( tcpServer )</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keyword">delete</span> tcpServer;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="class_e_b_cpp_1_1_e_b_http_server.html#a3d3e1b6e96050f9e0aea197adac85dc1">   66</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html#a3d3e1b6e96050f9e0aea197adac85dc1">setTcpServer</a>(<a class="code" href="class_e_b_cpp_1_1_e_b_tcp_server.html">EBTcpServer</a>* server)</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keywordflow">if</span>( server == <span class="keyword">nullptr</span> )</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        tcpServer = server;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        tcpServer-&gt;<a class="code" href="class_e_b_cpp_1_1_e_b_tcp_server.html#a5cadfdfc33ff3435a1691be0b84a3d03">newConnection</a>.connect( *<span class="keyword">this</span>, &amp;EBHttpServer::newConnection );      </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="class_e_b_cpp_1_1_e_b_http_server.html#a2616e1ebb66dfbc9ad693b65033e3276">   81</a></span>&#160;    EB_SIGNAL_WITH_ARGS( <a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html#a2616e1ebb66dfbc9ad693b65033e3276">newRequest</a>, <a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html">EBHttpRequest</a>* );</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <a class="code" href="class_e_b_cpp_1_1_e_b_tcp_server.html">EBTcpServer</a>* tcpServer;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    std::list&lt; EBHttpRequest* &gt; requests;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    EB_SLOT_WITH_ARGS(newConnection, <a class="code" href="class_e_b_cpp_1_1_e_b_tcp_socket.html">EBTcpSocket</a> * socket)</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    {</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html">EBHttpRequest</a>* request = <span class="keyword">new</span> <a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html">EBHttpRequest</a>( socket, <span class="keyword">this</span> );</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        request-&gt;<a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html#aeaf01832a9e4dcd2eddf15898dc16669">ready</a>.<a class="code" href="class_e_b_cpp_1_1_e_b_event.html#ab6960d64f1c433a7639f88029ae33531">connect</a>(*<span class="keyword">this</span>, &amp;EBHttpServer::requestReady);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        requests.push_back(request);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    }</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    EB_SLOT(requestReady)</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    {</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;        <a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html">EBHttpRequest</a>* request = <span class="keyword">static_cast&lt;</span><a class="code" href="class_e_b_cpp_1_1_e_b_http_request.html">EBHttpRequest</a>*<span class="keyword">&gt;</span>(sender);</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        EB_EMIT_WITH_ARGS( <a class="code" href="class_e_b_cpp_1_1_e_b_http_server.html#a2616e1ebb66dfbc9ad693b65033e3276">newRequest</a>, request );</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    }</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;};</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}</div>
 <div class="ttc" id="aclass_e_b_cpp_1_1_e_b_event_html_ab6960d64f1c433a7639f88029ae33531"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_event.html#ab6960d64f1c433a7639f88029ae33531">EBCpp::EBEvent::connect</a></div><div class="ttdeci">void connect(EBEventLoop &amp;eventLoop, X &amp;receiver, void(T::*function)(Types...))</div><div class="ttdoc">Connects a event to an callback method of the receiving object using an event loop.</div><div class="ttdef"><b>Definition:</b> EBEvent.hpp:156</div></div>
 <div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_request_html"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_request.html">EBCpp::EBHttpRequest</a></div><div class="ttdoc">Handles a http request.</div><div class="ttdef"><b>Definition:</b> EBHttpRequest.hpp:18</div></div>
 <div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_request_html_aeaf01832a9e4dcd2eddf15898dc16669"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_request.html#aeaf01832a9e4dcd2eddf15898dc16669">EBCpp::EBHttpRequest::ready</a></div><div class="ttdeci">EBCpp::EBEvent ready</div><div class="ttdoc">EB_SIGNAL ready.</div><div class="ttdef"><b>Definition:</b> EBHttpRequest.hpp:108</div></div>
-<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_server_html"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_server.html">EBCpp::EBHttpServer</a></div><div class="ttdoc">Implementation of a http server.</div><div class="ttdef"><b>Definition:</b> EBHttpServer.hpp:40</div></div>
-<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_server_html_a5d49ee6c57a723ab5e46dc8673676bd1"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_server.html#a5d49ee6c57a723ab5e46dc8673676bd1">EBCpp::EBHttpServer::EBHttpServer</a></div><div class="ttdeci">EBHttpServer(EBObject *parent)</div><div class="ttdoc">Construct a new EBHttpServer object.</div><div class="ttdef"><b>Definition:</b> EBHttpServer.hpp:47</div></div>
-<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_server_html_aa287511af058312cf768ff2a0216d670"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_server.html#aa287511af058312cf768ff2a0216d670">EBCpp::EBHttpServer::newRequest</a></div><div class="ttdeci">EBCpp::EBEvent&lt; EBHttpRequest * &gt; newRequest</div><div class="ttdoc">EB_SIGNAL newRequest.</div><div class="ttdef"><b>Definition:</b> EBHttpServer.hpp:86</div></div>
-<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_server_html_aba396249404ebf95e50253163e60baca"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_server.html#aba396249404ebf95e50253163e60baca">EBCpp::EBHttpServer::unbind</a></div><div class="ttdeci">bool unbind()</div><div class="ttdoc">Unbind the server from the port.</div><div class="ttdef"><b>Definition:</b> EBHttpServer.hpp:75</div></div>
-<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_server_html_ac3b9e074191077b0e068e217e4dc94a0"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_server.html#ac3b9e074191077b0e068e217e4dc94a0">EBCpp::EBHttpServer::bind</a></div><div class="ttdeci">bool bind(uint16_t port, std::string bindIp=&quot;0.0.0.0&quot;)</div><div class="ttdoc">Bind the server to the port.</div><div class="ttdef"><b>Definition:</b> EBHttpServer.hpp:63</div></div>
+<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_server_html"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_server.html">EBCpp::EBHttpServer</a></div><div class="ttdoc">Implementation of a http server.</div><div class="ttdef"><b>Definition:</b> EBHttpServer.hpp:39</div></div>
+<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_server_html_a2616e1ebb66dfbc9ad693b65033e3276"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_server.html#a2616e1ebb66dfbc9ad693b65033e3276">EBCpp::EBHttpServer::newRequest</a></div><div class="ttdeci">EBCpp::EBEvent&lt; EBHttpRequest * &gt; newRequest</div><div class="ttdoc">EB_SIGNAL newRequest.</div><div class="ttdef"><b>Definition:</b> EBHttpServer.hpp:81</div></div>
+<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_server_html_a3d3e1b6e96050f9e0aea197adac85dc1"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_server.html#a3d3e1b6e96050f9e0aea197adac85dc1">EBCpp::EBHttpServer::setTcpServer</a></div><div class="ttdeci">bool setTcpServer(EBTcpServer *server)</div><div class="ttdoc">Set the Tcp Server object.</div><div class="ttdef"><b>Definition:</b> EBHttpServer.hpp:66</div></div>
+<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_http_server_html_afe2da7d27ff1b6855d3a1320d0beb794"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_http_server.html#afe2da7d27ff1b6855d3a1320d0beb794">EBCpp::EBHttpServer::EBHttpServer</a></div><div class="ttdeci">EBHttpServer(EBObject *parent)</div><div class="ttdoc">Construct a new EBHttpServer object.</div><div class="ttdef"><b>Definition:</b> EBHttpServer.hpp:46</div></div>
 <div class="ttc" id="aclass_e_b_cpp_1_1_e_b_object_html"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_object.html">EBCpp::EBObject</a></div><div class="ttdoc">The core object. Every object from EBCpp must inherit this.</div><div class="ttdef"><b>Definition:</b> EBObject.hpp:42</div></div>
+<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_tcp_server_html"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_tcp_server.html">EBCpp::EBTcpServer</a></div><div class="ttdoc">Creates a TCP server.</div><div class="ttdef"><b>Definition:</b> EBTcpServer.hpp:45</div></div>
+<div class="ttc" id="aclass_e_b_cpp_1_1_e_b_tcp_server_html_a5cadfdfc33ff3435a1691be0b84a3d03"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_tcp_server.html#a5cadfdfc33ff3435a1691be0b84a3d03">EBCpp::EBTcpServer::newConnection</a></div><div class="ttdeci">EBCpp::EBEvent&lt; EBTcpSocket * &gt; newConnection</div><div class="ttdoc">EB_SIGNAL newConnection.</div><div class="ttdef"><b>Definition:</b> EBTcpServer.hpp:121</div></div>
 <div class="ttc" id="aclass_e_b_cpp_1_1_e_b_tcp_socket_html"><div class="ttname"><a href="class_e_b_cpp_1_1_e_b_tcp_socket.html">EBCpp::EBTcpSocket</a></div><div class="ttdoc">Socket to handle a tcp connection.</div><div class="ttdef"><b>Definition:</b> EBTcpSocket.hpp:44</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

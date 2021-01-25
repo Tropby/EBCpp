@@ -67,6 +67,29 @@ public:
     }
 
     /**
+     * @brief Construct a new EBTcpServerSocket object
+     * 
+     * @param parent EBTcpServer that have created the object
+     * @param socketId socket id of the tcp connection
+     * @param client client informations
+     */
+    EBTcpSocket( EBObject* parent, SOCKET socketId, struct sockaddr_in client ) : 
+        EBIODevice(parent),
+        thread(nullptr),
+        connectionState(false),
+        socketId(socketId),
+        address(client)
+    {        
+        #ifdef __WIN32__
+            WORD versionWanted = MAKEWORD(1, 1);
+            WSADATA wsaData;
+            WSAStartup(versionWanted, &wsaData);
+        #endif
+
+        startThread();
+    }    
+
+    /**
      * @brief Destroy the EBTcpSocket object
      * 
      */

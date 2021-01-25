@@ -26,6 +26,7 @@
 #include "../EBObject.hpp"
 #include "../EBEvent.hpp"
 #include "EBHttpRequest.hpp"
+#include "../socket/tcp/EBTcpServer.hpp"
 
 namespace EBCpp
 {
@@ -33,9 +34,7 @@ namespace EBCpp
 /**
  * @brief Implementation of a http server
  * 
- * @tparam T EBTcpServer type that will be used to bind the port
  */
-template<class T>
 class EBHttpServer : public EBObject
 {
 public:
@@ -46,35 +45,31 @@ public:
      */
     EBHttpServer(EBObject * parent) : 
         EBObject(parent),
-        tcpServer(this)
+        tcpServer(nullptr)        
     {
-        tcpServer.newConnection.connect( *this, &EBHttpServer::newConnection );      
+    }
+
+    virtual ~EBHttpServer()
+    {
+        if( tcpServer )
+            delete tcpServer;
     }
 
     /**
-     * @brief Bind the server to the port
+     * @brief Set the Tcp Server object
      * 
-     * @param port Server port that will be bound
-     * @param bindIp Ip to bind the server on
-     * @return true if binding is successful
-     * @return false if binging fails
-     * @throws may throws EBException on error
+     * @tparam T 
+     * @param server 
+     * @return true 
+     * @return false 
      */
-    bool bind( uint16_t port, std::string bindIp = "0.0.0.0" )
+    bool setTcpServer(EBTcpServer* server)
     {
-        return tcpServer.bind( port, bindIp );
-    }
-
-    /**
-     * @brief Unbind the server from the port
-     * 
-     * @return true if binding is successful
-     * @return false if binging fails
-     * @throws may throws EBException on error
-     */
-    bool unbind()
-    {
-        return tcpServer.unbind();
+        if( server == nullptr )
+            return false;
+        tcpServer = server;
+        tcpServer->newConnection.connect( *this, &EBHttpServer::newConnection );      
+        return true;
     }
 
     /**
@@ -86,7 +81,7 @@ public:
     EB_SIGNAL_WITH_ARGS( newRequest, EBHttpRequest* );
 
 private:
-    T tcpServer;
+    EBTcpServer* tcpServer;
     std::list< EBHttpRequest* > requests;
 
     /**
@@ -113,7 +108,7 @@ private:
      */
     EB_SLOT(requestReady)
     {
-        EBHttpRequest* request = reinterpret_cast<EBHttpRequest*>(sender);
+        EBHttpRequest* request = static_cast<EBHttpRequest*>(sender);
         EB_EMIT_WITH_ARGS( newRequest, request );
     }
 

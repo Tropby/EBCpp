@@ -1,4 +1,4 @@
 <map id="EBCpp::EBTcpServer" name="EBCpp::EBTcpServer">
-<area shape="rect" id="node1" title="Creates a TCP server." alt="" coords="5,160,152,267"/>
+<area shape="rect" id="node1" title="Creates a TCP server." alt="" coords="5,160,152,296"/>
 <area shape="rect" id="node2" href="$class_e_b_cpp_1_1_e_b_object.html" title="The core object. Every object from EBCpp must inherit this." alt="" coords="15,5,142,112"/>
 </map>

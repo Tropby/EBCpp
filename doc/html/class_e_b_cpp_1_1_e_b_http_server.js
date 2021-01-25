@@ -1,7 +1,7 @@
 var class_e_b_cpp_1_1_e_b_http_server =
 [
-    [ "EBHttpServer", "class_e_b_cpp_1_1_e_b_http_server.html#a5d49ee6c57a723ab5e46dc8673676bd1", null ],
-    [ "bind", "class_e_b_cpp_1_1_e_b_http_server.html#ac3b9e074191077b0e068e217e4dc94a0", null ],
-    [ "unbind", "class_e_b_cpp_1_1_e_b_http_server.html#aba396249404ebf95e50253163e60baca", null ],
-    [ "newRequest", "class_e_b_cpp_1_1_e_b_http_server.html#aa287511af058312cf768ff2a0216d670", null ]
+    [ "EBHttpServer", "class_e_b_cpp_1_1_e_b_http_server.html#afe2da7d27ff1b6855d3a1320d0beb794", null ],
+    [ "~EBHttpServer", "class_e_b_cpp_1_1_e_b_http_server.html#ab07af27bd2130c308e87c3ce633cb6b6", null ],
+    [ "setTcpServer", "class_e_b_cpp_1_1_e_b_http_server.html#a3d3e1b6e96050f9e0aea197adac85dc1", null ],
+    [ "newRequest", "class_e_b_cpp_1_1_e_b_http_server.html#a2616e1ebb66dfbc9ad693b65033e3276", null ]
 ];

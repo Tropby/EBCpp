@@ -30,7 +30,7 @@
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"
 #include "../src/socket/tcp/EBTcpServer.hpp"
-#include "../src/socket/tcp/EBTcpServerSocket.hpp"
+#include "../src/socket/tcp/EBTcpSocket.hpp"
 #include "../src/http/EBHttpServer.hpp"
 
 /**
@@ -46,11 +46,13 @@ public:
      */
     ExampleHttpServer() : 
         EBCpp::EBObject(nullptr),
-        server(this)
+        server(this),
+        tcpServer(this)
     {
         server.newRequest.connect(*this, &ExampleHttpServer::requestReady);
+        server.setTcpServer(&tcpServer);
 
-        if( server.bind(8958, "127.0.0.1") )
+        if( tcpServer.bind(8958, "127.0.0.1") )
         {
             std::cout << "Http server now bound on 8958. You can open the test page at http://127.0.0.1:8958/" << std::endl;
         }
@@ -75,7 +77,8 @@ public:
     }
 
 private:
-    EBCpp::EBHttpServer<EBCpp::EBTcpServer> server;
+    EBCpp::EBHttpServer server;
+    EBCpp::EBTcpServer tcpServer;
 };
 
 int main()

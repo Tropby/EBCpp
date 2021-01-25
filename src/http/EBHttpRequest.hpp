@@ -4,7 +4,7 @@
 
 #include "../EBObject.hpp"
 #include "../EBEvent.hpp"
-#include "../socket/tcp/EBTcpServerSocket.hpp"
+#include "../socket/tcp/EBTcpSocket.hpp"
 
 #include "EBHttpHeader.hpp"
 

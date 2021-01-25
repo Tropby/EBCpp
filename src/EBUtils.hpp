@@ -29,10 +29,6 @@
 
 #include "socket/tcp/EBTcpHeader.hpp"
 
-#ifdef __WIN32__
-#include <windows.h>
-#endif
-
 namespace EBCpp
 {
 

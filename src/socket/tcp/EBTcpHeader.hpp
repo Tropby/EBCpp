@@ -25,8 +25,8 @@
 
 #ifdef __WIN32__
 #include <io.h>
-#include <windows.h>
 #include <winsock2.h>
+#include <windows.h>
 #include <ws2def.h>
 #include <ws2tcpip.h>
 #else

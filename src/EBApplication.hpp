@@ -24,9 +24,9 @@
 #pragma once
 
 #include <algorithm>
-#include <memory>
-#include <list>
 #include <iostream>
+#include <list>
+#include <memory>
 
 namespace EBCpp
 {
@@ -35,20 +35,20 @@ class EBObject;
 
 /**
  * @brief The application class that keeps track of all EBObjects
- * 
+ *
  */
 class EBApplication
 {
 public:
     /**
      * @brief Get the Instance object
-     * 
+     *
      * @return EBApplication& Application instance
      */
-    static EBApplication & getInstance()
+    static EBApplication& getInstance()
     {
         static std::unique_ptr<EBApplication> instance;
-        if( !instance )
+        if (!instance)
         {
             instance = std::unique_ptr<EBApplication>(new EBApplication());
         }
@@ -57,72 +57,72 @@ public:
 
     /**
      * @brief Get the infos about all objects
-     * 
-     * @return std::string 
+     *
+     * @return std::string
      */
     static std::string getObjectsInfo()
     {
-        EBApplication & app = EBApplication::getInstance();
-        return "Living objects: " + std::to_string( app.livingObjects.size() );
+        EBApplication& app = EBApplication::getInstance();
+        return "Living objects: " + std::to_string(app.livingObjects.size());
     }
 
     /**
      * @brief Called from each EBObject that is created
-     * 
+     *
      * @param object Object that is created
      */
-    static void objectCreated( EBObject & object)
+    static void objectCreated(EBObject& object)
     {
-        EBApplication & app = EBApplication::getInstance();
+        EBApplication& app = EBApplication::getInstance();
 
-        bool found = (std::find(app.livingObjects.begin(), app.livingObjects.end(), &object) != app.livingObjects.end());
-        if(!found)
+        bool found =
+        (std::find(app.livingObjects.begin(), app.livingObjects.end(), &object) != app.livingObjects.end());
+        if (!found)
             app.livingObjects.push_back(&object);
     }
 
     /**
      * @brief Called from each EBObject that is destroyed
-     * 
+     *
      * @param object Object that is Destroyed
      */
-    static void objectDestroyed( EBObject & object )
+    static void objectDestroyed(EBObject& object)
     {
-        EBApplication & app = EBApplication::getInstance();
-        app.livingObjects.remove( &object );
+        EBApplication& app = EBApplication::getInstance();
+        app.livingObjects.remove(&object);
     }
 
     /**
      * @brief Checks if a EBObject is valid and known to the EBApplication
-     * 
+     *
      * @param object Object that is checked
      * @return true if the object is valid
      * @return false if the object is unknwon
      */
-    static bool isValidObject( EBObject & object )
+    static bool isValidObject(EBObject& object)
     {
         return EBApplication::isValidObject(&object);
     }
 
     /**
      * @brief Checks if a EBObject is valid and known to the EBApplication
-     * 
+     *
      * @param object Object that is checked
      * @return true if the object is valid
      * @return false if the object is unknwon
      */
-    static bool isValidObject( EBObject * object )
+    static bool isValidObject(EBObject* object)
     {
-        EBApplication & app = EBApplication::getInstance();
+        EBApplication& app = EBApplication::getInstance();
         return (std::find(app.livingObjects.begin(), app.livingObjects.end(), object) != app.livingObjects.end());
     }
 
 private:
     EBApplication()
     {
-
     }
 
-    std::list< EBObject* > livingObjects;
+    std::list<EBObject*> livingObjects;
 };
 
-}
+} // namespace EBCpp

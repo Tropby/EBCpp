@@ -23,15 +23,13 @@
 
 #pragma once
 
-#ifdef EB_OPEN_SSL
-
-#include <openssl/ssl.h> 
 #include <openssl/err.h>
+#include <openssl/ssl.h>
 
 #include <cinttypes>
-#include <thread>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <thread>
 
 #include "../EBTcpServer.hpp"
 #include "../EBTcpSocket.hpp"
@@ -43,25 +41,24 @@ namespace EBCpp
 
 /**
  * @brief Creates a TCP server
- * 
+ *
  */
 class EBSslServer : public EBTcpServer
 {
-public: 
+public:
     /**
      * @brief Construct a new EBTcpServer object
-     * 
+     *
      * @param certFileName Cert file name
      * @param keyFileName Key file name
      * @param parent Parent object of the tcp server
      */
-    EBSslServer( EBObject * parent, std::string certFileName, std::string keyFileName ) :
-        EBTcpServer(parent)
+    EBSslServer(EBObject* parent, std::string certFileName, std::string keyFileName) : EBTcpServer(parent)
     {
         SSL_load_error_strings();
         OpenSSL_add_ssl_algorithms();
 
-        const SSL_METHOD *method;
+        const SSL_METHOD* method;
         method = SSLv23_server_method();
 
         ctx = SSL_CTX_new(method);
@@ -87,34 +84,33 @@ public:
             perror("Can not load KEY.pem");
             ERR_print_errors_fp(stdout);
             exit(EXIT_FAILURE);
-        }     
+        }
     }
 
     ~EBSslServer()
     {
         SSL_CTX_free(ctx);
-	    EVP_cleanup();
+        EVP_cleanup();
     }
 
 protected:
-    virtual EBTcpSocket * nextConnection()
+    virtual EBTcpSocket* nextConnection()
     {
         struct sockaddr_in cli;
         socklen_t len = sizeof(cli);
 
-        int connfd = ::accept(socketId, reinterpret_cast<sockaddr*>(&cli),
-				&len);
-		if (connfd >= 0)
-		{
-			SSL *ssl;
-			ssl = SSL_new(ctx);
-			SSL_set_fd(ssl, connfd);
+        int connfd = ::accept(socketId, reinterpret_cast<sockaddr*>(&cli), &len);
+        if (connfd >= 0)
+        {
+            SSL* ssl;
+            ssl = SSL_new(ctx);
+            SSL_set_fd(ssl, connfd);
             int state = SSL_accept(ssl);
-			if ( state > 0)
-			{
-				EBSslSocket* socket = new EBSslSocket(this, ssl, connfd, cli);
+            if (state > 0)
+            {
+                EBSslSocket* socket = new EBSslSocket(this, ssl, connfd, cli);
                 return socket;
-			}
+            }
             else
             {
                 int err = SSL_get_error(ssl, state);
@@ -139,15 +135,13 @@ protected:
                 SSL_free(ssl);
                 return nullptr;
             }
-		}
+        }
 
         return nullptr;
     }
 
 private:
-	SSL_CTX* ctx;
+    SSL_CTX* ctx;
 };
 
-}
-
-#endif
+} // namespace EBCpp

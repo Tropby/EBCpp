@@ -23,10 +23,10 @@
 
 #pragma once
 
-#include <string>
-#include <memory>
-#include <thread>
 #include <functional>
+#include <memory>
+#include <string>
+#include <thread>
 
 #include "EBApplication.hpp"
 #include "EBObject.hpp"
@@ -36,27 +36,24 @@ namespace EBCpp
 
 /**
  * @brief Object to call a slot
- * 
+ *
  * Each time a signal is emitted, for every slot an EBSlotCall is creatred.
  * When the EventLoop calls this slot the EBSlotCall checks if the objects
  * provides to the call are valid and calls the slot.
- * 
+ *
  */
 class EBSlotCall : public EBObject
 {
 public:
     /**
      * @brief Construct a new EBSlotCall object
-     * 
+     *
      * @param sender The emitting object
      * @param receiver The object that slot will be called
      * @param f The method pointer of the receiver object that will be executed
      */
-    EBSlotCall(EBObject * sender, EBObject * receiver, std::function<void()> f) :
-        EBObject(nullptr),
-        sender(sender),
-        receiver(receiver),
-        function(f)
+    EBSlotCall(EBObject* sender, EBObject* receiver, std::function<void()> f) :
+        EBObject(nullptr), sender(sender), receiver(receiver), function(f)
     {
     }
 
@@ -65,16 +62,16 @@ public:
      */
     void call()
     {
-        if( EBApplication::isValidObject(sender) && EBApplication::isValidObject(receiver) )
+        if (EBApplication::isValidObject(sender) && EBApplication::isValidObject(receiver))
         {
             function();
         }
     }
 
 private:
-    EBObject * sender;
-    EBObject * receiver;
+    EBObject* sender;
+    EBObject* receiver;
     std::function<void()> function;
 };
 
-}
+} // namespace EBCpp

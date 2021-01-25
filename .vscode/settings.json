@@ -53,5 +53,7 @@
         "string": "cpp",
         "iomanip": "cpp",
         "map": "cpp"
-    }
+    },
+    "C_Cpp.clang_format_style": "file",
+    "formatFiles.excludePattern": "[ default: '**/build, **/.vscode, **/bin' ]"
 }

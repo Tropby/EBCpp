@@ -3,12 +3,8 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**",
-                "D:/Tools/OpenSSL/OpenSSL-Win32/include/"
+                "D:\\Tools\\OpenSSL\\OpenSSL-Win32\\include\\"
             ],
-            "browse": {
-                "path": ["D:/Tools/OpenSSL/OpenSSL-Win32/include/"]
-            },
             "defines": [
                 "_DEBUG",
                 "UNICODE",
@@ -17,7 +13,7 @@
             "compilerPath": "D:\\Tools\\gcc\\mingw-w64\\i686-8.1.0-posix-dwarf-rt_v6-rev0\\mingw32\\bin\\gcc.exe",
             "cStandard": "gnu17",
             "cppStandard": "gnu++17",
-            "intelliSenseMode": "windows-gcc-x86",
+            "intelliSenseMode": "gcc-x86",
             "configurationProvider": "go2sh.cmake-integration"
         }
     ],

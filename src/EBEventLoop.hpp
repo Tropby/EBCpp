@@ -35,32 +35,29 @@ namespace EBCpp
 
 /**
  * @brief Event handling class
- * 
+ *
  */
 class EBEventLoop : public EBObject
 {
 public:
     /**
      * @brief Construct a new EBEventLoop object
-     * 
+     *
      * @param parent Parent of the event loop
      */
-    EBEventLoop(EBObject* parent) : 
-        EBObject(parent),
-        semaphore(0, this)
+    EBEventLoop(EBObject* parent) : EBObject(parent), semaphore(0, this)
     {
-
     }
 
     /**
      * @brief Get the main instance (Main Loop)
-     * 
+     *
      * @return EBEventLoop& main event loop
      */
-    static EBEventLoop & getInstance()
+    static EBEventLoop& getInstance()
     {
         static std::unique_ptr<EBEventLoop> instance;
-        if( !instance )
+        if (!instance)
         {
             instance = std::unique_ptr<EBEventLoop>(new EBEventLoop(nullptr));
         }
@@ -69,24 +66,24 @@ public:
 
     /**
      * @brief A connection calls emit to emit a slot call to the event loop
-     * 
+     *
      * @param slot Slot that should be called
      */
-    void emit(EBSlotCall * slot)
+    void emit(EBSlotCall* slot)
     {
-        events.push_back( slot );
+        events.push_back(slot);
         semaphore.release();
     }
 
     /**
      * @brief Processes all events that are available to the event loop
-     * 
+     *
      */
     void processEvents()
     {
-        while( events.size() )
+        while (events.size())
         {
-            EBSlotCall * slot = events.front();
+            EBSlotCall* slot = events.front();
             slot->call();
             events.pop_front();
             delete slot;
@@ -95,23 +92,23 @@ public:
 
     /**
      * @brief Starts a loop that processes all signals and ends only if exit is called
-     * 
+     *
      */
     void exec()
     {
-        EBUtils::setThreadName("EBEventLoop 0x" + EBUtils::intToHex( reinterpret_cast<long long>(this) ) );
+        EBUtils::setThreadName("EBEventLoop 0x" + EBUtils::intToHex(reinterpret_cast<long long>(this)));
         closed = false;
-        while( !closed )
+        while (!closed)
         {
             semaphore.acquire();
             processEvents();
         }
     }
-    
+
     /**
      * @brief Exit the loop
      * @see exec()
-     * 
+     *
      */
     void exit()
     {
@@ -119,9 +116,9 @@ public:
     }
 
 private:
-    std::list< EBSlotCall* > events;
+    std::list<EBSlotCall*> events;
     EBSemaphore semaphore;
     bool closed;
 };
 
-}
+} // namespace EBCpp

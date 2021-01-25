@@ -30,36 +30,43 @@ namespace EBCpp
 
 /**
  * @brief Interface description of an input/output device
- * 
+ *
  */
 class EBIODevice : public EBObject
 {
 public:
     /**
      * @brief Construct a new EBIODevice object
-     * 
+     *
      * @param parent The parent of the IODevice
      */
-    EBIODevice(EBObject* parent) : EBObject(parent){}
+    EBIODevice(EBObject* parent) : EBObject(parent)
+    {
+    }
 
     /**
      * @brief Direction of the device
      */
-    typedef enum { READ_ONLY, WRITE_ONLY, READ_WRITE} DIRECTION;
+    typedef enum
+    {
+        READ_ONLY,
+        WRITE_ONLY,
+        READ_WRITE
+    } DIRECTION;
 
     /**
      * @brief Opens an input / output device
-     * 
+     *
      * @param direction The direction to open the device
      * @return true if the device could be opened
      * @return false if the device couldn't be opened
      * @throws May throws an exception
      */
-    virtual bool open( DIRECTION direction ) = 0;
+    virtual bool open(DIRECTION direction) = 0;
 
     /**
      * @brief Returns the state of the i/o device
-     * 
+     *
      * @return true if the i/o device is opened
      * @return false if the i/o device is not open
      */
@@ -67,7 +74,7 @@ public:
 
     /**
      * @brief Close the i/o device
-     * 
+     *
      * @return true if the i/o device could be closed
      * @return false on any error
      * @throws May throws an exception
@@ -76,33 +83,33 @@ public:
 
     /**
      * @brief Writes data to the output device
-     * 
+     *
      * @param data Pointer to the data to write
      * @param length Size of the data in bytes
      * @return int Bytes written to the output device
      */
-    virtual int write( char * data, int length ) = 0;
+    virtual int write(char* data, int length) = 0;
 
     /**
      * @brief Writes a string to the output device
-     * 
+     *
      * @param data String to wirte to the output device
      * @return int Bytes written to the output device
      */
-    virtual int write( std::string data ) = 0;
+    virtual int write(std::string data) = 0;
 
     /**
      * @brief Read data from the socket
-     * 
+     *
      * @param data Buffer for the read data
      * @param maxLength Size of the buffer
      * @return int Bytes read
      */
-    virtual int read( char * data, int maxLength ) = 0;
+    virtual int read(char* data, int maxLength) = 0;
 
     /**
      * @brief Checks if the data buffer contains "\\n"
-     * 
+     *
      * @return true if the data buffer contains "\\n"
      * @return false if the data buffer does not contain "\\n"
      */
@@ -110,7 +117,7 @@ public:
 
     /**
      * @brief Read a line from the input device
-     * 
+     *
      * @return std::string line data
      * @throws May throws an error if no line is available
      */
@@ -118,17 +125,17 @@ public:
 
     /**
      * @brief Set the filename
-     * 
+     *
      * @param fileName device to open (eg. /home/user/test.txt, tcp://127.0.0.1:8080, ...)
      */
-    void setFileName( std::string fileName )
+    void setFileName(std::string fileName)
     {
         this->fileName = fileName;
     }
 
     /**
      * @brief Get the filename
-     * 
+     *
      * @return std::string filename of the device
      */
     std::string getFileName()
@@ -137,7 +144,7 @@ public:
     }
 
 private:
-    std::string fileName;    
+    std::string fileName;
 };
 
 } // namespace EBCpp

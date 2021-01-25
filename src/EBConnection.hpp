@@ -26,15 +26,15 @@
 #include <functional>
 #include <list>
 
-#include "EBObject.hpp"
 #include "EBEventLoop.hpp"
+#include "EBObject.hpp"
 
 namespace EBCpp
 {
 
 /**
  * @brief Class to connect between a signal and a slot
- * 
+ *
  * @tparam args Argument list of the signal
  */
 template <typename... args>
@@ -43,38 +43,37 @@ class EBConnection : public EBObject
 public:
     /**
      * @brief Construct a new EBConnection object
-     * 
-     * @param eventLoop Event loop that will handle the slot calls 
+     *
+     * @param eventLoop Event loop that will handle the slot calls
      * @param receiver Object that will receive the emitted signals
-     * @param function Function to call 
+     * @param function Function to call
      */
-    EBConnection( EBEventLoop& eventLoop, EBObject& receiver, std::function<void(EBObject*, args...)> function ) : 
-        EBObject(&receiver),
-        eventLoop(&eventLoop),
-        receiver(&receiver),
-        function(function)
+    EBConnection(EBEventLoop& eventLoop, EBObject& receiver, std::function<void(EBObject*, args...)> function) :
+        EBObject(&receiver), eventLoop(&eventLoop), receiver(&receiver), function(function)
     {
     }
 
     /**
      * @brief Emit a signal
-     * 
+     *
      * @param sender Object that emitted the signal
-     * @param p Arguments for the call 
+     * @param p Arguments for the call
      */
-    void emit(EBObject * sender, args... p)
+    void emit(EBObject* sender, args... p)
     {
-        if( EBApplication::isValidObject(eventLoop) )
+        if (EBApplication::isValidObject(eventLoop))
         {
             std::function<void()> f = std::bind(function, sender, p...);
             (*eventLoop).emit(new EBSlotCall(sender, receiver, f));
-        }        
-    }   
+        }
+    }
 
 private:
-    EBEventLoop * eventLoop;
+    //! The Event loop that will handle the signals emitted thought this
+    //! connection
+    EBEventLoop* eventLoop;
     EBObject* receiver;
     std::function<void(EBObject*, args...)> function;
 };
 
-}
+} // namespace EBCpp

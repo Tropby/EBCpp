@@ -23,11 +23,11 @@
 
 #pragma once
 
-#include <string>
+#include <list>
 #include <memory>
+#include <string>
 #include <thread>
 #include <typeinfo>
-#include <list>
 
 #include "EBApplication.hpp"
 
@@ -36,40 +36,39 @@ namespace EBCpp
 
 /**
  * @brief The core object. Every object from EBCpp must inherit this.
- * 
+ *
  */
 class EBObject
 {
 public:
     /**
      * @brief Construct a new EBObject object
-     * 
-     * @param parent The parent EBObject of this EBObject 
+     *
+     * @param parent The parent EBObject of this EBObject
      */
-    EBObject( EBObject* parent ) : 
-        name( std::string(typeid(this).name()) + " - " + std::to_string( reinterpret_cast<long long>(this) ) ),
-        threadId( std::this_thread::get_id() ),
-        parent(parent)
+    EBObject(EBObject* parent) :
+        name(std::string(typeid(this).name()) + " - " + std::to_string(reinterpret_cast<long long>(this))),
+        threadId(std::this_thread::get_id()), parent(parent)
     {
         EBApplication::getInstance().objectCreated(*this);
-        if( parent != nullptr )
+        if (parent != nullptr)
             parent->registerChild(this);
     }
 
     /**
      * @brief Destroy the EBObject object
-     * 
+     *
      */
     ~EBObject()
     {
         EBApplication::getInstance().objectDestroyed(*this);
-        if( parent != nullptr )
+        if (parent != nullptr)
             parent->removeChild(this);
 
         // delete all child objects with the parent object
-        while( childs.size() )
+        while (childs.size())
         {
-            EBObject * obj = childs.front();
+            EBObject* obj = childs.front();
             childs.pop_front();
             delete obj;
         }
@@ -77,7 +76,7 @@ public:
 
     /**
      * @brief Get the name
-     * 
+     *
      * @return std::string the generated name of the object
      **/
     std::string getName()
@@ -90,18 +89,17 @@ private:
     std::thread::id threadId;
 
     EBObject* parent;
-    std::list< EBObject* > childs;
+    std::list<EBObject*> childs;
 
-    void registerChild( EBObject* child )
+    void registerChild(EBObject* child)
     {
-        childs.push_back( child );
+        childs.push_back(child);
     }
 
-    void removeChild( EBObject* child )
+    void removeChild(EBObject* child)
     {
-        childs.remove( child );
+        childs.remove(child);
     }
-
 };
 
-}
+} // namespace EBCpp

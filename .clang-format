@@ -1,0 +1,13 @@
+Language: Cpp
+BasedOnStyle: Microsoft 
+ColumnLimit: 120
+AccessModifierOffset: -4
+UseTab: Never
+TabWidth: 4
+ConstructorInitializerIndentWidth: 4
+IndentWidth: 4
+ContinuationIndentWidth: 0
+PointerAlignment: Left
+AlwaysBreakTemplateDeclarations: Yes
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+BreakConstructorInitializers: AfterColon

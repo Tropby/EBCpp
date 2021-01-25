@@ -21,40 +21,38 @@
  *      Author: Carsten (Tropby)
  */
 
-#include <iostream>
 #include <functional>
+#include <iostream>
 #include <string>
 
 #include "../src/EBApplication.hpp"
 #include "../src/EBEvent.hpp"
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"
+#include "../src/http/EBHttpServer.hpp"
 #include "../src/socket/tcp/EBTcpServer.hpp"
 #include "../src/socket/tcp/EBTcpSocket.hpp"
-#include "../src/http/EBHttpServer.hpp"
 
 /**
  * @brief Example to show the function of the TCP server
- * 
+ *
  */
 class ExampleHttpServer : public EBCpp::EBObject
 {
 public:
     /**
      * @brief Construct a new Example Tcp Server object
-     * 
+     *
      */
-    ExampleHttpServer() : 
-        EBCpp::EBObject(nullptr),
-        server(this),
-        tcpServer(this)
+    ExampleHttpServer() : EBCpp::EBObject(nullptr), server(this), tcpServer(this)
     {
         server.newRequest.connect(*this, &ExampleHttpServer::requestReady);
         server.setTcpServer(&tcpServer);
 
-        if( tcpServer.bind(8958, "127.0.0.1") )
+        if (tcpServer.bind(8958, "127.0.0.1"))
         {
-            std::cout << "Http server now bound on 8958. You can open the test page at http://127.0.0.1:8958/" << std::endl;
+            std::cout << "Http server now bound on 8958. You can open the test page at http://127.0.0.1:8958/"
+                      << std::endl;
         }
         else
         {
@@ -64,14 +62,14 @@ public:
 
     /**
      * @brief EB_SLOT requestReady
-     * 
-     * This slot will called if a request is made and ready 
+     *
+     * This slot will called if a request is made and ready
      * to be abalyzed
-     * 
+     *
      * @param sender The sender object (Http Server)
      * @param request The request object ready to be answered
      */
-    EB_SLOT_WITH_ARGS( requestReady, EBCpp::EBHttpRequest * request )
+    EB_SLOT_WITH_ARGS(requestReady, EBCpp::EBHttpRequest* request)
     {
         request->sendReply("<html><head><title>Hello World!</title></head><body>Hello World!</body></html>");
     }

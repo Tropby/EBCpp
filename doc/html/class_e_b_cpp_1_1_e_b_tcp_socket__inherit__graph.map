@@ -1,5 +1,0 @@
-<map id="EBCpp::EBTcpSocket" name="EBCpp::EBTcpSocket">
-<area shape="rect" id="node1" title="Socket to handle a tcp connection." alt="" coords="5,432,156,773"/>
-<area shape="rect" id="node2" href="$class_e_b_cpp_1_1_e_b_i_o_device.html" title="Interface description of an input/output device." alt="" coords="11,160,151,384"/>
-<area shape="rect" id="node3" href="$class_e_b_cpp_1_1_e_b_object.html" title="The core object. Every object from EBCpp must inherit this." alt="" coords="17,5,144,112"/>
-</map>

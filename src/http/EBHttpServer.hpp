@@ -23,95 +23,92 @@
 
 #pragma once
 
-#include "../EBObject.hpp"
 #include "../EBEvent.hpp"
-#include "EBHttpRequest.hpp"
+#include "../EBObject.hpp"
 #include "../socket/tcp/EBTcpServer.hpp"
+#include "EBHttpRequest.hpp"
 
 namespace EBCpp
 {
 
 /**
  * @brief Implementation of a http server
- * 
+ *
  */
 class EBHttpServer : public EBObject
 {
 public:
     /**
      * @brief Construct a new EBHttpServer object
-     * 
+     *
      * @param parent Parent of the http server object
      */
-    EBHttpServer(EBObject * parent) : 
-        EBObject(parent),
-        tcpServer(nullptr)        
+    EBHttpServer(EBObject* parent) : EBObject(parent), tcpServer(nullptr)
     {
     }
 
     virtual ~EBHttpServer()
     {
-        if( tcpServer )
+        if (tcpServer)
             delete tcpServer;
     }
 
     /**
      * @brief Set the Tcp Server object
-     * 
-     * @tparam T 
-     * @param server 
-     * @return true 
-     * @return false 
+     *
+     * @tparam T
+     * @param server
+     * @return true
+     * @return false
      */
     bool setTcpServer(EBTcpServer* server)
     {
-        if( server == nullptr )
+        if (server == nullptr)
             return false;
         tcpServer = server;
-        tcpServer->newConnection.connect( *this, &EBHttpServer::newConnection );      
+        tcpServer->newConnection.connect(*this, &EBHttpServer::newConnection);
         return true;
     }
 
     /**
      * @brief EB_SIGNAL newRequest
-     * 
+     *
      * Will be emitted if a new http request is ready
-     * 
+     *
      */
-    EB_SIGNAL_WITH_ARGS( newRequest, EBHttpRequest* );
+    EB_SIGNAL_WITH_ARGS(newRequest, EBHttpRequest*);
 
 private:
     EBTcpServer* tcpServer;
-    std::list< EBHttpRequest* > requests;
+    std::list<EBHttpRequest*> requests;
 
     /**
      * @brief EB_SLOT newConnection
-     * 
-     * Will called by the EBTcpServer if a new connection is 
+     *
+     * Will called by the EBTcpServer if a new connection is
      * available
-     * 
+     *
      * @param sender Object that has emmited the signal
      * @param socket New tcp socket
      */
-    EB_SLOT_WITH_ARGS(newConnection, EBTcpSocket * socket)
+    EB_SLOT_WITH_ARGS(newConnection, EBTcpSocket* socket)
     {
-        EBHttpRequest* request = new EBHttpRequest( socket, this );
+        EBHttpRequest* request = new EBHttpRequest(socket, this);
         request->ready.connect(*this, &EBHttpServer::requestReady);
         requests.push_back(request);
     }
 
     /**
      * @brief EB_SLOT requestReady
-     * 
+     *
      * Will be called if a request is ready
-     * 
+     *
      */
     EB_SLOT(requestReady)
     {
         EBHttpRequest* request = static_cast<EBHttpRequest*>(sender);
-        EB_EMIT_WITH_ARGS( newRequest, request );
+        EB_EMIT_WITH_ARGS(newRequest, request);
     }
-
 };
 
-}
+} // namespace EBCpp

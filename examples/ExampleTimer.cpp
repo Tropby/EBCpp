@@ -29,53 +29,50 @@ using namespace EBCpp;
 
 /**
  * @brief Example to show the function of an timer
- * 
+ *
  */
 class ExampleTimer : public EBObject
 {
 public:
-	/**
-	 * @brief Construct a new Example Timer object
-	 * 
-	 * @param parent Parent of this object
-	 */
-	ExampleTimer(EBObject* parent) : 
-        EBObject(parent),
-        timer(this)
-	{
-		timer.timeout.connect(*this, &ExampleTimer::timeout);
-		timer.start( 1000 );
-	}
+    /**
+     * @brief Construct a new Example Timer object
+     *
+     * @param parent Parent of this object
+     */
+    ExampleTimer(EBObject* parent) : EBObject(parent), timer(this)
+    {
+        timer.timeout.connect(*this, &ExampleTimer::timeout);
+        timer.start(1000);
+    }
 
 private:
     EBTimer timer;
 
-	/**
-	 * @brief EB_SLOT timeout
-	 * 
-	 * Will be called by the timer for each timeout that
-	 * occures.
-	 * 
-	 */
-	EB_SLOT(timeout)
-	{
-		static int i = 0;
-		cout << "timeout " << i++ << endl;
+    /**
+     * @brief EB_SLOT timeout
+     *
+     * Will be called by the timer for each timeout that
+     * occures.
+     *
+     */
+    EB_SLOT(timeout)
+    {
+        static int i = 0;
+        cout << "timeout " << i++ << endl;
 
-		if( i == 5 )
-			EBEventLoop::getInstance().exit();
-	}
-
+        if (i == 5)
+            EBEventLoop::getInstance().exit();
+    }
 };
 
 /**
  * @brief Main from the timer example
- * 
+ *
  * @return int Exit code (0)
  */
 int main()
 {
-	ExampleTimer tt(nullptr);
+    ExampleTimer tt(nullptr);
     EBEventLoop::getInstance().exec();
     return 0;
 }

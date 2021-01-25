@@ -23,10 +23,8 @@
 
 #pragma once
 
-#ifdef EB_OPEN_SSL
-
-#include <openssl/ssl.h> 
 #include <openssl/err.h>
+#include <openssl/ssl.h>
 
 #include "../EBTcpSocket.hpp"
 
@@ -35,61 +33,58 @@ namespace EBCpp
 
 /**
  * @brief Socket to handle a tcp connection
- * 
+ *
  */
 class EBSslSocket : public EBTcpSocket
 {
-public: 
+public:
     /**
      * @brief Construct a new EBSslSocket object
-     * 
+     *
      * @param parent Parent of the EBSslSocket instance
      */
-    EBSslSocket( EBObject* parent ) : 
-        EBTcpSocket(parent)
+    EBSslSocket(EBObject* parent) : EBTcpSocket(parent)
     {
     }
 
     /**
      * @brief Construct a new EBSslSocket object
-     * 
+     *
      * @param ssl Ssl structure
      * @param parent Parent of the EBSslSocket instance
      */
-    EBSslSocket( EBObject* parent, SSL* ssl, SOCKET socketId, struct sockaddr_in client ) : 
-        EBTcpSocket(parent, socketId, client),
-        ssl(ssl)
+    EBSslSocket(EBObject* parent, SSL* ssl, SOCKET socketId, struct sockaddr_in client) :
+        EBTcpSocket(parent, socketId, client), ssl(ssl)
     {
     }
 
     /**
      * @brief Destroy the EBSslSocket object
-     * 
+     *
      */
     virtual ~EBSslSocket()
     {
-     
     }
 
     /**
      * @brief Send raw binary data
-     * 
+     *
      * @param data Pointer to the data
      * @param length Length of the data
      * @return int bytes written to the tcp socket
      */
-    virtual int write( char * data, int length )
+    virtual int write(char* data, int length)
     {
         return send(socketId, data, length, 0);
     }
 
     /**
      * @brief Send string
-     * 
+     *
      * @param data string to send
      * @return int bytes written to the tcp socket
      */
-    virtual int write( std::string data )
+    virtual int write(std::string data)
     {
         int len = SSL_write(ssl, data.c_str(), data.length());
         if (len < 0)
@@ -113,23 +108,23 @@ public:
 
     /**
      * @brief Creates a socket and connects to the host
-     * 
-     * @return true if the socket is connected 
+     *
+     * @return true if the socket is connected
      * @return false otherwise
      */
     virtual bool connect()
     {
-        if( !EBTcpSocket::connect() )
+        if (!EBTcpSocket::connect())
             return false;
 
         SSL_library_init();
         SSLeay_add_ssl_algorithms();
         SSL_load_error_strings();
-        const SSL_METHOD *meth = TLS_client_method();
-        SSL_CTX *ctx = SSL_CTX_new(meth);
+        const SSL_METHOD* meth = TLS_client_method();
+        SSL_CTX* ctx = SSL_CTX_new(meth);
         ssl = SSL_new(ctx);
         if (!ssl)
-        {            
+        {
             return false;
         }
 
@@ -146,23 +141,20 @@ public:
 
     /**
      * @brief Receive data from the socket
-     * 
+     *
      * @param buffer buffer for the data
      * @param size size of the buffer
      * @return int bytes read from the socket
      */
-    virtual int receiveData(char * buffer, int size)
+    virtual int receiveData(char* buffer, int size)
     {
         // Read next block of data
         return SSL_read(ssl, buffer, size);
-    }    
+    }
 
 private:
-    SSL *ssl;
+    SSL* ssl;
     int sslSock;
-
 };
 
-}
-
-#endif
+} // namespace EBCpp

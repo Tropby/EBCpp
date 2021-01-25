@@ -21,8 +21,8 @@
  *      Author: Carsten (Tropby)
  */
 
-#include <iostream>
 #include <functional>
+#include <iostream>
 #include <string>
 
 #include "../src/EBApplication.hpp"
@@ -33,50 +33,47 @@
 
 /**
  * @brief Example to show the function of a tcp client
- * 
+ *
  */
 class ExampleTcpClient : public EBCpp::EBObject
 {
 public:
-
     /**
      * @brief Construct a new Example Tcp Client object
-     * 
+     *
      * @param parent Parent of this object
      */
-    ExampleTcpClient(EBCpp::EBObject * parent) : 
-        EBCpp::EBObject(parent),
-        socket(this)
+    ExampleTcpClient(EBCpp::EBObject* parent) : EBCpp::EBObject(parent), socket(this)
     {
-        socket.connected.connect( *this, &ExampleTcpClient::connected );
-        socket.disconnected.connect( *this, &ExampleTcpClient::disconnected );
-        socket.error.connect( *this, &ExampleTcpClient::error );
-        socket.readReady.connect( *this, &ExampleTcpClient::readReady );
+        socket.connected.connect(*this, &ExampleTcpClient::connected);
+        socket.disconnected.connect(*this, &ExampleTcpClient::disconnected);
+        socket.error.connect(*this, &ExampleTcpClient::error);
+        socket.readReady.connect(*this, &ExampleTcpClient::readReady);
 
         socket.setFileName("tcp://127.0.0.1:8958");
-        socket.open(EBCpp::EBIODevice::READ_WRITE);    
+        socket.open(EBCpp::EBIODevice::READ_WRITE);
     }
 
     /**
      * @brief EB_SLOT connected
-     * 
+     *
      * Called if a client connection is established
-     * 
+     *
      * @param sender The sender object
      */
-    EB_SLOT( connected )
+    EB_SLOT(connected)
     {
         std::cout << "connected" << std::endl;
     }
 
     /**
      * @brief EB_SLOT disconnected
-     * 
+     *
      * Called if a client disconnects
-     * 
+     *
      * @param sender The sender object
      */
-    EB_SLOT( disconnected )
+    EB_SLOT(disconnected)
     {
         std::cout << "disconnected" << std::endl;
         EBCpp::EBEventLoop::getInstance().exit();
@@ -84,12 +81,12 @@ public:
 
     /**
      * @brief EB_SLOT readReady
-     * 
+     *
      * Called if data is available from the client
-     * 
+     *
      * @param sender The sender object
      */
-    EB_SLOT( readReady )
+    EB_SLOT(readReady)
     {
         char buffer[1024];
         EBCpp::EBTcpSocket* socket = static_cast<EBCpp::EBTcpSocket*>(sender);
@@ -104,30 +101,28 @@ public:
 
     /**
      * @brief EB_SLOT error
-     * 
+     *
      * Is called by a client socket if an error occured.
-     * 
+     *
      * @param sender The sender object
      * @param message Error message
      */
-    EB_SLOT_WITH_ARGS( error, std::string message )
+    EB_SLOT_WITH_ARGS(error, std::string message)
     {
         std::cout << "ERROR: " << message << std::endl;
     }
 
 private:
     EBCpp::EBTcpSocket socket;
-
 };
 
 /**
  * @brief The main of the tcp client example
- * 
+ *
  * @return int Exit code (0)
  */
 int main()
 {
     ExampleTcpClient exampleTcpClient(nullptr);
     EBCpp::EBEventLoop::getInstance().exec();
-
 }

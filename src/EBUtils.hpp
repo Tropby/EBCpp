@@ -23,14 +23,14 @@
 
 #pragma once
 
-#include <string>
-#include <sstream>
 #include <iomanip>
+#include <sstream>
+#include <string>
 
 #include "socket/tcp/EBTcpHeader.hpp"
 
 #ifdef __WIN32__
-    #include <windows.h>  
+#include <windows.h>
 #endif
 
 namespace EBCpp
@@ -38,21 +38,21 @@ namespace EBCpp
 
 /**
  * @brief Class that provides utility functions
- * 
+ *
  */
 class EBUtils
 {
-public:    
+public:
     /**
      * @brief converts a hostname to its corrosponding ip address
-     * 
+     *
      * @param hostname Hostname that will be converted
      * @return std::string ip address of the hostname
      */
     static std::string hostnameToIp(std::string hostname)
     {
         struct addrinfo hints, *servinfo, *p;
-        struct sockaddr_in *h;
+        struct sockaddr_in* h;
         int rv;
 
         memset(&hints, 0, sizeof hints);
@@ -68,66 +68,59 @@ public:
         char ip[64];
         for (p = servinfo; p != NULL; p = p->ai_next)
         {
-            h = (struct sockaddr_in*) p->ai_addr;
+            h = (struct sockaddr_in*)p->ai_addr;
             strcpy(ip, inet_ntoa(h->sin_addr));
         }
 
         freeaddrinfo(servinfo); // all done with this structure
         return ip;
-
     }
 
     /**
-     * @brief Sets the thread name 
-     * 
+     * @brief Sets the thread name
+     *
      * @param threadName Name of the current thread
      */
-    static void setThreadName(std::string threadName) 
-    {  
+    static void setThreadName(std::string threadName)
+    {
         pthread_setname_np(pthread_self(), threadName.c_str());
-    }   
+    }
 
     /**
      * @brief converts an integer/long to its hex representation
-     * 
+     *
      * @tparam T Type of the parameter i
      * @param i integer to convert to hex
      * @return std::string hex string of the parameter i
      */
-    template<typename T>
-    static std::string intToHex( T i )
+    template <typename T>
+    static std::string intToHex(T i)
     {
         std::stringstream stream;
-        stream << "0x"
-                << std::setfill ('0') << std::setw(sizeof(T)*2)
-                << std::hex << i;
+        stream << "0x" << std::setfill('0') << std::setw(sizeof(T) * 2) << std::hex << i;
         return stream.str();
     }
 
     /**
      * @brief Trims a string and returns the trimmed string
-     * 
+     *
      * @param s String that should be trimmed
      * @return std::string trimmed string
      */
-    static std::string trim(const std::string &s)
+    static std::string trim(const std::string& s)
     {
-        auto isWhitespace = [](const char c)
-        {
-            return c==' ' || c=='\n' || c=='\t' || c=='\r' || c==11;
-        };
-        
-        int left=0, right=s.length()-1;
+        auto isWhitespace = [](const char c) { return c == ' ' || c == '\n' || c == '\t' || c == '\r' || c == 11; };
 
-        while(left<=right && isWhitespace(s[left]))
+        int left = 0, right = s.length() - 1;
+
+        while (left <= right && isWhitespace(s[left]))
             ++left;
 
-        while(right>left && isWhitespace(s[right]))
+        while (right > left && isWhitespace(s[right]))
             --right;
 
-        return s.substr(left, 1+right-left);
-    }    
+        return s.substr(left, 1 + right - left);
+    }
 };
 
-}
-
+} // namespace EBCpp

@@ -21,8 +21,8 @@
  *      Author: Carsten (Tropby)
  */
 
-#include <iostream>
 #include <functional>
+#include <iostream>
 #include <string>
 
 #define EB_OPEN_SSL
@@ -30,58 +30,55 @@
 #include "../src/EBApplication.hpp"
 #include "../src/EBEvent.hpp"
 #include "../src/EBEventLoop.hpp"
-#include "../src/EBTimer.hpp"
 #include "../src/EBIODevice.hpp"
+#include "../src/EBTimer.hpp"
 #include "../src/socket/tcp/ssl/EBSslSocket.hpp"
 
 /**
  * @brief Example to show the function of a tcp client
- * 
+ *
  */
 class ExampleSSLClient : public EBCpp::EBObject
 {
 public:
-
     /**
      * @brief Construct a new Example Tcp Client object
-     * 
+     *
      * @param parent Parent of this object
      */
-    ExampleSSLClient(EBCpp::EBObject * parent) : 
-        EBCpp::EBObject(parent),
-        socket(this)
+    ExampleSSLClient(EBCpp::EBObject* parent) : EBCpp::EBObject(parent), socket(this)
     {
-        socket.connected.connect( *this, &ExampleSSLClient::connected );
-        socket.disconnected.connect( *this, &ExampleSSLClient::disconnected );
-        socket.error.connect( *this, &ExampleSSLClient::error );
-        socket.readReady.connect( *this, &ExampleSSLClient::readReady );
+        socket.connected.connect(*this, &ExampleSSLClient::connected);
+        socket.disconnected.connect(*this, &ExampleSSLClient::disconnected);
+        socket.error.connect(*this, &ExampleSSLClient::error);
+        socket.readReady.connect(*this, &ExampleSSLClient::readReady);
 
         socket.setFileName("tcp://google.com:443");
-        socket.open(EBCpp::EBIODevice::READ_WRITE);    
+        socket.open(EBCpp::EBIODevice::READ_WRITE);
     }
 
     /**
      * @brief EB_SLOT connected
-     * 
+     *
      * Called if a client connection is established
-     * 
+     *
      * @param sender The sender object
      */
-    EB_SLOT( connected )
+    EB_SLOT(connected)
     {
         std::cout << "connected" << std::endl;
-        EBCpp::EBTcpSocket * socket = static_cast<EBCpp::EBTcpSocket*>(sender);
+        EBCpp::EBTcpSocket* socket = static_cast<EBCpp::EBTcpSocket*>(sender);
         socket->write("GET / HTTP/1.0\r\nhost: www.google.com\r\n\r\n");
     }
 
     /**
      * @brief EB_SLOT disconnected
-     * 
+     *
      * Called if a client disconnects
-     * 
+     *
      * @param sender The sender object
      */
-    EB_SLOT( disconnected )
+    EB_SLOT(disconnected)
     {
         std::cout << "disconnected" << std::endl;
         EBCpp::EBEventLoop::getInstance().exit();
@@ -89,12 +86,12 @@ public:
 
     /**
      * @brief EB_SLOT readReady
-     * 
+     *
      * Called if data is available from the client
-     * 
+     *
      * @param sender The sender object
      */
-    EB_SLOT( readReady )
+    EB_SLOT(readReady)
     {
         char buffer[1024];
         EBCpp::EBSslSocket* socket = static_cast<EBCpp::EBSslSocket*>(sender);
@@ -107,30 +104,28 @@ public:
 
     /**
      * @brief EB_SLOT error
-     * 
+     *
      * Is called by a client socket if an error occured.
-     * 
+     *
      * @param sender The sender object
      * @param message Error message
      */
-    EB_SLOT_WITH_ARGS( error, std::string message )
+    EB_SLOT_WITH_ARGS(error, std::string message)
     {
         std::cout << "ERROR: " << message << std::endl;
     }
 
 private:
     EBCpp::EBSslSocket socket;
-
 };
 
 /**
  * @brief The main of the tcp client example
- * 
+ *
  * @return int Exit code (0)
  */
 int main()
 {
     ExampleSSLClient exampleTcpClient(nullptr);
     EBCpp::EBEventLoop::getInstance().exec();
-
 }

@@ -23,34 +23,32 @@
 
 #define EB_OPEN_SSL
 
-#include <iostream>
 #include <functional>
+#include <iostream>
 #include <string>
 
 #include "../src/EBApplication.hpp"
 #include "../src/EBEvent.hpp"
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"
-#include "../src/socket/tcp/ssl/EBSslServer.hpp"
 #include "../src/socket/tcp/EBTcpSocket.hpp"
+#include "../src/socket/tcp/ssl/EBSslServer.hpp"
 
 /**
  * @brief Example to show the function of the TCP server
- * 
+ *
  */
 class ExampleSslServer : public EBCpp::EBObject
 {
 public:
     /**
      * @brief Construct a new Example Tcp Server object
-     * 
+     *
      */
-    ExampleSslServer() : 
-        EBCpp::EBObject(nullptr),
-        server(this, "../examples/testCert.pem", "../examples/testKey.pem")
+    ExampleSslServer() : EBCpp::EBObject(nullptr), server(this, "../examples/testCert.pem", "../examples/testKey.pem")
     {
-        server.newConnection.connect( *this, &ExampleSslServer::newConnection );
-        if( server.bind(8958) )
+        server.newConnection.connect(*this, &ExampleSslServer::newConnection);
+        if (server.bind(8958))
         {
             std::cout << "Tcp server now bound on 8958" << std::endl;
         }
@@ -62,13 +60,13 @@ public:
 
     /**
      * @brief EB_SLOT newConnection
-     * 
+     *
      * Called if a new client socket is available
-     * 
+     *
      * @param sender The sender object
      * @param socket The new client socket
      */
-    EB_SLOT_WITH_ARGS( newConnection, EBCpp::EBTcpSocket* socket )
+    EB_SLOT_WITH_ARGS(newConnection, EBCpp::EBTcpSocket* socket)
     {
         std::cout << "new connection!" << std::endl;
 
@@ -76,17 +74,17 @@ public:
         socket->readReady.connect(*this, &ExampleSslServer::readReady);
         socket->error.connect(*this, &ExampleSslServer::error);
 
-        socket->write( "Hallo :)\n" );
+        socket->write("Hallo :)\n");
     }
 
     /**
      * @brief EB_SLOT disconnected
-     * 
+     *
      * Called if a client disconnects
-     * 
+     *
      * @param sender The sender object
      */
-    EB_SLOT( disconnected )
+    EB_SLOT(disconnected)
     {
         EBCpp::EBTcpSocket* socket = static_cast<EBCpp::EBTcpSocket*>(sender);
         std::cout << "disconnected" << std::endl;
@@ -95,12 +93,12 @@ public:
 
     /**
      * @brief EB_SLOT readReady
-     * 
+     *
      * Called if data is available from a client
-     * 
+     *
      * @param sender The sender object
      */
-    EB_SLOT( readReady )
+    EB_SLOT(readReady)
     {
         char buffer[1024];
         EBCpp::EBTcpSocket* socket = static_cast<EBCpp::EBTcpSocket*>(sender);
@@ -110,19 +108,19 @@ public:
 
         std::cout << "read Ready: " << s << std::endl;
 
-        if( socket->isOpened() )
+        if (socket->isOpened())
             socket->close();
     }
 
     /**
      * @brief EB_SLOT error
-     * 
+     *
      * Is called by a client socket if an error occured.
-     * 
+     *
      * @param sender The sender object
      * @param message Error message
      */
-    EB_SLOT_WITH_ARGS( error, std::string message )
+    EB_SLOT_WITH_ARGS(error, std::string message)
     {
         std::cout << "ERROR: " << message << std::endl;
     }

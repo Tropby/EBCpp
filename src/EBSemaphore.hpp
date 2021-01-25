@@ -24,8 +24,8 @@
 #pragma once
 
 #include <cinttypes>
-#include <mutex>
 #include <condition_variable>
+#include <mutex>
 
 #include "EBObject.hpp"
 
@@ -34,33 +34,31 @@ namespace EBCpp
 
 /**
  * @brief Semaphore implementation for EBCpp
- * 
+ *
  */
 class EBSemaphore : public EBObject
 {
-public:    
+public:
     /**
      * @brief Construct a new EBSemaphore object
-     * 
+     *
      * @param startCount Number of tokens the semaphore can provide after the creation
      * @param parent Parent EBCpp object
      */
-    EBSemaphore(uint32_t startCount, EBObject* parent = nullptr) : 
-        EBObject(parent),
-        tokens(startCount)
+    EBSemaphore(uint32_t startCount, EBObject* parent = nullptr) : EBObject(parent), tokens(startCount)
     {
     }
 
     /**
      * @brief Acquires a token from the semaphore
-     * 
-     * Acquires a token from the semaphore, if no token is available this 
+     *
+     * Acquires a token from the semaphore, if no token is available this
      * function locks until a token is available
      */
     void acquire()
     {
         std::unique_lock<std::mutex> lock(mutex);
-        while(tokens == 0)
+        while (tokens == 0)
         {
             condition.wait(lock);
         }
@@ -69,7 +67,7 @@ public:
 
     /**
      * @brief Releases a token to the semaphore
-     * 
+     *
      */
     void release()
     {
@@ -80,7 +78,7 @@ public:
 
     /**
      * @brief Clears the semaphore and sets token count to zero
-     * 
+     *
      */
     void clear()
     {
@@ -93,4 +91,4 @@ private:
     std::condition_variable condition;
 };
 
-}
+} // namespace EBCpp

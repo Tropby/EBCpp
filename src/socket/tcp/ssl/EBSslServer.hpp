@@ -59,7 +59,7 @@ public:
         OpenSSL_add_ssl_algorithms();
 
         const SSL_METHOD* method;
-        method = SSLv23_server_method();
+        method = TLS_server_method();
 
         ctx = SSL_CTX_new(method);
         if (!ctx)
@@ -68,8 +68,6 @@ public:
             ERR_print_errors_fp(stdout);
             exit(EXIT_FAILURE);
         }
-
-        SSL_CTX_set_ecdh_auto(ctx, 1);
 
         /* Set the key and cert */
         if (SSL_CTX_use_certificate_file(ctx, certFileName.c_str(), SSL_FILETYPE_PEM) <= 0)

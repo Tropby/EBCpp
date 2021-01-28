@@ -93,9 +93,11 @@ private:
      */
     EB_SLOT_WITH_ARGS(newConnection, EBTcpSocket* socket)
     {
-        EBHttpRequest* request = new EBHttpRequest(socket, this);
+        EBHttpRequest* request = new EBHttpRequest(this);
         request->ready.connect(*this, &EBHttpServer::requestReady);
+        request->finished.connect(*this, &EBHttpServer::requestFinished);
         requests.push_back(request);
+        request->setSocket(socket);
     }
 
     /**
@@ -108,6 +110,13 @@ private:
     {
         EBHttpRequest* request = static_cast<EBHttpRequest*>(sender);
         EB_EMIT_WITH_ARGS(newRequest, request);
+    }
+
+    EB_SLOT(requestFinished)
+    {
+        EBHttpRequest * request = static_cast<EBHttpRequest*>(sender);
+        requests.remove(request);
+        delete request;
     }
 };
 

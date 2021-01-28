@@ -23,11 +23,22 @@ public:
      * @param tcpSocket Socket that will be used for the http request
      * @param parent Parent of the http request
      */
-    EBHttpRequest(EBTcpSocket* tcpSocket, EBObject* parent) :
+    EBHttpRequest(EBObject* parent) :
         EBObject(parent), tcpSocket(tcpSocket), headerFinished(false), requestHeader(this), replyHeader(this),
         responseCode(200), firstLine(true)
     {
+    }
+
+    ~EBHttpRequest()
+    {
+        delete tcpSocket;
+    }
+
+    void setSocket(EBTcpSocket* tcpSocket)
+    {
+        this->tcpSocket = tcpSocket;
         tcpSocket->readReady.connect(*this, &EBHttpRequest::readReady);
+        readReady(tcpSocket);
     }
 
     /**
@@ -41,8 +52,8 @@ public:
         tcpSocket->write(replyHeader.getHeader());
         tcpSocket->write("\r\n");
         tcpSocket->write(data);
-        tcpSocket->close();
-        delete tcpSocket;
+        tcpSocket->close(); 
+        EB_EMIT(finished);
     }
 
     /**
@@ -101,6 +112,8 @@ public:
      * Signal is emitted if the request receive has been finished
      */
     EB_SIGNAL(ready);
+
+    EB_SIGNAL(finished);
 
 private:
     EBTcpSocket* tcpSocket;

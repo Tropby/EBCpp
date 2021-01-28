@@ -27,6 +27,7 @@
 #include <iostream>
 #include <list>
 #include <memory>
+#include <mutex>
 
 namespace EBCpp
 {
@@ -75,10 +76,12 @@ public:
     {
         EBApplication& app = EBApplication::getInstance();
 
+        app.mutex.lock();
         bool found =
         (std::find(app.livingObjects.begin(), app.livingObjects.end(), &object) != app.livingObjects.end());
         if (!found)
             app.livingObjects.push_back(&object);
+        app.mutex.unlock();
     }
 
     /**
@@ -89,7 +92,10 @@ public:
     static void objectDestroyed(EBObject& object)
     {
         EBApplication& app = EBApplication::getInstance();
+
+        app.mutex.lock();
         app.livingObjects.remove(&object);
+        app.mutex.unlock();
     }
 
     /**
@@ -123,6 +129,7 @@ private:
     }
 
     std::list<EBObject*> livingObjects;
+    std::mutex mutex;
 };
 
 } // namespace EBCpp

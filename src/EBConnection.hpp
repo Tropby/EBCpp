@@ -61,10 +61,10 @@ public:
      */
     void emit(EBObject* sender, args... p)
     {
-        if (EBApplication::isValidObject(eventLoop))
+        if (EBObject::isValidObject(eventLoop))
         {
             std::function<void()> f = std::bind(function, sender, p...);
-            (*eventLoop).emit(new EBSlotCall(sender, receiver, f));
+            (*eventLoop).emit( std::make_shared< EBSlotCall>(sender, receiver, f));
         }
     }
 

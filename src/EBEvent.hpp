@@ -138,12 +138,6 @@ public:
      */
     ~EBEvent()
     {
-        while (connections.size())
-        {
-            EBConnection<args...>* obj = connections.front();
-            connections.pop_front();
-            delete obj;
-        }
     }
 
     /**
@@ -159,7 +153,7 @@ public:
     template <class X, class T, class... Types>
     void connect(EBEventLoop& eventLoop, X& receiver, void (T::*function)(Types...))
     {
-        connections.push_back(new EBConnection<args...>(eventLoop, receiver, EBCpp::bind(function, receiver)));
+        connections.push_back(std::make_shared<EBConnection<args...>>( eventLoop, receiver, EBCpp::bind(function, receiver) ) );
     }
 
     /**
@@ -194,14 +188,14 @@ public:
      */
     void emit(EBObject* sender, args... p)
     {
-        for (EBConnection<args...>* c : connections)
+        for (std::shared_ptr<EBConnection<args...>> c : connections)
         {
             c->emit(sender, p...);
         }
     }
 
 private:
-    std::list<EBConnection<args...>*> connections;
+    std::list< std::shared_ptr<EBConnection<args...>>> connections;
 };
 
 } // namespace EBCpp

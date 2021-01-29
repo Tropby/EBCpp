@@ -69,7 +69,7 @@ public:
      *
      * @param slot Slot that should be called
      */
-    void emit(EBSlotCall* slot)
+    void emit(std::shared_ptr<EBSlotCall> slot)
     {
         events.push_back(slot);
         semaphore.release();
@@ -83,10 +83,9 @@ public:
     {
         while (events.size())
         {
-            EBSlotCall* slot = events.front();
+            std::shared_ptr<EBSlotCall> slot = events.front();
             slot->call();
             events.pop_front();
-            delete slot;
         }
     }
 
@@ -116,7 +115,7 @@ public:
     }
 
 private:
-    std::list<EBSlotCall*> events;
+    std::list< std::shared_ptr<EBSlotCall> > events;
     EBSemaphore semaphore;
     bool closed;
 };

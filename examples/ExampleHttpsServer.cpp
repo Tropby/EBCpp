@@ -25,7 +25,6 @@
 #include <iostream>
 #include <string>
 
-#include "../src/EBApplication.hpp"
 #include "../src/EBEvent.hpp"
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"
@@ -73,7 +72,8 @@ public:
     EB_SLOT_WITH_ARGS(requestReady, EBCpp::EBHttpRequest* request)
     {
         static int count = 0;
-        request->sendReply("<html><head><title>Hello World!</title></head><body>Hello World!<br />Called: " + std::to_string(++count) +  "</body></html>");
+        request->sendReply("<html><head><title>Hello World!</title></head><body>Hello World!<br />Called: " + std::to_string(++count) + "<hr />" + 
+        EBObject::getObjectsInfo() + "</body></html>");
     }
 
 private:

@@ -49,8 +49,6 @@ public:
 
     virtual ~EBHttpServer()
     {
-        if (tcpServer)
-            delete tcpServer;
     }
 
     /**
@@ -80,7 +78,7 @@ public:
 
 private:
     EBTcpServer* tcpServer;
-    std::list<EBHttpRequest*> requests;
+    std::list<std::shared_ptr<EBHttpRequest>> requests;
 
     /**
      * @brief EB_SLOT newConnection
@@ -93,7 +91,7 @@ private:
      */
     EB_SLOT_WITH_ARGS(newConnection, EBTcpSocket* socket)
     {
-        EBHttpRequest* request = new EBHttpRequest(this);
+        std::shared_ptr<EBHttpRequest> request = std::make_shared<EBHttpRequest>(this);
         request->ready.connect(*this, &EBHttpServer::requestReady);
         request->finished.connect(*this, &EBHttpServer::requestFinished);
         requests.push_back(request);
@@ -114,9 +112,14 @@ private:
 
     EB_SLOT(requestFinished)
     {
-        EBHttpRequest * request = static_cast<EBHttpRequest*>(sender);
-        requests.remove(request);
-        delete request;
+        for( auto it : requests )
+        {
+            if( it.get() == sender )
+            {
+                requests.remove(it);
+                break;
+            }
+        }
     }
 };
 

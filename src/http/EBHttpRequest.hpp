@@ -27,10 +27,12 @@ public:
         EBObject(parent), tcpSocket(tcpSocket), headerFinished(false), requestHeader(this), replyHeader(this),
         responseCode(200), firstLine(true)
     {
+        std::cout << "EBHttpRequest" << std::endl;
     }
 
     ~EBHttpRequest()
     {
+        std::cout << "~EBHttpRequest" << std::endl;
         delete tcpSocket;
     }
 

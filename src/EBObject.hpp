@@ -51,7 +51,7 @@ public:
         name(std::string(typeid(this).name()) + " - " + EBUtils::intToHex(reinterpret_cast<long long>(this))),
         threadId(std::this_thread::get_id()), parent(parent)
     {
-        objectCreated(*this);
+        objectCreated(this);
 
         if (parent != nullptr)
             parent->registerChild(this);
@@ -63,7 +63,7 @@ public:
      */
     ~EBObject()
     {
-        objectDestroyed(*this);
+        objectDestroyed(this);
 
         if (parent != nullptr)
         {
@@ -104,13 +104,13 @@ public:
      *
      * @param object Object that is created
      */
-    static void objectCreated(EBObject& object)
+    static void objectCreated(EBObject* object)
     {
+        if( isValidObject(object) )
+            return;
+
         mutex.lock();
-        bool found =
-            (std::find(livingObjects.begin(), livingObjects.end(), &object) != livingObjects.end());
-        if (!found)
-            livingObjects.push_back(&object);
+        livingObjects.push_back(object);
         mutex.unlock();
     }
 
@@ -119,10 +119,10 @@ public:
      *
      * @param object Object that is Destroyed
      */
-    static void objectDestroyed(EBObject& object)
+    static void objectDestroyed(EBObject* object)
     {
         mutex.lock();
-        livingObjects.remove(&object);
+        livingObjects.remove(object);
         mutex.unlock();
     }        
 
@@ -147,8 +147,13 @@ public:
      */
     static bool isValidObject(EBObject* object)
     {
+        bool found = false;
         mutex.lock();
-        bool found = (std::find(livingObjects.begin(), livingObjects.end(), object) != livingObjects.end());
+        for( auto it: livingObjects )
+        {
+            if( it == object )
+                found = true;
+        }
         mutex.unlock();
         return found;
     }    

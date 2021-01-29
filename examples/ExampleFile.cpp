@@ -21,6 +21,7 @@
  *      Author: Carsten (Tropby)
  */
 
+#include <iostream>
 #include "../src/EBFile.hpp"
 
 /**

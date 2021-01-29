@@ -25,7 +25,6 @@
 #include <iostream>
 #include <string>
 
-#include "../src/EBApplication.hpp"
 #include "../src/EBEvent.hpp"
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"

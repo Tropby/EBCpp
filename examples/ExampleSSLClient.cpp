@@ -27,7 +27,6 @@
 
 #define EB_OPEN_SSL
 
-#include "../src/EBApplication.hpp"
 #include "../src/EBEvent.hpp"
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBIODevice.hpp"

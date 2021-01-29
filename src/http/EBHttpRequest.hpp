@@ -20,7 +20,6 @@ public:
     /**
      * @brief Construct a new EBHttpRequest object
      *
-     * @param tcpSocket Socket that will be used for the http request
      * @param parent Parent of the http request
      */
     EBHttpRequest(EBObject* parent) :
@@ -36,6 +35,11 @@ public:
         delete tcpSocket;
     }
 
+    /**
+     * @brief Set the socket the request is performed on
+     * 
+     * @param tcpSocket the socket
+     */
     void setSocket(EBTcpSocket* tcpSocket)
     {
         this->tcpSocket = tcpSocket;
@@ -115,6 +119,12 @@ public:
      */
     EB_SIGNAL(ready);
 
+    /**
+     * @brief EB_SIGNAL finished
+     * 
+     * This signal will be emitted if the request is finished and the
+     * reply is send to the client.
+     */
     EB_SIGNAL(finished);
 
 private:

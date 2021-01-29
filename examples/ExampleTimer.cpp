@@ -21,6 +21,8 @@
  *      Author: Carsten (Tropby)
  */
 
+#include <iostream>
+
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"
 

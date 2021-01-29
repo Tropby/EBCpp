@@ -28,8 +28,9 @@
 #include <string>
 #include <thread>
 #include <typeinfo>
+#include <mutex>
+#include <algorithm>
 
-#include "EBApplication.hpp"
 #include "EBUtils.hpp"
 
 namespace EBCpp
@@ -51,7 +52,8 @@ public:
         name(std::string(typeid(this).name()) + " - " + EBUtils::intToHex(reinterpret_cast<long long>(this))),
         threadId(std::this_thread::get_id()), parent(parent)
     {
-        EBApplication::getInstance().objectCreated(*this);
+        objectCreated(*this);
+
         if (parent != nullptr)
             parent->registerChild(this);
     }
@@ -62,9 +64,12 @@ public:
      */
     ~EBObject()
     {
-        EBApplication::getInstance().objectDestroyed(*this);
+        objectDestroyed(*this);
+
         if (parent != nullptr)
+        {
             parent->removeChild(this);
+        }
 
         // delete all child objects with the parent object
         while (childs.size())
@@ -85,10 +90,69 @@ public:
         return name;
     }
 
-    void deleteLater()
-    {
-
+   /**
+     * @brief Get the infos about all objects
+     *
+     * @return std::string
+     */
+    static std::string getObjectsInfo()
+    {        
+        return "Living objects: " + std::to_string(livingObjects.size());
     }
+
+    /**
+     * @brief Called from each EBObject that is created
+     *
+     * @param object Object that is created
+     */
+    static void objectCreated(EBObject& object)
+    {
+        mutex.lock();
+        bool found =
+            (std::find(livingObjects.begin(), livingObjects.end(), &object) != livingObjects.end());
+        if (!found)
+            livingObjects.push_back(&object);
+        mutex.unlock();
+    }
+
+    /**
+     * @brief Called from each EBObject that is destroyed
+     *
+     * @param object Object that is Destroyed
+     */
+    static void objectDestroyed(EBObject& object)
+    {
+        mutex.lock();
+        livingObjects.remove(&object);
+        mutex.unlock();
+    }        
+
+    /**
+     * @brief Checks if a EBObject is valid and known to the EBApplication
+     *
+     * @param object Object that is checked
+     * @return true if the object is valid
+     * @return false if the object is unknwon
+     */
+    static bool isValidObject(EBObject& object)
+    {
+        return EBObject::isValidObject(&object);
+    }
+
+    /**
+     * @brief Checks if a EBObject is valid and known to the EBApplication
+     *
+     * @param object Object that is checked
+     * @return true if the object is valid
+     * @return false if the object is unknwon
+     */
+    static bool isValidObject(EBObject* object)
+    {
+        mutex.lock();
+        bool found = (std::find(livingObjects.begin(), livingObjects.end(), object) != livingObjects.end());
+        mutex.unlock();
+        return found;
+    }    
 
 private:
     std::string name;
@@ -96,6 +160,9 @@ private:
 
     EBObject* parent;
     std::list<EBObject*> childs;
+
+    static std::mutex mutex;
+    static std::list<EBObject*> livingObjects;
 
     void registerChild(EBObject* child)
     {
@@ -107,5 +174,8 @@ private:
         childs.remove(child);
     }
 };
+
+inline std::mutex EBObject::mutex;
+inline std::list<EBObject*> EBObject::livingObjects;
 
 } // namespace EBCpp

@@ -69,9 +69,11 @@ public:
      *
      * @param slot Slot that should be called
      */
-    void emit(EBSlotCall* slot)
+    void emit(std::shared_ptr<EBSlotCall> slot)
     {
+        mutex.lock();
         events.push_back(slot);
+        mutex.unlock();
         semaphore.release();
     }
 
@@ -83,10 +85,15 @@ public:
     {
         while (events.size())
         {
-            EBSlotCall* slot = events.front();
+            mutex.lock();
+            std::shared_ptr<EBSlotCall> slot = events.front();
+            mutex.unlock();
+
             slot->call();
+
+            mutex.lock();
             events.pop_front();
-            delete slot;
+            mutex.unlock();
         }
     }
 
@@ -116,7 +123,8 @@ public:
     }
 
 private:
-    std::list<EBSlotCall*> events;
+    std::list< std::shared_ptr<EBSlotCall> > events;
+    std::mutex mutex;
     EBSemaphore semaphore;
     bool closed;
 };

@@ -160,7 +160,6 @@ public:
      *
      * @return true if the connection could be closed
      * @return false NEVER
-     * @throws EBException if the connection was not established
      */
     virtual bool close()
     {
@@ -174,13 +173,9 @@ public:
 #endif
             ::close(socketId);
             socketId = -1;
+            return true;
         }
-        else
-        {
-            EB_EXCEPTION("Can not close a unopend connection!");
-        }
-
-        return true;
+        return false;        
     }
 
     /**

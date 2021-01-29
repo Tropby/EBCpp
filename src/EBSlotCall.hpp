@@ -28,7 +28,6 @@
 #include <string>
 #include <thread>
 
-#include "EBApplication.hpp"
 #include "EBObject.hpp"
 
 namespace EBCpp
@@ -62,7 +61,7 @@ public:
      */
     void call()
     {
-        if (EBApplication::isValidObject(sender) && EBApplication::isValidObject(receiver))
+        if (EBObject::isValidObject(sender) && EBObject::isValidObject(receiver))
         {
             function();
         }

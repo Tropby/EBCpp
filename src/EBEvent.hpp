@@ -29,7 +29,6 @@
 
 #include "EBConnection.hpp"
 #include "EBEventLoop.hpp"
-#include "EBObject.hpp"
 
 #define EB_SIGNAL(signalName) EBCpp::EBEvent<> signalName
 #define EB_SLOT(slotName) void slotName(EBCpp::EBObject* sender)
@@ -113,6 +112,8 @@ std::function<void(Types...)> bind(void (T::*f)(Types...), X& object)
 
 namespace EBCpp
 {
+
+class EBObject;
 
 /**
  * @brief This objects handles an event

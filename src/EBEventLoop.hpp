@@ -71,7 +71,9 @@ public:
      */
     void emit(std::shared_ptr<EBSlotCall> slot)
     {
+        mutex.lock();
         events.push_back(slot);
+        mutex.unlock();
         semaphore.release();
     }
 
@@ -83,9 +85,15 @@ public:
     {
         while (events.size())
         {
+            mutex.lock();
             std::shared_ptr<EBSlotCall> slot = events.front();
+            mutex.unlock();
+
             slot->call();
+
+            mutex.lock();
             events.pop_front();
+            mutex.unlock();
         }
     }
 
@@ -116,6 +124,7 @@ public:
 
 private:
     std::list< std::shared_ptr<EBSlotCall> > events;
+    std::mutex mutex;
     EBSemaphore semaphore;
     bool closed;
 };

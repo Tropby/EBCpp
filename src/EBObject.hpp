@@ -29,6 +29,7 @@
 #include <thread>
 #include <typeinfo>
 #include <mutex>
+#include <algorithm>
 
 #include "EBUtils.hpp"
 

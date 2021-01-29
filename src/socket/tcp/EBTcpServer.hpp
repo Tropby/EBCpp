@@ -132,7 +132,9 @@ protected:
         SOCKET connfd = ::accept(socketId, reinterpret_cast<sockaddr*>(&cli), &len);
         if (connfd >= 0)
         {
-            return new EBTcpSocket(this, connfd, cli);
+            EBTcpSocket* socket = new EBTcpSocket(this, connfd, cli);
+            socket->startThread();
+            return socket;
         }
 
         return nullptr;

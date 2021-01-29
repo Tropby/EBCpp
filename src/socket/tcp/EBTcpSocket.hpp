@@ -70,15 +70,13 @@ public:
      * @param client client informations
      */
     EBTcpSocket(EBObject* parent, SOCKET socketId, struct sockaddr_in client) :
-        EBIODevice(parent), thread(nullptr), connectionState(false), socketId(socketId), address(client)
+        EBIODevice(parent), thread(nullptr), connectionState(true), socketId(socketId), address(client)
     {
 #ifdef __WIN32__
         WORD versionWanted = MAKEWORD(1, 1);
         WSADATA wsaData;
         WSAStartup(versionWanted, &wsaData);
 #endif
-
-        startThread();
     }
 
     /**
@@ -269,6 +267,12 @@ public:
         return std::string();
     }
 
+    //! Starts the receiver thread
+    void startThread()
+    {
+        thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpSocket::run, this)));
+    }
+
     /**
      * @brief EB_SIGNAL error
      *
@@ -303,12 +307,6 @@ protected:
 
     //! Client informations
     SOCKADDR_IN address;
-
-    //! Starts the receiver thread
-    void startThread()
-    {
-        thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpSocket::run, this)));
-    }
 
     /**
      * @brief Creates a socket and connects to the host

@@ -34,5 +34,8 @@
 #include <netdb.h> //hostent
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <cstring>
+#include <unistd.h>
+#define SOCKADDR_IN sockaddr_in
 #define SOCKET int32_t
 #endif

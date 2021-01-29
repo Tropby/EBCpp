@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <sstream>
 
 #include "../EBEvent.hpp"
@@ -47,6 +48,11 @@ public:
         readReady(tcpSocket);
     }
 
+    std::string getData()
+    {
+        return "";
+    }
+
     /**
      * @brief Sends a reply to the http client and closes the connection
      *
@@ -58,7 +64,14 @@ public:
         tcpSocket->write(replyHeader.getHeader());
         tcpSocket->write("\r\n");
         tcpSocket->write(data);
-        tcpSocket->close(); 
+        try
+        {
+            tcpSocket->close(); 
+        }
+        catch(EBException& ex)
+        {
+            
+        }
         EB_EMIT(finished);
     }
 

@@ -85,6 +85,11 @@ public:
         return name;
     }
 
+    void deleteLater()
+    {
+
+    }
+
 private:
     std::string name;
     std::thread::id threadId;

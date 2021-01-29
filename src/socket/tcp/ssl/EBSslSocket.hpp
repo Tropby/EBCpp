@@ -108,6 +108,8 @@ public:
         return len;
     }
 
+protected:
+
     /**
      * @brief Creates a socket and connects to the host
      *

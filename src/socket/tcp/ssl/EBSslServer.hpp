@@ -107,6 +107,7 @@ protected:
             if (state > 0)
             {
                 EBSslSocket* socket = new EBSslSocket(this, ssl, connfd, cli);
+                socket->startThread();
                 return socket;
             }
             else

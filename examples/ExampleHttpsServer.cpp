@@ -72,8 +72,10 @@ public:
     EB_SLOT_WITH_ARGS(requestReady, EBCpp::EBHttpRequest* request)
     {
         static int count = 0;
-        request->sendReply("<html><head><title>Hello World!</title></head><body>Hello World!<br />Called: " + std::to_string(++count) + "<hr />" + 
-        EBObject::getObjectsInfo() + "</body></html>");
+
+        request->sendReply("<html><head><title>Hello World (" + std::to_string(++count) + 
+        ")</title><meta http-equiv=\"refresh\" content=\"1; URL=/\"></head><body>Hello World!<br />Called: " + std::to_string(++count) + "<hr />" + 
+        EBObject::getObjectsInfo() + "<hr /></body></html>");
     }
 
 private:

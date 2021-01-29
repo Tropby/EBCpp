@@ -66,6 +66,10 @@ public:
      */
     virtual ~EBSslSocket()
     {
+        SSL_shutdown(ssl);
+        close();     
+        joinThread();   
+        SSL_free(ssl);        
     }
 
     /**
@@ -77,7 +81,24 @@ public:
      */
     virtual int write(char* data, int length)
     {
-        return send(socketId, data, length, 0);
+        int len = SSL_write(ssl, data, length);
+        if (len < 0)
+        {
+            int err = SSL_get_error(ssl, len);
+            switch (err)
+            {
+            case SSL_ERROR_WANT_WRITE:
+            case SSL_ERROR_WANT_READ:
+            case SSL_ERROR_ZERO_RETURN:
+            case SSL_ERROR_SYSCALL:
+            case SSL_ERROR_SSL:
+            default:
+                EB_EMIT_WITH_ARGS(error, "SSL Error!");
+                break;
+            }
+        }
+
+        return len;        
     }
 
     /**

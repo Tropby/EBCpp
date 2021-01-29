@@ -85,12 +85,8 @@ public:
      */
     virtual ~EBTcpSocket()
     {
-        if (thread)
-        {
-            if (isOpened())
-                this->close();
-            thread->join();
-        }
+        close();
+        joinThread();
     }
 
     /**
@@ -166,13 +162,13 @@ public:
         if (isOpened())
         {
             connectionState = false;
-#ifdef __WIN32__
-            ::shutdown(socketId, SD_BOTH);
-#else
-            ::shutdown(socketId, SHUT_RDWR);
-#endif
-            ::close(socketId);
-            socketId = -1;
+
+#ifdef __WIN32__                    
+                shutdown(socketId, SD_SEND);
+#else                
+                shutdown(socketId, SHUT_WR);
+#endif                    
+
             return true;
         }
         return false;        
@@ -271,6 +267,18 @@ public:
     void startThread()
     {
         thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpSocket::run, this)));
+    }
+
+    void joinThread()
+    {
+        if (thread)
+        {
+            if( thread->joinable() )
+            {
+                thread->join();
+            }
+            thread = nullptr;
+        }
     }
 
     /**
@@ -402,10 +410,22 @@ private:
             {
             // Discriptor disconnected
             case 0:
+#ifdef __WIN32__                    
+                    ::closesocket(socketId);
+#else                
+                    ::close(socketId);
+#endif                    
+
                 EB_EMIT(disconnected);
                 return;
 
             case -1:
+#ifdef __WIN32__                    
+                ::closesocket(socketId);
+#else                
+                ::close(socketId);
+#endif                    
+
                 // if not closed send error message otherwise send disconnected
                 if (connectionState)
                 {

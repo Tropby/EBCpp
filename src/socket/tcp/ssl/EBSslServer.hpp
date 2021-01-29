@@ -130,7 +130,11 @@ protected:
                 {
                     /* Same as error */
                 }
-
+#ifdef __WIN32__                
+                closesocket(connfd);
+#else                
+                close(connfd);
+#endif                
                 SSL_free(ssl);
                 return nullptr;
             }

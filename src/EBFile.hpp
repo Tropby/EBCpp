@@ -103,7 +103,7 @@ public:
      * @param data String to wirte to the output device
      * @return int Bytes written to the output device
      */
-    virtual int write(std::string data)
+    virtual int write(const std::string& data)
     {
         file << data;
         return data.size();

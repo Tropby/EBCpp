@@ -27,12 +27,10 @@ public:
         EBObject(parent), tcpSocket(tcpSocket), headerFinished(false), requestHeader(this), replyHeader(this),
         responseCode(200), firstLine(true)
     {
-        std::cout << "EBHttpRequest" << std::endl;
     }
 
     ~EBHttpRequest()
     {
-        std::cout << "~EBHttpRequest" << std::endl;
         delete tcpSocket;
     }
 
@@ -58,20 +56,14 @@ public:
      *
      * @param data Data to send
      */
-    void sendReply(std::string data)
+    void sendReply(std::string data) 
     {
         tcpSocket->write("HTTP/1.0 " + std::to_string(responseCode) + " Okay\r\n");
         tcpSocket->write(replyHeader.getHeader());
+        tcpSocket->write("Content-Length: " + std::to_string(data.size()) + "\r\n");
         tcpSocket->write("\r\n");
         tcpSocket->write(data);
-        try
-        {
-            tcpSocket->close(); 
-        }
-        catch(EBException& ex)
-        {
-            
-        }
+        tcpSocket->close(); 
         EB_EMIT(finished);
     }
 

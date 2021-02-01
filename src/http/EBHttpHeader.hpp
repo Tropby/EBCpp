@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <locale> 
 
 #include "../EBObject.hpp"
 #include "../EBUtils.hpp"
@@ -34,7 +35,7 @@ public:
     {
         std::string key = EBUtils::trim(line.substr(0, line.find(':')));
         std::string value = EBUtils::trim(line.substr(line.find(':') + 1));
-        values[key] = value;
+        values[EBUtils::toLower(key)] = value;
     }
 
     /**
@@ -45,7 +46,9 @@ public:
      */
     std::string getValue(const std::string& key)
     {
-        return values[key];
+        if( !contains(key) )
+            return "";
+        return values[ EBUtils::toLower(key) ];
     }
 
     /**
@@ -57,7 +60,7 @@ public:
      */
     bool contains(const std::string& key) const
     {
-        return values.find(key) != values.end();
+        return values.find(EBUtils::toLower(key)) != values.end();
     }
 
     /**

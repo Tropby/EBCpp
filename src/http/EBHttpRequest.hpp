@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <map>
 
 #include "../EBEvent.hpp"
 #include "../EBObject.hpp"
@@ -46,9 +47,9 @@ public:
         readReady(tcpSocket);
     }
 
-    std::string getData()
+    std::vector<char> getData()
     {
-        return "";
+        return data;
     }
 
     /**
@@ -117,6 +118,11 @@ public:
         responseCode = code;
     }
 
+    std::string getPostParameter( std::string key )
+    {
+        return postParameter[key];
+    }
+
     /**
      * @brief EB_SIGNAL ready
      *
@@ -147,8 +153,15 @@ private:
     int responseCode;
     bool firstLine;
 
+    std::vector<char> data;
+
+    std::map<std::string, std::string> postParameter;
+
     void protocolError()
     {
+        tcpSocket->write("Protocol Error!");
+        tcpSocket->close();
+        EB_EXCEPTION("Protocol Error!");
     }
 
     EB_SLOT(readReady)
@@ -164,25 +177,22 @@ private:
                     if (firstLine)
                     {
                         firstLine = false;
-                        std::istringstream f(line);
-                        std::string s;
-
-                        if (!getline(f, s, ' '))
-                            protocolError();
-                        requestMethod = s;
-
-                        if (!getline(f, s, ' '))
-                            protocolError();
-                        requestPath = s;
-
-                        if (!getline(f, s, ' '))
-                            protocolError();
-                        requestProtocol = s;
+                        extractMethodProtocolAndPath(line);
                     }
                     else if (line.size() == 0)
+                    {
                         headerFinished = true;
+                    }
                     else
+                    {
                         requestHeader.processLine(line);
+                        if( contentSize == -1 && requestHeader.contains("content-length") )
+                        {
+                            std::string len = requestHeader.getValue("content-length");
+                            contentSize = std::stoi( len );
+                        }
+
+                    }
                 }
             }
         }
@@ -191,9 +201,68 @@ private:
             std::cerr << ex.what() << '\n';
         }
 
+        if( contentSize > 0 )
+        {
+            while( !tcpSocket->atEnd() )
+            {
+                char buffer[1024];
+                int bytesRead = tcpSocket->read(buffer, 1024);
+                for( int i = 0; i < bytesRead; i++ )
+                    data.push_back( buffer[i] );
+                contentSize -= bytesRead;
+            }
+
+        }
+
         if (headerFinished && contentSize <= 0)
         {
+            if( requestHeader.contains("content-type") )
+            {
+                if( EBUtils::toLower( requestHeader.getValue("content-type") )
+                    .compare("application/x-www-form-urlencoded") == 0 )
+                {
+                    processPOSTParameters();
+                }
+            }
+
             EB_EMIT(ready);
+        }
+    }
+
+    void extractMethodProtocolAndPath( std::string line )
+    {
+        std::istringstream f(line);
+        std::string s;
+
+        if (!getline(f, s, ' '))
+            protocolError();
+        requestMethod = s;
+
+        if (!getline(f, s, ' '))
+            protocolError();
+        requestPath = s;
+
+        if (!getline(f, s, ' '))
+            protocolError();
+        requestProtocol = s;        
+    }
+
+    void processPOSTParameters()
+    {
+        std::vector<char> v = getData();
+        std::string param( v.begin(), v.end() );
+        std::stringstream ss(param);
+
+        std::string token;
+        while(std::getline(ss, token, '&'))
+        {
+            std::string key = EBUtils::trim(token.substr(0, token.find('=')));
+            std::string value = EBUtils::trim(token.substr(token.find('=') + 1));
+
+            key = EBUtils::urlDecode( key );
+            value = EBUtils::urlDecode( value );
+
+            postParameter[key] = value;
         }
     }
 };

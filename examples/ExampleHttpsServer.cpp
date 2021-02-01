@@ -73,9 +73,26 @@ public:
     {
         static int count = 0;
 
-        request->sendReply("<html><head><title>Hello World (" + std::to_string(++count) + 
-        ")</title><meta http-equiv=\"refresh\" content=\"1; URL=/\"></head><body>Hello World!<br />Called: " + std::to_string(++count) + "<hr />" + 
-        EBObject::getObjectsInfo() + "<hr /></body></html>");
+        std::vector<char> v = request->getData();
+
+        request->sendReply(
+            "<html>"
+                "<head>"
+                    "<title>Hello World (" + std::to_string(++count) + ")</title>"
+                "</head>"
+                "<body>"        
+                    "Hello World!<br />"
+                    "Called: " + std::to_string(++count) + "<hr />" 
+                    "<form method=\"POST\">"
+                        "<input type=\"text\" name=\"te=st\" />"
+                        "<input type=\"text\" name=\"Blub\" />"
+                        "<input type=\"submit\" />"
+                    "</form><hr />"
+                    + std::string(v.begin(), v.end()) + "<hr />"
+                    + request->getPostParameter("te=st") + "<hr />"
+                    + EBObject::getObjectsInfo() + "<hr />"
+                "</body>"
+            "</html>");
     }
 
 private:

@@ -97,6 +97,41 @@ public:
         return stream.str();
     }
 
+    static std::string toLower( std::string s )
+    {
+        std::transform(s.begin(), s.end(), s.begin(), 
+            [](unsigned char c){ return std::tolower(c); }
+        );
+        return s;
+    }
+
+    static std::string urlDecode( std::string s )
+    {
+        std::string ret;
+        char ch;
+
+        for( int i = 0; i < s.length(); i++ )
+        {
+            if( s[i] == '%' ) 
+            {
+                int ii;
+                sscanf( s.substr(i+1,2).c_str(), "%x", &ii );
+                ch=static_cast<char>(ii);
+                ret += ch;
+                i = i + 2;
+            }
+            else if( s[i] == '+' )
+            {
+                ret += " ";
+            }
+            else 
+            {
+                ret += s[i];
+            }
+        }
+        return ret;
+    }
+
     /**
      * @brief Trims a string and returns the trimmed string
      *

@@ -32,6 +32,7 @@ public:
     ~EBHttpRequest()
     {
         delete tcpSocket;
+        tcpSocket = nullptr;
     }
 
     /**

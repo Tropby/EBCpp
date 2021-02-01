@@ -66,10 +66,11 @@ public:
      */
     virtual ~EBSslSocket()
     {
-        SSL_shutdown(ssl);
+        //SSL_shutdown(ssl);
         close();     
         joinThread();   
-        SSL_free(ssl);        
+        SSL_free(ssl);  
+        ssl = 0;      
     }
 
     /**
@@ -109,23 +110,31 @@ public:
      */
     virtual int write(std::string data)
     {
-        int len = SSL_write(ssl, data.c_str(), data.length());
-        if (len < 0)
+        int len = -1;
+        try
         {
-            int err = SSL_get_error(ssl, len);
-            switch (err)
+            len = SSL_write(ssl, data.c_str(), data.length());
+            if (len < 0)
             {
-            case SSL_ERROR_WANT_WRITE:
-            case SSL_ERROR_WANT_READ:
-            case SSL_ERROR_ZERO_RETURN:
-            case SSL_ERROR_SYSCALL:
-            case SSL_ERROR_SSL:
-            default:
-                EB_EMIT_WITH_ARGS(error, "SSL Error!");
-                break;
+                int err = SSL_get_error(ssl, len);
+                switch (err)
+                {
+                case SSL_ERROR_WANT_WRITE:
+                case SSL_ERROR_WANT_READ:
+                case SSL_ERROR_ZERO_RETURN:
+                case SSL_ERROR_SYSCALL:
+                case SSL_ERROR_SSL:
+                default:
+                    EB_EMIT_WITH_ARGS(error, "SSL Error!");
+                    break;
+                }
             }
         }
-
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        
         return len;
     }
 

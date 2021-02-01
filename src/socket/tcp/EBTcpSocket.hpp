@@ -282,6 +282,17 @@ public:
     }
 
     /**
+     * @brief Returns true if the end of stream is reached
+     * 
+     * @return true if at the end of the io stream
+     * @return false otherwise
+     */
+    virtual bool atEnd()
+    {
+        return (data.size() == 0);
+    }    
+
+    /**
      * @brief EB_SIGNAL error
      *
      * Emitted if an error occures on the TCP connection
@@ -354,17 +365,6 @@ protected:
     {
         // Read next block of data
         return ::recv(socketId, buffer, sizeof(buffer), 0);
-    }
-
-    /**
-     * @brief Returns true if the end of stream is reached
-     * 
-     * @return true if at the end of the io stream
-     * @return false otherwise
-     */
-    virtual bool atEnd()
-    {
-        return (data.size() == 0);
     }
 
 private:

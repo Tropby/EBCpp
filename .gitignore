@@ -31,7 +31,6 @@
 *.out
 *.app
 
-Debug/**
-/Debug/
-/Release/
 build/**
+doc/**
+bin/**

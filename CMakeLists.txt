@@ -1,19 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(EBCpp VERSION 1.0)
-
-# Build EBCpp Examples
-set(BUILD_EXAMPLES ON)
-set(ENABLE_DEBBUNG_OUTPUT OFF)
+project(EBCpp VERSION 0.1 LANGUAGES CXX)
 
 # Require C++17 Standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-# Source files
-file(GLOB_RECURSE EBCppSources CONFIGURE_DEPENDS src/*.cpp src/**/*.cpp )
-file(GLOB_RECURSE EBCppHeaders CONFIGURE_DEPENDS src/*.h src/**/*.h )
-file(GLOB_RECURSE EBCppExamples CONFIGURE_DEPENDS examples/*.cpp examples/**/*.cpp )
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 # Add defines for windows
 if(WIN32)
@@ -22,58 +14,94 @@ if(WIN32)
     add_definitions(-D_WIN32_WINNT=${WINDOWS_VERSION})
 endif()
 
-if(${ENABLE_DEBBUNG_OUTPUT})
-    add_compile_definitions(EB_ENABLE_DEBUGGING)
+# Compile EBCppExampleFile
+add_executable(EBCppExampleFile examples/ExampleFile.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleFile -Wl,-subsystem,console)
 endif()
 
-if(${BUILD_EXAMPLES})
-    # Build Timer Example
-        add_executable(EBCppExamplesTimer ${EBCppSources} ${EBCppExamples})
-        target_compile_definitions(EBCppExamplesTimer PRIVATE USE_EXAMPLES)
-        target_compile_definitions(EBCppExamplesTimer PRIVATE EXAMPLE_TIMER)
-        if(WIN32)
-            target_link_libraries(EBCppExamplesTimer wsock32 ws2_32 -Wl,-subsystem,console)
-        endif()
+# Compile EBCppExampleTimer 
+add_executable(EBCppExampleTimer examples/ExampleTimer.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleTimer -Wl,-subsystem,console)
+endif()
 
-    # Build Socket Example
-        add_executable(EBCppExamplesSocket ${EBCppSources} ${EBCppExamples})
-        target_compile_definitions(EBCppExamplesSocket PRIVATE USE_EXAMPLES)
-        target_compile_definitions(EBCppExamplesSocket PRIVATE EXAMPLE_SOCKET)
-        if(WIN32)
-            target_link_libraries(EBCppExamplesSocket wsock32 ws2_32 -Wl,-subsystem,console)
-        endif()
+# Compile EBCppExampleTcpClient 
+add_executable(EBCppExampleTcpClient examples/ExampleTcpClient.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleTcpClient wsock32 ws2_32 -Wl,-subsystem,console)
+endif()
 
-    # Build File Example
-        add_executable(EBCppExamplesFile ${EBCppSources} ${EBCppExamples})
-        target_compile_definitions(EBCppExamplesFile PRIVATE USE_EXAMPLES)
-        target_compile_definitions(EBCppExamplesFile PRIVATE EXAMPLE_FILE)
-            if(WIN32)
-            target_link_libraries(EBCppExamplesFile wsock32 ws2_32 -Wl,-subsystem,console)
-        endif()
+# Compile EBCppExampleTcpServer 
+add_executable(EBCppExampleTcpServer examples/ExampleTcpServer.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleTcpServer wsock32 ws2_32 -Wl,-subsystem,console)
+endif()
 
-    # Build Http Example
-        add_executable(EBCppExamplesHttp ${EBCppSources} ${EBCppExamples})
-        target_compile_definitions(EBCppExamplesHttp PRIVATE USE_EXAMPLES)
-        target_compile_definitions(EBCppExamplesHttp PRIVATE EXAMPLE_HTTP)
-            if(WIN32)
-            target_link_libraries(EBCppExamplesHttp wsock32 ws2_32 -Wl,-subsystem,console)
-        endif()        
+# Compile EBCppExampleHttpServer 
+add_executable(EBCppExampleHttpServer examples/ExampleHttpServer.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleHttpServer wsock32 ws2_32 -Wl,-subsystem,console)
+endif()
 
-    # Build Https Example
-    find_package(OpenSSL REQUIRED)
-    if(OPENSSL_FOUND)
-        
-        message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
-        message("OpenSSL libraries: ${OPENSSL_SSL_LIBRARIES} ${OPENSSL_CRYPTO_LIBRARIES}")
-        
-        add_executable(EBCppExamplesHttps ${EBCppSources} ${EBCppExamples}) 
-        target_compile_definitions(EBCppExamplesHttps PRIVATE USE_EXAMPLES)
-        target_compile_definitions(EBCppExamplesHttps PRIVATE EXAMPLE_HTTPS)
-        target_compile_definitions(EBCppExamplesHttps PRIVATE EB_OPENSSL) 
-
-        include_directories(${OPENSSL_INCLUDE_DIR})  
-        if(WIN32)                        
-            target_link_libraries(EBCppExamplesHttps OpenSSL::SSL OpenSSL::Crypto pthread wsock32 ws2_32 -Wl,-subsystem,console)
-        endif()        
+find_package(OpenSSL)
+if(OPENSSL_FOUND)    
+    # Compile EBCppExampleSSLClient 
+    add_executable(EBCppExampleSSLClient examples/ExampleSSLClient.cpp)
+    target_include_directories(EBCppExampleSSLClient PRIVATE ${OPENSSL_INCLUDE_DIR})
+    if(WIN32)
+        target_link_libraries(EBCppExampleSSLClient OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     endif()
+
+    # Compile EBCppExampleSSLServer 
+    add_executable(EBCppExampleSSLServer examples/ExampleSSLServer.cpp)
+    target_include_directories(EBCppExampleSSLServer PRIVATE ${OPENSSL_INCLUDE_DIR})
+    if(WIN32)
+        target_link_libraries(EBCppExampleSSLServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    endif()    
+
+    # Compile EBCppExampleHttpsServer 
+    add_executable(EBCppExampleHttpsServer examples/ExampleHttpsServer.cpp)
+    target_include_directories(EBCppExampleHttpsServer PRIVATE ${OPENSSL_INCLUDE_DIR})
+    if(WIN32)
+        target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    endif()        
 endif()
+
+find_package(Doxygen OPTIONAL_COMPONENTS dot)
+if( DOXYGEN_FOUND )
+    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "README.md")
+    #set(DOXYGEN_PROJECT_LOGO "${CMAKE_SOURCE_DIR}/doc/images/o2_logo.png")
+    set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../doc)
+    set(DOXYGEN_GENERATE_TREEVIEW YES)
+    set(DOXYGEN_HIDE_UNDOC_RELATIONS NO)
+    set(DOXYGEN_HAVE_DOT YES)
+    set(DOXYGEN_DOT_NUM_THREADS 1)
+    set(DOXYGEN_UML_LOOK YES)
+    set(DOXYGEN_UML_LIMIT_NUM_FIELDS 50)
+    set(DOXYGEN_TEMPLATE_RELATIONS YES)
+    set(DOXYGEN_DOT_IMAGE_FORMAT svg)
+    set(DOXYGEN_INTERACTIVE_SVG YES)
+    set(DOXYGEN_DOT_GRAPH_MAX_NODES 100)
+    set(DOXYGEN_DOT_TRANSPARENT YES)
+    set(DOXYGEN_MACRO_EXPANSION YES)
+
+    set(DOXYGEN_PREDEFINED 
+        "EB_SIGNAL(a) = EBCpp::EBEvent<> a"        
+        "EB_SIGNAL_WITH_ARGS(a, b) = EBCpp::EBEvent<b> a"
+        "EB_SLOT(a) = void a( EBObject * sender )"
+        "EB_SLOT_WITH_ARGS(a, b) = void a( EBObject * sender, b )"
+    )
+
+    file(GLOB_RECURSE EBCppHeaders CONFIGURE_DEPENDS src/*.hpp src/**/*.hpp examples/*.cpp)
+
+    doxygen_add_docs(doxygen 
+        ${EBCppHeaders} README.md
+        ALL
+        COMMENT "Generating doxygen documentation for ${PROJECT_NAME}"
+    )
+else(DOXYGEN_FOUND)
+    message("doxygen not found building without doxygen documentation") 
+endif(DOXYGEN_FOUND)  
+
+add_executable(EBCppTest test/test.cpp)

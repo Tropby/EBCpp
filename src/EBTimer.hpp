@@ -135,8 +135,9 @@ private:
         {
             // Wait for the timer run out or the timer is canceled
             {
-                std::unique_lock<std::mutex> lock(mWait);
-                cvWait.wait_for(lock, std::chrono::milliseconds(time), [&] { return !timerRunning; });
+                //std::unique_lock<std::mutex> lock(mWait);
+                //cvWait.wait_for(lock, std::chrono::milliseconds(time), [&] { return !timerRunning; });
+                usleep(time * 1000.0);
             }
 
             // Emit the timeout event if the timer is still running and the thead should not end

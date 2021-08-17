@@ -159,6 +159,11 @@ public:
         return found;
     }    
 
+    EBObject * getParent() const
+    {
+        return parent;
+    }
+
 private:
     std::string name;
     std::thread::id threadId;

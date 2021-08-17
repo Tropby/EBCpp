@@ -44,6 +44,12 @@ if(WIN32)
     target_link_libraries(EBCppExampleHttpServer wsock32 ws2_32 -Wl,-subsystem,console)
 endif()
 
+# Compile EBCppExampleGui 
+add_executable(EBCppExampleGui examples/ExampleGui.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleGui gdiplus -Wl,-subsystem,console)
+endif()
+
 find_package(OpenSSL)
 if(OPENSSL_FOUND)    
     # Compile EBCppExampleSSLClient 

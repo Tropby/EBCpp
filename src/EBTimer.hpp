@@ -25,6 +25,7 @@
 
 #include <functional>
 #include <thread>
+#include <chrono>
 
 #include "EBEvent.hpp"
 #include "EBSemaphore.hpp"
@@ -134,9 +135,10 @@ private:
         while (timerRunning)
         {
             // Wait for the timer run out or the timer is canceled
-            {
-                std::unique_lock<std::mutex> lock(mWait);
-                cvWait.wait_for(lock, std::chrono::milliseconds(time), [&] { return !timerRunning; });
+            {                
+                //std::unique_lock<std::mutex> lock(mWait);
+                //cvWait.wait_for(lock, std::chrono::milliseconds(time), [&] { return !timerRunning; });
+                std::this_thread::sleep_for(std::chrono::microseconds(time * 1000));
             }
 
             // Emit the timeout event if the timer is still running and the thead should not end

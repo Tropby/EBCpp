@@ -26,6 +26,8 @@
 #include <gdiplus.h>
 #include "../../../EBObject.hpp"
 
+#ifdef __WIN32__
+
 namespace EBCpp
 {
 
@@ -40,3 +42,5 @@ public:
 };
 
 } // namespace EBCpp
+
+#endif

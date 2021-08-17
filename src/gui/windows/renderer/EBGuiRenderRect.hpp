@@ -25,6 +25,8 @@
 
 #include "EBGuiRenderer.hpp"
 
+#ifdef __WIN32__
+
 namespace EBCpp
 {
 
@@ -47,3 +49,5 @@ protected:
 };
 
 } // namespace EBCpp
+
+#endif

@@ -66,6 +66,11 @@ public:
         InvalidateRect(hwnd, NULL, FALSE);
     }
 
+    virtual void resized( int w, int h )
+    {
+        EBGuiWindowBase::resized(w, h);
+    }
+
     EB_SIGNAL(closed);
 
 private:
@@ -145,8 +150,10 @@ private:
         }
 
         case WM_SIZE: {
-            InvalidateRect(hwnd, NULL, FALSE);
-            break;
+            w = lParam & 0x0000FFFF;
+            h = (lParam >> 16) & 0x0000FFFF;
+            resized(w, h);
+            return 0;
         }
 
         case WM_LBUTTONDOWN: {
@@ -224,8 +231,7 @@ private:
 
         if (hwnd == NULL)
         {
-            /// TODO: Failed.... Throw an exeption
-            exit(1);
+            throw new std::exception();
         }
 
         ShowWindow(hwnd, SW_SHOW);

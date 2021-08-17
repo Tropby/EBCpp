@@ -50,6 +50,12 @@ if(WIN32)
     target_link_libraries(EBCppExampleGui gdiplus -Wl,-subsystem,console)
 endif()
 
+# Compile EBCppExampleGuiLayout
+add_executable(EBCppExampleGuiLayout examples/ExampleGuiLayout.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleGuiLayout gdiplus -Wl,-subsystem,console)
+endif()
+
 find_package(OpenSSL)
 if(OPENSSL_FOUND)    
     # Compile EBCppExampleSSLClient 

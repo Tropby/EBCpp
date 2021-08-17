@@ -34,7 +34,7 @@ namespace EBCpp
 class EBGuiWidget : public EBObject
 {
 public:
-    EBGuiWidget(EBObject* parent) : EBObject(parent), visible(false), widgetParent(nullptr)
+    EBGuiWidget(EBObject* parent) : EBObject(parent), visible(false), widgetParent(nullptr), w(0), h(0), x(0), y(0)
     {
     }
 
@@ -99,8 +99,15 @@ public:
         this->y = y;
     }
 
+    virtual int getWidth()
+    {
+        return w;
+    }
+
     virtual void setWidth(int width)
     {
+        if( this->w != width )
+            invalidate();
         this->w = width;
     }
 

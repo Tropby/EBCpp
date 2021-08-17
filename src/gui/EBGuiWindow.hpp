@@ -48,6 +48,17 @@ protected :
         mousePos.y = y;
         return EBGuiWidget::setMousePos(x, y);
     }
+
+    virtual void resized(int w, int h)
+    {
+        EBGuiWidget* widget = this->widgets.front();
+        widget->setX(0);
+        widget->setY(0);
+        widget->setWidth(w);
+        widget->setHeight(h);
+
+        invalidate();
+    }
 };
 
 } // namespace EBCpp

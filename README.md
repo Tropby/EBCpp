@@ -5,6 +5,7 @@ Event Based C++ (EBCpp) will be a framework that uses Events (Signal-Slot) to pr
 The events are synchronised to one thread. Therefore the events are thread-safe. You can use multible threads by setting up additional `EBEventLoop`s. This should only be used by experienced users.
 
 ## Table of Content
+
 * [Installation](#installation)
 * [Example](#example)
 
@@ -22,29 +23,37 @@ using namespace EBCpp;
 class ExampleTimer : public EBObject
 {
 public:
-	ExampleTimer(EBObject* parent) : 
+    ExampleTimer(EBObject* parent) : 
         EBObject(parent),
         timer(this)
-	{
-		timer.timeout.connect(*this, &ExampleTimer::timeout);
-		timer.start( 1000 );
-	}
+    {
+        timer.timeout.connect(*this, &ExampleTimer::timeout);
+        timer.start( 1000 );
+    }
 
 private:
     EBTimer timer;
 
-	EB_SLOT(timeout)
-	{
-		static int i = 0;
-		cout << "timeout " << i++ << endl;
-	}
+    EB_SLOT(timeout)
+    {
+        static int i = 0;
+        cout << "timeout " << i++ << endl;
+    }
 
 };
 
 int main()
 {
-	ExampleTimer tt(nullptr);
+    ExampleTimer tt(nullptr);
     EBEventLoop::getInstance().exec();
     return 0;
 }
 ```
+
+## GUI (Example)
+
+Currently working on a GUI implementation. That can render a GUI for Windows (GDI+). Other renderes can be added.
+
+GUI rendering is done in another thread than the event handler.
+
+See ExampleGui.cpp for an example.

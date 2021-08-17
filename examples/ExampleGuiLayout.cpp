@@ -27,6 +27,7 @@
 #include "../src/gui/EBGuiLabel.hpp"
 #include "../src/gui/EBGuiWidget.hpp"
 #include "../src/gui/EBGuiWindow.hpp"
+#include "../src/gui/EBGuiHorizontalLayout.hpp"
 
 #include <iostream>
 
@@ -36,30 +37,37 @@ public:
     ExampleGui() : EBObject(nullptr), window(this), clickCounter(0)
     {
         window.closed.connect(*this, &ExampleGui::windowClosed);
-        EBCpp::EBGuiWidget* widget = new EBCpp::EBGuiWidget(&window);
-        window.addWidget(widget);
+        EBCpp::EBGuiHorizontalLayout* layout = new EBCpp::EBGuiHorizontalLayout(&window);
+        window.addWidget(layout);
 
-        widget->setX(20);
-        widget->setY(20);
-        widget->setWidth(300);
-        widget->setHeight(300);
+        layout->addElement(1);
+        layout->addElement(1);
+        layout->addElement(1);
+        layout->addElement(1);
 
-        label = new EBCpp::EBGuiLabel(widget);
-        widget->addWidget(label);
-        label->setX(20);
-        label->setY(20);
+        label = new EBCpp::EBGuiLabel(layout);
+        layout->addWidget(label);
+        label->setX(0);
+        label->setY(0);
         label->setWidth(200);
         label->setHeight(40);
-        label->setText("Hallo :)");
+        label->setText("Hallo 1");
 
-        button = new EBCpp::EBGuiButton(widget);
-        widget->addWidget(button);
-        button->setX(20);
-        button->setY(50);
-        button->setWidth(200);
-        button->setHeight(40);
-        button->setText("Click Me!");
-        button->clicked.connect(*this, &ExampleGui::buttonClicked);
+        EBCpp::EBGuiButton* bttn = new EBCpp::EBGuiButton(layout);
+        layout->addWidget(bttn);
+        bttn->setX(0);
+        bttn->setY(0);
+        bttn->setWidth(200);
+        bttn->setHeight(40);
+        bttn->setText("Hallo 2");
+
+        label = new EBCpp::EBGuiLabel(layout);
+        layout->addWidget(label);
+        label->setX(0);
+        label->setY(0);
+        label->setWidth(200);
+        label->setHeight(40);
+        label->setText("Hallo 3");
     }
 
 private:

@@ -23,17 +23,17 @@
 
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBObject.hpp"
+#include "../src/gui/EBGuiButton.hpp"
 #include "../src/gui/EBGuiLabel.hpp"
 #include "../src/gui/EBGuiWidget.hpp"
 #include "../src/gui/EBGuiWindow.hpp"
-#include "../src/gui/EBGuiButton.hpp"
 
 #include <iostream>
 
 class ExampleGui : public EBCpp::EBObject
 {
 public:
-    ExampleGui() : EBObject(nullptr), window(this)
+    ExampleGui() : EBObject(nullptr), window(this), clickCounter(0)
     {
         window.closed.connect(*this, &ExampleGui::windowClosed);
         EBCpp::EBGuiWidget* widget = new EBCpp::EBGuiWidget(&window);
@@ -44,29 +44,43 @@ public:
         widget->setWidth(800);
         widget->setHeight(600);
 
-        EBCpp::EBGuiLabel* label = new EBCpp::EBGuiLabel(widget);
+        label = new EBCpp::EBGuiLabel(widget);
         widget->addWidget(label);
         label->setX(20);
         label->setY(20);
         label->setWidth(200);
         label->setHeight(40);
-        label->setText("Hallo Welt!");
+        label->setText("Hallo :)");
 
-        EBCpp::EBGuiButton* button = new EBCpp::EBGuiButton(widget);
+        button = new EBCpp::EBGuiButton(widget);
         widget->addWidget(button);
         button->setX(20);
         button->setY(100);
         button->setWidth(200);
         button->setHeight(40);
-        button->setText("Hallo Welt!");
+        button->setText("Click Me!");
+        button->clicked.connect(*this, &ExampleGui::buttonClicked);
     }
 
 private:
-    EBCpp::EBGuiWindow window;    
+    EBCpp::EBGuiWindow window;
+
+    EBCpp::EBGuiButton* button;
+    EBCpp::EBGuiLabel* label;
+
+    int clickCounter;
 
     EB_SLOT(windowClosed)
-    {        
+    {
         EBCpp::EBEventLoop::getInstance().exit();
+    }
+
+    EB_SLOT(buttonClicked)
+    {
+        std::string str = "Button Clicked: " + std::to_string(++clickCounter);
+        label->setText(str);
+        Sleep(10000);
+        label->setText("Okay!");
     }
 };
 

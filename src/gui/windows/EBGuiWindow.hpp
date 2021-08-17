@@ -61,6 +61,11 @@ public:
         windowThread.join();
     }
 
+    virtual void invalidate()
+    {
+        InvalidateRect(hwnd, NULL, FALSE);
+    }
+
     EB_SIGNAL(closed);
 
 private:
@@ -90,9 +95,15 @@ private:
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
 
+            x = 0;
+            y = 0;
+
             RECT rect;
             if (GetWindowRect(WindowFromDC(hdc), &rect))
             {
+                w = rect.right - rect.left;
+                h = rect.bottom - rect.top;
+
                 int width = rect.right - rect.left;
                 int height = rect.bottom - rect.top;
 
@@ -135,6 +146,22 @@ private:
 
         case WM_SIZE: {
             InvalidateRect(hwnd, NULL, FALSE);
+            break;
+        }
+
+        case WM_LBUTTONDOWN: {
+            WORD xPos = lParam & 0x0000FFFF;
+            WORD yPos = (lParam >> 16) & 0x0000FFFF;
+            if( handleMouseDown(xPos, yPos) )
+                return 0;
+            break;
+        }
+
+        case WM_LBUTTONUP: {
+            WORD xPos = lParam & 0x0000FFFF;
+            WORD yPos = (lParam >> 16) & 0x0000FFFF;
+            if( handleMouseUp(xPos, yPos) )
+                return 0;
             break;
         }
 

@@ -54,6 +54,12 @@ public:
         }
     }
 
+    virtual void invalidate()
+    {
+        if( this->parentWidget() )
+            this->parentWidget()->invalidate();
+    }
+
     void render(std::list<EBGuiRenderer*>& list)
     {
         draw(list);
@@ -116,12 +122,45 @@ public:
         widgets.remove(widget);
     }
 
-    virtual EBGuiWidget* parentWidget()
+    EBGuiWidget* parentWidget()
     {
         return this->widgetParent;
     }
 
-    virtual bool setMousePos(int x, int y)
+    bool handleMouseDown(int x, int y)
+    {
+        if( !mouseInWidget )
+            return false;
+
+        for( EBGuiWidget * w : widgets )
+        {
+            if( w->handleMouseDown(x, y) )
+            {
+                // If one component have handled the click event quit the loop
+                return true;
+            }
+        }
+
+        return mouseDown(x, y);
+    }
+
+    bool handleMouseUp(int x, int y)
+    {
+        if (!mouseInWidget)
+            return false;
+
+        for (EBGuiWidget* w : widgets)
+        {
+            if (w->handleMouseUp(x, y))
+            {
+                // If one component have handled the click event quit the loop
+                return true;
+            }
+        }
+        return mouseUp(x, y);
+    }
+
+    bool setMousePos(int x, int y)
     {
         bool changed = mouseInWidget;
         int px = 0;
@@ -138,6 +177,11 @@ public:
             (this->x + px <= x) && (this->x + px + this->w >= x) &&
             (this->y + py <= y) && (this->y + py + this->h >= y);
 
+        if (mouseInWidget && !changed)
+            mouseHover(x, y);
+        else if( !mouseInWidget && changed )
+            mouseLeave(x, y);
+
         changed = (mouseInWidget != changed);
 
         for (EBGuiWidget* w : widgets)
@@ -149,6 +193,24 @@ public:
     }
 
 protected:
+    virtual void mouseLeave(int x, int y)
+    {
+    }
+
+    virtual void mouseHover(int x, int y)
+    {
+    }
+
+    virtual bool mouseDown(int x, int y)
+    {
+        return false;
+    }
+
+    virtual bool mouseUp(int x, int y)
+    {
+        return false;
+    }
+
     virtual void draw(std::list<EBGuiRenderer*>& list)
     {
         EBGuiRenderRect* rect = new EBGuiRenderRect(this, x, y, x + w, y + h);

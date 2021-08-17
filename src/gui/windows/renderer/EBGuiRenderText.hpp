@@ -34,8 +34,10 @@ class EBGuiRenderText : public EBGuiRenderTextBase
 {
 public:
     EBGuiRenderText(EBObject* parent, int x, int y, int w, int h, std::string text,
-                    EBGuiColor fontColor = EB_COLOR_BLACK) :
-        EBGuiRenderTextBase(parent, x, y, w, h, text, fontColor)
+                    EBGuiColor fontColor = EB_COLOR_BLACK,
+                    EBGuiHorizontalAlignment horizontalAlignment = EBGuiHorizontalAlignment::EB_HOR_ALIGN_LEFT,
+                    EBGuiVerticalAlignment verticalAlignment = EBGuiVerticalAlignment::EB_VERT_ALIGN_TOP) :
+        EBGuiRenderTextBase(parent, x, y, w, h, text, fontColor, horizontalAlignment, verticalAlignment)
     {
     }
 
@@ -45,8 +47,35 @@ public:
         Gdiplus::Font font(&fontFamily, 24, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);
         Gdiplus::RectF rectF(x, y, w, h);
         Gdiplus::StringFormat stringFormat;
-        stringFormat.SetAlignment(Gdiplus::StringAlignment::StringAlignmentNear);
-        Gdiplus::SolidBrush solidBrush(Gdiplus::Color(fontColor.getA(), fontColor.getR(), fontColor.getG(), fontColor.getB()));
+
+        switch (horizontalAlignment)
+        {
+        case EBGuiHorizontalAlignment::EB_HOR_ALIGN_LEFT:
+            stringFormat.SetAlignment(Gdiplus::StringAlignment::StringAlignmentNear);
+            break;
+        case EBGuiHorizontalAlignment::EB_HOR_ALIGN_RIGHT:
+            stringFormat.SetAlignment(Gdiplus::StringAlignment::StringAlignmentFar);
+            break;
+        case EBGuiHorizontalAlignment::EB_HOR_ALIGN_CENTER:
+            stringFormat.SetAlignment(Gdiplus::StringAlignment::StringAlignmentCenter);
+            break;
+        }
+
+        switch (verticalAlignment)
+        {
+        case EBGuiVerticalAlignment::EB_VERT_ALIGN_TOP:
+            stringFormat.SetLineAlignment(Gdiplus::StringAlignment::StringAlignmentNear);
+            break;
+        case EBGuiVerticalAlignment::EB_VERT_ALIGN_CENTER:
+            stringFormat.SetLineAlignment(Gdiplus::StringAlignment::StringAlignmentCenter);
+            break;
+        case EBGuiVerticalAlignment::EB_VERT_ALIGN_BOTTOM:
+            stringFormat.SetLineAlignment(Gdiplus::StringAlignment::StringAlignmentFar);
+            break;
+        }
+
+        Gdiplus::SolidBrush solidBrush(
+        Gdiplus::Color(fontColor.getA(), fontColor.getR(), fontColor.getG(), fontColor.getB()));
 
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         std::wstring w = converter.from_bytes(text);

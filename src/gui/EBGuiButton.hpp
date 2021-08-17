@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "../EBEvent.hpp"
 #include "EBGuiWidget.hpp"
 #include "renderer/EBGuiColor.hpp"
 
@@ -51,18 +52,59 @@ public:
         this->borderColor = borderColor;
     }
 
+    EB_SIGNAL(clicked);
+
 protected:
+    virtual void mouseLeave(int x, int y)
+    {
+        bool mid = mouseIsDown;
+        mouseIsDown = false;
+        if (mid)
+            invalidate();
+    }
+
+    virtual void mouseHover(int x, int y)
+    {
+        bool mid = mouseIsDown;
+    }
+
+    virtual bool mouseDown(int x, int y)
+    {
+        bool mid = mouseIsDown;
+        mouseIsDown = true;
+        if (!mid)
+            invalidate();
+        return true;
+    }
+
+    virtual bool mouseUp(int x, int y)
+    {
+        bool mid = mouseIsDown;
+
+        if (mouseIsDown)
+        {
+            EB_EMIT(clicked);
+        }
+
+        mouseIsDown = false;
+
+        if (mid)
+            invalidate();
+
+        return true;
+    }
+
     virtual void draw(std::list<EBGuiRenderer*>& list)
     {
         EBGuiWidget* p = parentWidget();
         int px = p->getX();
         int py = p->getY();
 
-        list.push_back(new EBGuiRenderText(this, x + px, y + py, w, h, text, textColor));
+        list.push_back(new EBGuiRenderText(this, x + px, y + py, w, h, text, textColor, EB_HOR_ALIGN_CENTER, EB_VERT_ALIGN_CENTER));
         list.push_back(new EBGuiRenderRect(this, x + px, y + py, w, h, borderColor));
-        if( mouseInWidget )
+        if( mouseIsDown )
             list.push_back(new EBGuiRenderRect(this, x + px + 1, y + py + 1, w - 1, h - 1, borderColor));
-        else
+        else        
             list.push_back(new EBGuiRenderRect(this, x + px, y + py, w - 1, h - 1, borderColor));
     }
 
@@ -70,6 +112,8 @@ private:
     std::string text;
     EBGuiColor textColor;
     EBGuiColor borderColor;
+
+    bool mouseIsDown;
 };
 
 } // namespace EBCpp

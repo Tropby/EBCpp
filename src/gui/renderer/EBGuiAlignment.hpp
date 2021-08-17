@@ -23,43 +23,20 @@
 
 #pragma once
 
-#include "EBGuiWidget.hpp"
-#include "renderer/EBGuiColor.hpp"
-
 namespace EBCpp
 {
 
-class EBGuiLabel : public EBGuiWidget
+enum EBGuiHorizontalAlignment {
+    EB_HOR_ALIGN_LEFT,
+    EB_HOR_ALIGN_CENTER,
+    EB_HOR_ALIGN_RIGHT
+};
+
+enum EBGuiVerticalAlignment
 {
-public:
-    EBGuiLabel(EBObject* parent) : EBGuiWidget(parent), color(EB_COLOR_BLACK)
-    {
-    }
-
-    void setText( std::string text )
-    {
-        this->text = text;
-        invalidate();
-    }
-
-    void setColor( EBGuiColor & color )
-    {
-        this->color = color;
-    }
-
-protected:
-    virtual void draw(std::list<EBGuiRenderer*> & list)
-    {
-        EBGuiWidget* p = parentWidget();
-        int px = p->getX();
-        int py = p->getY();
-
-        list.push_back(new EBGuiRenderText(this, x + px, y + py, w, h, text, color));
-    }
-
-private:
-    std::string text;
-    EBGuiColor color;
+    EB_VERT_ALIGN_TOP,
+    EB_VERT_ALIGN_CENTER,
+    EB_VERT_ALIGN_BOTTOM
 };
 
 } // namespace EBCpp

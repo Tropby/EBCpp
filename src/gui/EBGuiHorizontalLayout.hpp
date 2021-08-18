@@ -25,6 +25,7 @@
 
 #include "EBGuiWidget.hpp"
 #include "renderer/EBGuiColor.hpp"
+#include "EBGuiPadding.hpp"
 
 namespace EBCpp
 {
@@ -32,13 +33,13 @@ namespace EBCpp
 class EBGuiHorizontalLayout : public EBGuiWidget
 {
 public:
-    EBGuiHorizontalLayout(EBObject* parent) : EBGuiWidget(parent)
+    EBGuiHorizontalLayout(EBObject* parent) : EBGuiWidget(parent), padding({0,0,0,0}), cellPadding({0,0,0,0})
     {
     }
 
     virtual void prepare(int x, int y, int w, int h)
     {
-        int width = this->w;
+        int width = this->w - ( padding.left + padding.right + ( cellPadding.left + cellPadding.right ) * elements.size() );
 
         int elementSum = 0;
         for( int i : elements )
@@ -48,7 +49,7 @@ public:
         float factor = (float)width / (float)elementSum;
 
         int i = 0;
-        int currentX = 0;
+        int currentX = padding.left;
         for (EBGuiWidget * widget : widgets)
         {
             int size = 1;
@@ -57,10 +58,16 @@ public:
                 std::list<int>::iterator it = std::next(elements.begin(), i);
                 size = *it;
             }
-            widget->setWidth(size * factor);
+
+            currentX += cellPadding.left;
             widget->setX(currentX);
+            widget->setY( padding.top + cellPadding.top );
+            widget->setWidth(size * factor);
+            widget->setHeight(this->h - ( padding.top + padding.bottom + cellPadding.top + cellPadding.bottom ) );
+
             currentX += widget->getWidth();
-            widget->setHeight(this->h);
+            currentX += cellPadding.right;
+
             i++;
         }
 
@@ -72,6 +79,18 @@ public:
         elements.push_back(elementSize);
     }
 
+    virtual void setPadding( EBGuiPadding & padding )
+    {
+        this->padding = padding;
+        invalidate();
+    }
+
+    virtual void setCellPadding(EBGuiPadding& padding)
+    {
+        this->cellPadding = padding;
+        invalidate();
+    }
+
 protected:
     virtual void draw(std::list<EBGuiRenderer*>& list)
     {
@@ -80,6 +99,9 @@ protected:
 
 private:
     std::list<int> elements;
+
+    EBGuiPadding padding;
+    EBGuiPadding cellPadding;
 };
 
 } // namespace EBCpp

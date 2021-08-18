@@ -33,13 +33,19 @@ namespace EBCpp
 class EBGuiButton : public EBGuiWidget
 {
 public:
-    EBGuiButton(EBObject* parent) : EBGuiWidget(parent), textColor(EB_COLOR_BLACK), borderColor(EB_COLOR_BLACK)
+    EBGuiButton(EBObject* parent) :
+        EBGuiWidget(parent), textColor(EB_COLOR_BLACK), borderColor(EB_COLOR_BLACK), mouseIsDown(false)
     {
     }
 
     void setText(std::string text)
     {
         this->text = text;
+    }
+
+    std::string getText()
+    {
+        return this->text;
     }
 
     void setTextColor(EBGuiColor & textColor)

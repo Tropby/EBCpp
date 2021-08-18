@@ -28,55 +28,58 @@
 #include "../src/gui/EBGuiWidget.hpp"
 #include "../src/gui/EBGuiWindow.hpp"
 #include "../src/gui/EBGuiHorizontalLayout.hpp"
+#include "../src/gui/EBGuiPadding.hpp"
 
 #include <iostream>
 
-class ExampleGui : public EBCpp::EBObject
+class ExampleGuiLayout : public EBCpp::EBObject
 {
 public:
-    ExampleGui() : EBObject(nullptr), window(this), clickCounter(0)
+    ExampleGuiLayout() : EBObject(nullptr), window(this)
     {
-        window.closed.connect(*this, &ExampleGui::windowClosed);
+        window.closed.connect(*this, &ExampleGuiLayout::windowClosed);
         EBCpp::EBGuiHorizontalLayout* layout = new EBCpp::EBGuiHorizontalLayout(&window);
         window.addWidget(layout);
 
         layout->addElement(1);
+        layout->addElement(2);
         layout->addElement(1);
-        layout->addElement(1);
-        layout->addElement(1);
+
+        EBCpp::EBGuiPadding p;
+        p.left = 5;
+        p.top = 10;
+        p.right = 10;
+        p.bottom = 5;
+        layout->setPadding(p);
+
+        EBCpp::EBGuiPadding cp;
+        cp.left = 5;
+        cp.top = 10;
+        cp.right = 10;
+        cp.bottom = 5;
+        layout->setCellPadding(cp);
+
+        button1 = new EBCpp::EBGuiButton(layout);
+        layout->addWidget(button1);
+        button1->setText("1");
+        button1->clicked.connect(*this, &ExampleGuiLayout::buttonClicked);
+
+        button2 = new EBCpp::EBGuiButton(layout);
+        layout->addWidget(button2);
+        button2->setText("2");
+        button2->clicked.connect(*this, &ExampleGuiLayout::buttonClicked);
 
         label = new EBCpp::EBGuiLabel(layout);
         layout->addWidget(label);
-        label->setX(0);
-        label->setY(0);
-        label->setWidth(200);
-        label->setHeight(40);
-        label->setText("Hallo 1");
-
-        EBCpp::EBGuiButton* bttn = new EBCpp::EBGuiButton(layout);
-        layout->addWidget(bttn);
-        bttn->setX(0);
-        bttn->setY(0);
-        bttn->setWidth(200);
-        bttn->setHeight(40);
-        bttn->setText("Hallo 2");
-
-        label = new EBCpp::EBGuiLabel(layout);
-        layout->addWidget(label);
-        label->setX(0);
-        label->setY(0);
-        label->setWidth(200);
-        label->setHeight(40);
-        label->setText("Hallo 3");
+        label->setText("???");
     }
 
 private:
     EBCpp::EBGuiWindow window;
 
-    EBCpp::EBGuiButton* button;
+    EBCpp::EBGuiButton* button1;
+    EBCpp::EBGuiButton* button2;
     EBCpp::EBGuiLabel* label;
-
-    int clickCounter;
 
     EB_SLOT(windowClosed)
     {
@@ -85,7 +88,9 @@ private:
 
     EB_SLOT(buttonClicked)
     {
-        std::string str = "Button Clicked: " + std::to_string(++clickCounter);
+        EBCpp::EBGuiButton* button = (EBCpp::EBGuiButton*)sender;        
+        std::string str = "Button Clicked: " + button->getText();
+
         label->setText(str);
     }
 };
@@ -97,7 +102,7 @@ private:
  */
 int main()
 {
-    ExampleGui gui;
+    ExampleGuiLayout gui;
     EBCpp::EBEventLoop::getInstance().exec();
     return 0;
 }

@@ -29,6 +29,7 @@
 #include "../src/gui/EBGuiWindow.hpp"
 #include "../src/gui/EBGuiHorizontalLayout.hpp"
 #include "../src/gui/EBGuiPadding.hpp"
+#include "../src/gui/EBGuiTextLine.hpp"
 
 #include <iostream>
 
@@ -42,7 +43,8 @@ public:
         window.addWidget(layout);
 
         layout->addElement(1);
-        layout->addElement(2);
+        layout->addElement(1);
+        layout->addElement(1);
         layout->addElement(1);
 
         EBCpp::EBGuiPadding p;
@@ -62,16 +64,22 @@ public:
         button1 = new EBCpp::EBGuiButton(layout);
         layout->addWidget(button1);
         button1->setText("1");
+        button1->setMaxHeight(200);
         button1->clicked.connect(*this, &ExampleGuiLayout::buttonClicked);
 
         button2 = new EBCpp::EBGuiButton(layout);
         layout->addWidget(button2);
         button2->setText("2");
+        button2->setMaxHeight(100);
         button2->clicked.connect(*this, &ExampleGuiLayout::buttonClicked);
 
         label = new EBCpp::EBGuiLabel(layout);
         layout->addWidget(label);
         label->setText("???");
+
+        EBCpp::EBGuiTextLine* textLine = new EBCpp::EBGuiTextLine(layout);
+        layout->addWidget(textLine);
+        textLine->setText("test");
     }
 
 private:

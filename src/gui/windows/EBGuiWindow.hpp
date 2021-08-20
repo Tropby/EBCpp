@@ -184,6 +184,11 @@ private:
             return 0;
         }
 
+        case WM_CHAR: {
+            handleKeyPress(wParam);
+            return 0;
+        }
+
         case WM_CLOSE: {
             DestroyWindow(hwnd);
             return 0;

@@ -116,6 +116,11 @@ public:
         thread = new std::thread(std::bind(&EBTimer::run, this));
     }
 
+    bool isRunning()
+    {
+        return timerRunning;
+    }
+
 private:
     bool timerRunning;
     bool singleShot;
@@ -138,7 +143,7 @@ private:
             {                
                 //std::unique_lock<std::mutex> lock(mWait);
                 //cvWait.wait_for(lock, std::chrono::milliseconds(time), [&] { return !timerRunning; });
-                std::this_thread::sleep_for(std::chrono::microseconds(time * 1000));
+                std::this_thread::sleep_for(std::chrono::milliseconds(time));
             }
 
             // Emit the timeout event if the timer is still running and the thead should not end

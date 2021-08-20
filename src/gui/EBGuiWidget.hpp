@@ -26,6 +26,8 @@
 #include "../EBObject.hpp"
 #include "renderer/EBGuiRenderRect.hpp"
 #include "renderer/EBGuiRenderText.hpp"
+#include "renderer/EBGuiRenderTextLine.hpp"
+#include "renderer/EBGuiRenderTextLineWithCursor.hpp"
 #include "renderer/EBGuiRenderer.hpp"
 
 namespace EBCpp
@@ -34,7 +36,9 @@ namespace EBCpp
 class EBGuiWidget : public EBObject
 {
 public:
-    EBGuiWidget(EBObject* parent) : EBObject(parent), visible(false), widgetParent(nullptr), w(0), h(0), x(0), y(0)
+    EBGuiWidget(EBObject* parent) :
+        EBObject(parent), visible(false), widgetParent(nullptr), w(0), h(0), x(0), y(0), minW(0), minH(0),
+        maxW(INT_MAX), maxH(INT_MAX)
     {
     }
 
@@ -89,14 +93,14 @@ public:
         return x;
     }
 
-    virtual int getY()
-    {
-        return y;
-    }
-
     virtual void setY(int y)
     {
         this->y = y;
+    }
+
+    virtual int getY()
+    {
+        return y;
     }
 
     virtual int getWidth()
@@ -104,8 +108,53 @@ public:
         return w;
     }
 
+    virtual void setMinWidth(int width)
+    {
+        minW = width;
+        if (w < width)
+        {
+            w = width;
+            invalidate();
+        }
+    }
+
+    virtual void setMinHeight(int height)
+    {
+        minH = height;
+        if (h < height)
+        {
+            h = height;
+            invalidate();
+        }
+    }
+
+    virtual void setMaxWidth(int width)
+    {
+        maxW = width;
+        if (w > width)
+        {
+            w = width;
+            invalidate();
+        }    
+    }
+
+    virtual void setMaxHeight(int height)
+    {
+        maxH = height;
+        if( h > height )
+        {
+            h = height;
+            invalidate();
+        }
+    }
+
     virtual void setWidth(int width)
     {
+        if( width > maxW )
+            width = maxW;
+        if( width < minW )
+            width = minW;
+
         if( this->w != width )
             invalidate();
         this->w = width;
@@ -113,6 +162,13 @@ public:
 
     virtual void setHeight(int height)
     {
+        if (height > maxH)
+            height = maxH;
+        if (height < minH)
+            height = minH;
+
+        if (this->h != height)
+            invalidate();
         this->h = height;
     }
 
@@ -149,6 +205,20 @@ public:
         }
 
         return mouseDown(x, y);
+    }
+
+    void handleKeyPress(char key)
+    {
+        if(this->isFocused())
+        {
+            keyPress(key);
+            return;
+        }
+
+        for (EBGuiWidget* w : widgets)
+        {
+            w->handleKeyPress(key);
+        }
     }
 
     bool handleMouseUp(int x, int y)
@@ -199,7 +269,40 @@ public:
         return changed;
     }
 
+    bool isFocused()
+    {
+        return focused;
+    }
+
+    void setFocus()
+    {
+        EBGuiWidget* root = this->widgetParent;
+
+        // Update Focus for all widgets
+        while (root->widgetParent != nullptr)
+        {
+            root = root->widgetParent;
+        }
+        root->clearFocus();
+        this->focused = true;
+    }
+
+    void clearFocus()
+    {
+        this->focused = false;
+        for (EBGuiWidget* widget : widgets)
+        {
+            widget->clearFocus();
+        }
+    }
+
 protected:
+
+    virtual void keyPress(char key)
+    {
+
+    }
+
     virtual void mouseLeave(int x, int y)
     {
     }
@@ -226,10 +329,18 @@ protected:
 
     bool mouseInWidget;
     bool visible;
+
+    bool focused;
+
     int x;
     int y;
     int w;
     int h;
+    int minW;
+    int minH;
+    int maxW;
+    int maxH;
+
     std::list<EBGuiWidget*> widgets;
     EBGuiWidget* widgetParent;
 };

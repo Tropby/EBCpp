@@ -132,6 +132,13 @@ public:
         return ret;
     }
 
+    static int64_t uptime()
+    {
+        static std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        return std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+    }
+
     /**
      * @brief Trims a string and returns the trimmed string
      *

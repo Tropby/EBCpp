@@ -55,7 +55,8 @@
         "map": "cpp",
         "csignal": "cpp",
         "numeric": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "codecvt": "cpp"
     },
     "C_Cpp.clang_format_style": "file",
     "formatFiles.excludePattern": "[ default: '**/build, **/.vscode, **/bin' ]",

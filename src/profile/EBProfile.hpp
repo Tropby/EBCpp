@@ -23,11 +23,25 @@
 
 #pragma once
 
-#ifdef __WIN32__
+#include "../EBObject.hpp"
 
-#include <gdiplus.h>
+#define EB_PROFILE_FUNC
+#define EB_PROFILE_CLASS
 
-class EBGuiUtils{
+namespace EBCpp {
+
+class EBProfileCall;
+
+class EBProfile : public EBObject{
+public:
+    virtual ~EBProfile(){}
+
+    std::shared_ptr<EBProfile> getInstance();
+
+private:
+    EBProfile(){}
+
+    std::shared_ptr<EBProfile> instance;
 }
 
-#endif
+}

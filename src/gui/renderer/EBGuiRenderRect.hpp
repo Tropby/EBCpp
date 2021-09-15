@@ -32,15 +32,15 @@ namespace EBCpp
 class EBGuiRenderRectBase : public EBGuiRenderer
 {
 public:
-    EBGuiRenderRectBase(EBObject* parent, int x, int y, int w, int h,
-                        EBGuiColor borderColor = EBGuiColor(nullptr, 0, 0, 0)) :
-        EBGuiRenderer(parent),
+    EBGuiRenderRectBase(int x, int y, int w, int h,
+                        EBObjectPointer<EBGuiColor> borderColor = EB_COLOR_BLACK) :
+        EBGuiRenderer(),
         x(x), y(y), w(w), h(h), borderColor(borderColor)
     {
     }
 
 protected:
-    EBGuiColor borderColor;
+    EBObjectPointer<EBGuiColor> borderColor;
     int x;
     int y;
     int w;

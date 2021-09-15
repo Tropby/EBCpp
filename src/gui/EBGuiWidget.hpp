@@ -33,11 +33,11 @@
 namespace EBCpp
 {
 
-class EBGuiWidget : public EBObject
+class EBGuiWidget : public EBObject<EBGuiWidget>
 {
 public:
-    EBGuiWidget(EBObject* parent) :
-        EBObject(parent), visible(false), widgetParent(nullptr), w(0), h(0), x(0), y(0), minW(0), minH(0),
+    EBGuiWidget() :
+        EBObject(), visible(false), widgetParent(nullptr), w(0), h(0), x(0), y(0), minW(0), minH(0),
         maxW(INT_MAX), maxH(INT_MAX)
     {
     }
@@ -52,7 +52,7 @@ public:
      */
     virtual void prepare(int x, int y, int w, int h)
     {
-        for (EBGuiWidget* widget : widgets)
+        for (EBObjectPointer<EBGuiWidget>& widget : widgets)
         {
             widget->prepare(x, y, w, h);
         }
@@ -60,14 +60,14 @@ public:
 
     virtual void invalidate()
     {
-        if( this->parentWidget() )
+        if( this->parentWidget().get() != nullptr )
             this->parentWidget()->invalidate();
     }
 
-    void render(std::list<EBGuiRenderer*>& list)
+    void render(std::list<EBObjectPointer<EBGuiRenderer> >& list)
     {
         draw(list);
-        for (EBGuiWidget* w : widgets)
+        for (EBObjectPointer<EBGuiWidget>& w : widgets)
         {
             w->render(list);
         }
@@ -172,20 +172,29 @@ public:
         this->h = height;
     }
 
-    virtual void addWidget(EBGuiWidget* widget)
+    virtual void addWidget(EBObjectPointer<EBGuiWidget> widget)
     {
         if (widget->widgetParent != nullptr)
             widget->widgetParent->removeWidget(widget);
-        widget->widgetParent = this;
+        widget->widgetParent = &(*this);
         widgets.push_back(widget);
     }
 
-    virtual void removeWidget(EBGuiWidget* widget)
+    virtual void addWidget(EBGuiWidget& widget)
+    {
+        EBObjectPointer<EBGuiWidget> widgetPointer = &widget;
+        if (widgetPointer->widgetParent != nullptr)
+            widgetPointer->widgetParent->removeWidget(widgetPointer);
+        widgetPointer->widgetParent = &(*this);
+        widgets.push_back(widgetPointer);
+    }
+
+    virtual void removeWidget(EBObjectPointer<EBGuiWidget> widget)
     {
         widgets.remove(widget);
     }
 
-    EBGuiWidget* parentWidget()
+    EBObjectPointer<EBGuiWidget> parentWidget()
     {
         return this->widgetParent;
     }
@@ -195,7 +204,7 @@ public:
         if( !mouseInWidget )
             return false;
 
-        for( EBGuiWidget * w : widgets )
+        for (EBObjectPointer<EBGuiWidget>& w : widgets)
         {
             if( w->handleMouseDown(x, y) )
             {
@@ -215,7 +224,7 @@ public:
             return;
         }
 
-        for (EBGuiWidget* w : widgets)
+        for (EBObjectPointer<EBGuiWidget>& w : widgets)
         {
             w->handleKeyPress(key);
         }
@@ -226,7 +235,7 @@ public:
         if (!mouseInWidget)
             return false;
 
-        for (EBGuiWidget* w : widgets)
+        for (EBObjectPointer<EBGuiWidget>& w : widgets)
         {
             if (w->handleMouseUp(x, y))
             {
@@ -261,7 +270,7 @@ public:
 
         changed = (mouseInWidget != changed);
 
-        for (EBGuiWidget* w : widgets)
+        for (EBObjectPointer<EBGuiWidget>& w : widgets)
         {
             changed |= w->setMousePos(x, y);
         }
@@ -276,7 +285,7 @@ public:
 
     void setFocus()
     {
-        EBGuiWidget* root = this->widgetParent;
+        EBObjectPointer<EBGuiWidget>& root = this->widgetParent;
 
         // Update Focus for all widgets
         while (root->widgetParent != nullptr)
@@ -290,7 +299,7 @@ public:
     void clearFocus()
     {
         this->focused = false;
-        for (EBGuiWidget* widget : widgets)
+        for (EBObjectPointer<EBGuiWidget>& widget : widgets)
         {
             widget->clearFocus();
         }
@@ -321,10 +330,10 @@ protected:
         return false;
     }
 
-    virtual void draw(std::list<EBGuiRenderer*>& list)
+    virtual void draw(std::list<EBObjectPointer<EBGuiRenderer> >& list)
     {
-        EBGuiRenderRect* rect = new EBGuiRenderRect(this, x, y, x + w, y + h);
-        list.push_back(rect);
+        EBObjectPointer<EBGuiRenderRect> rect = EBCpp::EBObjectBase::createObject<EBGuiRenderRect>(x, y, x + w, y + h);
+        list.push_back(rect->cast<EBGuiRenderer>());
     }
 
     bool mouseInWidget;
@@ -341,8 +350,8 @@ protected:
     int maxW;
     int maxH;
 
-    std::list<EBGuiWidget*> widgets;
-    EBGuiWidget* widgetParent;
+    std::list<EBObjectPointer<EBGuiWidget>> widgets;
+    EBObjectPointer<EBGuiWidget> widgetParent;
 };
 
 } // namespace EBCpp

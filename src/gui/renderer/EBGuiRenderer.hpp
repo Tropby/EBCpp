@@ -26,10 +26,10 @@
 namespace EBCpp
 {
 
-class EBGuiRendererBase : public EBObject
+class EBGuiRendererBase : public EBObject<EBGuiRendererBase>
 {
 public:
-    EBGuiRendererBase(EBObject* parent) : EBObject(parent)
+    EBGuiRendererBase() : EBObject()
     {
     }
 };

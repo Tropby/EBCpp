@@ -42,7 +42,7 @@ public:
      *
      * @param parent The parent of the IODevice
      */
-    EBFile(EBObject* parent) : EBIODevice(parent)
+    EBFile() : EBIODevice()
     {
     }
 

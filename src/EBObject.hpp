@@ -30,17 +30,157 @@
 #include <typeinfo>
 #include <mutex>
 #include <algorithm>
+#include <iostream>
 
 #include "EBUtils.hpp"
 
 namespace EBCpp
 {
 
+class EBObjectPointerBase;
+template <class T>
+class EBObjectPointer;
+
+class EBObjectBase
+{
+public:
+    EBObjectBase(std::string name) : name(name)
+    {
+        _counter++;
+    }
+
+    virtual ~EBObjectBase()
+    {
+        _counter--;    
+    }
+
+    template <class C, class... argList>
+    static EBObjectPointer<C> createObject(argList... args)
+    {
+        C* object = new C(args...);
+        objectList.push_back(object);
+        return EBObjectPointer<C>(object);
+    }
+
+    static void destroyObjects()
+    {
+        for (EBObjectBase* ptr : objectToBeDestroyed)
+            destroyObject(ptr);
+
+        objectToBeDestroyed.clear();
+    }
+
+    static void destroyObject(EBObjectBase* object)
+    {
+        objectList.remove(object);
+        delete object;
+    }
+
+    virtual void use(EBObjectPointerBase* w) = 0;
+    virtual void unuse(EBObjectPointerBase* w) = 0;
+    static inline int _counter = 0;
+
+    /**
+     * @brief Get the name
+     *
+     * @return std::string the generated name of the object
+     **/
+    virtual std::string getName()
+    {
+        return name;
+    }
+
+private:    
+    static inline std::list<EBObjectBase*> objectList;
+    static inline std::list<EBObjectBase*> objectToBeDestroyed;
+    std::string name;
+};
+
+class EBObjectPointerBase
+{
+public:
+    EBObjectPointerBase(EBObjectBase* pointer) : pointer(pointer)
+    {
+        if (pointer != nullptr)
+            pointer->use(this);
+
+        _counter++;
+    }
+    virtual ~EBObjectPointerBase()
+    {
+        if (pointer != nullptr)
+            pointer->unuse(this);
+
+        _counter--;
+    }
+    static inline int _counter = 0;
+
+    bool isValid()
+    {
+        return pointer != nullptr;
+    }
+
+    void objectDeleted()
+    {
+        pointer = nullptr;
+    }
+
+    bool operator==(const EBObjectPointerBase& other)
+    {
+        return this->pointer == other.pointer;
+    }
+
+    bool operator!=(const EBObjectPointerBase& other)
+    {
+        return this->pointer != other.pointer;
+    }
+
+protected:
+    EBObjectBase* pointer;
+};
+
+template <class T>
+class EBObjectPointer : public EBObjectPointerBase
+{
+public:
+    EBObjectPointer(EBObjectBase* pointer) : EBObjectPointerBase(pointer){}
+
+    EBObjectPointer(const EBObjectPointer& other) : EBObjectPointerBase(other.pointer){}
+
+    void operator=(const EBObjectPointer<T>& other)
+    {
+        if (this->pointer != nullptr)
+            this->pointer->unuse(this);
+
+        this->pointer = other.pointer;
+
+        if (this->pointer != nullptr)
+            this->pointer->use(this);
+    }
+
+    T* operator->()
+    {
+        if (pointer == nullptr)
+            throw std::exception();
+
+        return static_cast<T*>(pointer);
+    }
+
+    T* get() const
+    {
+        if (pointer == nullptr)
+            throw std::exception();
+
+        return static_cast<T*>(pointer);
+    }
+};
+
 /**
  * @brief The core object. Every object from EBCpp must inherit this.
  *
  */
-class EBObject
+template <class T>
+class EBObject : public EBObjectBase
 {
 public:
     /**
@@ -48,144 +188,75 @@ public:
      *
      * @param parent The parent EBObject of this EBObject
      */
-    EBObject(EBObject* parent) :
-        name(std::string(typeid(this).name()) + " - " + EBUtils::intToHex(reinterpret_cast<long long>(this))),
-        threadId(std::this_thread::get_id()), parent(parent)
+    EBObject() :
+        EBObjectBase(std::string(typeid(this).name()) + " - " + EBUtils::intToHex(reinterpret_cast<long long>(this))),
+        threadId(std::this_thread::get_id())
     {
-        objectCreated(this);
-
-        if (parent != nullptr)
-            parent->registerChild(this);
     }
 
     /**
      * @brief Destroy the EBObject object
      *
      */
-    ~EBObject()
+    virtual ~EBObject()
     {
-        objectDestroyed(this);
-
-        if (parent != nullptr)
+        if (sharedPointer.size())
         {
-            parent->removeChild(this);
-        }
-
-        // delete all child objects with the parent object
-        while (childs.size())
-        {
-            EBObject* obj = childs.front();
-            childs.pop_front();
-            delete obj;
+            std::cout << "Object " << getName() << " killed while watched (" << std::dec << sharedPointer.size() << ")!" << std::endl;
+            for (EBObjectPointerBase* w : sharedPointer)
+            {
+                w->objectDeleted();
+            }
         }
     }
 
-    /**
-     * @brief Get the name
-     *
-     * @return std::string the generated name of the object
-     **/
-    std::string getName()
+    EBObjectPointer<T> operator&()
     {
-        return name;
+        return EBObjectPointer<T>(this);
     }
 
-   /**
-     * @brief Get the infos about all objects
-     *
-     * @return std::string
-     */
-    static std::string getObjectsInfo()
-    {        
-        return "Living objects: " + std::to_string(livingObjects.size());
+    template <class type>
+    EBObjectPointer<type> cast()
+    {
+        return this;
     }
 
-    /**
-     * @brief Called from each EBObject that is created
-     *
-     * @param object Object that is created
-     */
-    static void objectCreated(EBObject* object)
+    virtual void use(EBObjectPointerBase* ptr)
     {
-        if( isValidObject(object) )
-            return;
-
         mutex.lock();
-        livingObjects.push_back(object);
+        sharedPointer.push_back(ptr);
         mutex.unlock();
     }
 
-    /**
-     * @brief Called from each EBObject that is destroyed
-     *
-     * @param object Object that is Destroyed
-     */
-    static void objectDestroyed(EBObject* object)
+    virtual void unuse(EBObjectPointerBase* ptr)
     {
         mutex.lock();
-        livingObjects.remove(object);
-        mutex.unlock();
-    }        
-
-    /**
-     * @brief Checks if a EBObject is valid and known to the EBApplication
-     *
-     * @param object Object that is checked
-     * @return true if the object is valid
-     * @return false if the object is unknwon
-     */
-    static bool isValidObject(EBObject& object)
-    {
-        return EBObject::isValidObject(&object);
-    }
-
-    /**
-     * @brief Checks if a EBObject is valid and known to the EBApplication
-     *
-     * @param object Object that is checked
-     * @return true if the object is valid
-     * @return false if the object is unknwon
-     */
-    static bool isValidObject(EBObject* object)
-    {
-        bool found = false;
-        mutex.lock();
-        for( auto it: livingObjects )
         {
-            if( it == object )
-                found = true;
+            if (std::find(sharedPointer.begin(), sharedPointer.end(), ptr) != sharedPointer.end())
+                sharedPointer.remove(ptr);
+        }
+
+        // Check if all references to a Heap object are gone
+        if (sharedPointer.size() == 0)
+        {
+            if (std::find(objectList.begin(), objectList.end(), this) != objectList.end())
+            {                
+                objectList.remove(this);
+                objectToBeDestroyed.push_back(this);
+            }
         }
         mutex.unlock();
-        return found;
-    }    
+    }
 
-    EBObject * getParent() const
+    uint32_t watchCount()
     {
-        return parent;
+        return sharedPointer.size();
     }
 
 private:
-    std::string name;
+    std::list<EBObjectPointerBase*> sharedPointer;
     std::thread::id threadId;
-
-    EBObject* parent;
-    std::list<EBObject*> childs;
-
-    static std::mutex mutex;
-    static std::list<EBObject*> livingObjects;
-
-    void registerChild(EBObject* child)
-    {
-        childs.push_back(child);
-    }
-
-    void removeChild(EBObject* child)
-    {
-        childs.remove(child);
-    }
+    std::mutex mutex;
 };
-
-inline std::mutex EBObject::mutex;
-inline std::list<EBObject*> EBObject::livingObjects;
 
 } // namespace EBCpp

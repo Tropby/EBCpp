@@ -23,24 +23,24 @@
 
 #pragma once
 
-#define EB_COLOR_BLACK EBGuiColor(nullptr, 0x00, 0x00, 0x00, 0xFF)
-#define EB_COLOR_RED EBGuiColor(nullptr, 0xFF, 0x00, 0x00, 0xFF)
-#define EB_COLOR_BLUE EBGuiColor(nullptr, 0x00, 0xFF, 0x00, 0xFF)
-#define EB_COLOR_GREEN EBGuiColor(nullptr, 0x00, 0x00, 0xFF, 0xFF)
+#define EB_COLOR_BLACK EBCpp::EBObjectBase::createObject<EBGuiColor>( 0x00, 0x00, 0x00, 0xFF)
+#define EB_COLOR_RED EBCpp::EBObjectBase::createObject<EBGuiColor>(0xFF, 0x00, 0x00, 0xFF)
+#define EB_COLOR_BLUE EBCpp::EBObjectBase::createObject<EBGuiColor > (0x00, 0xFF, 0x00, 0xFF)
+#define EB_COLOR_GREEN EBCpp::EBObjectBase::createObject<EBGuiColor>(0x00, 0x00, 0xFF, 0xFF)
 
 namespace EBCpp
 {
 
-class EBGuiColor : public EBObject
+class EBGuiColor : public EBObject < EBGuiColor>
 {
 public:
-    EBGuiColor(EBObject* parent, unsigned char r, unsigned char g, unsigned char b, unsigned char a = 0xFF) :
-        EBObject(parent), r(r), g(g), b(b), a(a)
+    EBGuiColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 0xFF) :
+        EBObject(), r(r), g(g), b(b), a(a)
     {
     }
 
     EBGuiColor(const EBGuiColor & other) : 
-        EBObject(other.getParent()), r(other.r), g(other.g), b(other.b), a(other.a)
+        EBObject(), r(other.r), g(other.g), b(other.b), a(other.a)
     {        
     }
 

@@ -35,16 +35,16 @@
  * @brief Example to show the function of the TCP server
  *
  */
-class ExampleTcpServer : public EBCpp::EBObject
+class ExampleTcpServer : public EBCpp::EBObject<ExampleTcpServer>
 {
 public:
     /**
      * @brief Construct a new Example Tcp Server object
      *
      */
-    ExampleTcpServer() : EBCpp::EBObject(nullptr), server(this)
+    ExampleTcpServer() :  server()
     {
-        server.newConnection.connect(*this, &ExampleTcpServer::newConnection);
+        server.newConnection.connect(this, &ExampleTcpServer::newConnection);
         if (server.bind(8958))
         {
             std::cout << "Tcp server now bound on 8958" << std::endl;
@@ -63,15 +63,15 @@ public:
      * @param sender The sender object
      * @param socket The new client socket
      */
-    EB_SLOT_WITH_ARGS(newConnection, EBCpp::EBTcpSocket* socket)
+    EB_SLOT_WITH_ARGS(newConnection, EBCpp::EBObjectPointer< EBCpp::EBTcpSocket > socket)
     {
         std::cout << "new connection!" << std::endl;
 
-        socket->disconnected.connect(*this, &ExampleTcpServer::disconnected);
-        socket->readReady.connect(*this, &ExampleTcpServer::readReady);
-        socket->error.connect(*this, &ExampleTcpServer::error);
+        socket->disconnected.connect(this, &ExampleTcpServer::disconnected);
+        socket->readReady.connect(this, &ExampleTcpServer::readReady);
+        socket->error.connect(this, &ExampleTcpServer::error);
 
-        socket->write("Hallo :)\n");
+        socket->write("Hallo :)");
     }
 
     /**
@@ -83,9 +83,8 @@ public:
      */
     EB_SLOT(disconnected)
     {
-        EBCpp::EBTcpSocket* socket = static_cast<EBCpp::EBTcpSocket*>(sender);
+        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
         std::cout << "disconnected" << std::endl;
-        delete socket;
     }
 
     /**
@@ -98,12 +97,14 @@ public:
     EB_SLOT(readReady)
     {
         char buffer[1024];
-        EBCpp::EBTcpSocket* socket = static_cast<EBCpp::EBTcpSocket*>(sender);
+        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
 
         int nbytes = socket->read(buffer, 1024);
         std::string s(buffer, nbytes);
 
         std::cout << "read Ready: " << s << std::endl;
+
+        socket->write(s);
 
         if (socket->isOpened())
             socket->close();
@@ -129,5 +130,5 @@ private:
 int main()
 {
     ExampleTcpServer exampleTcpServer;
-    EBCpp::EBEventLoop::getInstance().exec();
+    EBCpp::EBEventLoop::getInstance()->exec();
 }

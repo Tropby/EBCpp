@@ -52,7 +52,7 @@ namespace EBCpp
 class EBGuiWindow : public EBGuiWindowBase
 {
 public:
-    EBGuiWindow(EBObject* parent) : EBGuiWindowBase(parent), windowThread(std::thread(&EBGuiWindow::createWindow, this))
+    EBGuiWindow() : EBGuiWindowBase(), windowThread(std::thread(&EBGuiWindow::createWindow, this))
     {
     }
 
@@ -118,21 +118,20 @@ private:
 
                 Gdiplus::Graphics graphics(hdcMem);
 
-                for (EBGuiWidget* w : widgets)
+                for (EBObjectPointer<EBGuiWidget> w : widgets)
                 {
                     w->prepare(0, 0, width, height);
                 }
                 Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 255, 255));
                 graphics.FillRectangle(&brush, 0, 0, width, height);
 
-                std::list<EBGuiRenderer*> list;
-                for (EBGuiWidget* w : widgets)
+                std::list< EBObjectPointer<EBGuiRenderer> > list;
+                for (EBObjectPointer<EBGuiWidget> w : widgets)
                 {
                     w->render(list);
-                    for (EBGuiRenderer* l : list)
+                    for (EBObjectPointer<EBGuiRenderer> l : list)
                     {
                         l->render(graphics);
-                        delete l;
                     }
                 }
 

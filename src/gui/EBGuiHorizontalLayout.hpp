@@ -33,7 +33,7 @@ namespace EBCpp
 class EBGuiHorizontalLayout : public EBGuiWidget
 {
 public:
-    EBGuiHorizontalLayout(EBObject* parent) : EBGuiWidget(parent), padding({0,0,0,0}), cellPadding({0,0,0,0})
+    EBGuiHorizontalLayout() : EBGuiWidget(), padding({0,0,0,0}), cellPadding({0,0,0,0})
     {
     }
 
@@ -50,7 +50,7 @@ public:
 
         int i = 0;
         int currentX = padding.left;
-        for (EBGuiWidget * widget : widgets)
+        for (EBObjectPointer < EBGuiWidget> widget : widgets)
         {
             int size = 1;
             if (elements.size() > i)

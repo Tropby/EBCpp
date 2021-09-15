@@ -30,55 +30,52 @@
 
 #include <iostream>
 
-class ExampleGui : public EBCpp::EBObject
+class ExampleGui : public EBCpp::EBObject<ExampleGui>
 {
 public:
-    ExampleGui() : EBObject(nullptr), window(this), clickCounter(0)
+    ExampleGui() : clickCounter(0)
     {
-        window.closed.connect(*this, &ExampleGui::windowClosed);
-        EBCpp::EBGuiWidget* widget = new EBCpp::EBGuiWidget(&window);
-        window.addWidget(widget);
+        window.closed.connect(this, &ExampleGui::windowClosed);
+        window.addWidget(&widget);
 
-        widget->setX(20);
-        widget->setY(20);
-        widget->setWidth(300);
-        widget->setHeight(300);
+        widget.setX(20);
+        widget.setY(20);
+        widget.setWidth(300);
+        widget.setHeight(300);
 
-        label = new EBCpp::EBGuiLabel(widget);
-        widget->addWidget(label);
-        label->setX(20);
-        label->setY(20);
-        label->setWidth(200);
-        label->setHeight(40);
-        label->setText("Hallo :)");
+        widget.addWidget(&label);
+        label.setX(20);
+        label.setY(20);
+        label.setWidth(200);
+        label.setHeight(40);
+        label.setText("Hallo :)");
 
-        button = new EBCpp::EBGuiButton(widget);
-        widget->addWidget(button);
-        button->setX(20);
-        button->setY(50);
-        button->setWidth(200);
-        button->setHeight(40);
-        button->setText("Click Me!");
-        button->clicked.connect(*this, &ExampleGui::buttonClicked);
+        widget.addWidget(&button);
+        button.setX(20);
+        button.setY(50);
+        button.setWidth(200);
+        button.setHeight(40);
+        button.setText("Click Me!");
+        button.clicked.connect(this, &ExampleGui::buttonClicked);
     }
 
 private:
     EBCpp::EBGuiWindow window;
-
-    EBCpp::EBGuiButton* button;
-    EBCpp::EBGuiLabel* label;
+    EBCpp::EBGuiWidget widget;
+    EBCpp::EBGuiButton button;
+    EBCpp::EBGuiLabel label;
 
     int clickCounter;
 
     EB_SLOT(windowClosed)
     {
-        EBCpp::EBEventLoop::getInstance().exit();
+        EBCpp::EBEventLoop::getInstance()->exit();
     }
 
     EB_SLOT(buttonClicked)
     {
         std::string str = "Button Clicked: " + std::to_string(++clickCounter);
-        label->setText(str);
+        label.setText(str);
     }
 };
 
@@ -90,6 +87,6 @@ private:
 int main()
 {
     ExampleGui gui;
-    EBCpp::EBEventLoop::getInstance().exec();
+    EBCpp::EBEventLoop::getInstance()->exec();
     return 0;
 }

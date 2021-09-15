@@ -32,7 +32,8 @@ namespace EBCpp
  * @brief Interface description of an input/output device
  *
  */
-class EBIODevice : public EBObject
+template <class T>
+class EBIODevice : public EBObject<T>
 {
 public:
     /**
@@ -40,7 +41,7 @@ public:
      *
      * @param parent The parent of the IODevice
      */
-    EBIODevice(EBObject* parent) : EBObject(parent)
+    EBIODevice()
     {
     }
 
@@ -96,7 +97,7 @@ public:
      * @param data String to wirte to the output device
      * @return int Bytes written to the output device
      */
-    virtual int write(std::string data) = 0;
+    virtual int write(const std::string& data) = 0;
 
     /**
      * @brief Read data from the socket

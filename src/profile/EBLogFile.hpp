@@ -23,44 +23,27 @@
 
 #pragma once
 
-#include "EBGuiWidget.hpp"
-#include "renderer/EBGuiColor.hpp"
+#include "../EBObject.hpp"
+#include <fstream>
 
 namespace EBCpp
 {
 
-class EBGuiLabel : public EBGuiWidget
+class EBLogFile : public EBObject<EBLogFile>
 {
 public:
-    EBGuiLabel() : EBGuiWidget(), color(EB_COLOR_BLACK)
+    EBLogFile()
     {
+        logfile        
     }
 
-    void setText( std::string text )
+    void log(const std::string& message)
     {
-        this->text = text;
-        invalidate();
-    }
-
-    void setColor(EBObjectPointer<EBGuiColor> color)
-    {
-        this->color = color;
-    }
-
-protected:
-    virtual void draw(std::list<EBObjectPointer<EBGuiRenderer> > & list)
-    {
-        EBObjectPointer<EBGuiWidget> p = parentWidget();
-        int px = p->getX();
-        int py = p->getY();
-
-        list.push_back(
-        EBCpp::EBObjectBase::createObject<EBGuiRenderText>(x + px, y + py, w, h, text, color)->cast<EBGuiRenderer>());
+        std::cout << message.str() << std::endl;
     }
 
 private:
-    std::string text;
-    EBObjectPointer<EBGuiColor>  color;
+    std::ofstream logfile;
 };
 
 } // namespace EBCpp

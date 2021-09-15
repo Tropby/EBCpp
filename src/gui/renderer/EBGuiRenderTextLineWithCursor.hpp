@@ -33,9 +33,9 @@ namespace EBCpp
 class EBGuiRenderTextLineWithCursorBase : public EBGuiRenderer
 {
 public:
-    EBGuiRenderTextLineWithCursorBase(EBObject* parent, int x, int y, int maxWidth, std::string text, int cursorPos,
-                                      EBGuiColor fontColor = EB_COLOR_BLACK) :
-        EBGuiRenderer(parent),
+    EBGuiRenderTextLineWithCursorBase(int x, int y, int maxWidth, std::string text, int cursorPos,
+                                      EBObjectPointer<EBGuiColor> fontColor = EB_COLOR_BLACK) :
+        EBGuiRenderer(),
         x(x), y(y), maxWidth(maxWidth), text(text), cursorPos(cursorPos), fontColor(fontColor)
     {
     }
@@ -46,7 +46,7 @@ protected:
     int maxWidth;
     std::string text;
     int cursorPos;
-    EBGuiColor fontColor;
+    EBObjectPointer<EBGuiColor> fontColor;
 };
 
 } // namespace EBCpp

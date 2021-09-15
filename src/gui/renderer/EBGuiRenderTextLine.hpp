@@ -33,9 +33,9 @@ namespace EBCpp
 class EBGuiRenderTextLineBase : public EBGuiRenderer
 {
 public:
-    EBGuiRenderTextLineBase(EBObject* parent, int x, int y, int w, std::string text,
-                        EBGuiColor fontColor = EB_COLOR_BLACK) :
-        EBGuiRenderer(parent),
+    EBGuiRenderTextLineBase(int x, int y, int w, std::string text,
+                        EBObjectPointer<EBGuiColor> fontColor = EB_COLOR_BLACK) :
+        EBGuiRenderer(),
         x(x), y(y), w(w), text(text), fontColor(fontColor)
     {
     }
@@ -45,7 +45,7 @@ protected:
     int y;
     int w;
     std::string text;
-    EBGuiColor fontColor;
+    EBObjectPointer<EBGuiColor> fontColor;
 };
 
 } // namespace EBCpp

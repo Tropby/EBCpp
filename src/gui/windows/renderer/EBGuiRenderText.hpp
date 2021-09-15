@@ -35,11 +35,11 @@ namespace EBCpp
 class EBGuiRenderText : public EBGuiRenderTextBase
 {
 public:
-    EBGuiRenderText(EBObject* parent, int x, int y, int w, int h, std::string text,
-                    EBGuiColor fontColor = EB_COLOR_BLACK,
+    EBGuiRenderText(int x, int y, int w, int h, std::string text,
+                    EBObjectPointer<EBGuiColor> fontColor = EB_COLOR_BLACK,
                     EBGuiHorizontalAlignment horizontalAlignment = EBGuiHorizontalAlignment::EB_HOR_ALIGN_LEFT,
                     EBGuiVerticalAlignment verticalAlignment = EBGuiVerticalAlignment::EB_VERT_ALIGN_TOP) :
-        EBGuiRenderTextBase(parent, x, y, w, h, text, fontColor, horizontalAlignment, verticalAlignment)
+        EBGuiRenderTextBase(x, y, w, h, text, fontColor, horizontalAlignment, verticalAlignment)
     {
     }
 
@@ -77,7 +77,7 @@ public:
         }
 
         Gdiplus::SolidBrush solidBrush(
-        Gdiplus::Color(fontColor.getA(), fontColor.getR(), fontColor.getG(), fontColor.getB()));
+        Gdiplus::Color(fontColor->getA(), fontColor->getR(), fontColor->getG(), fontColor->getB()));
 
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         std::wstring w = converter.from_bytes(text);

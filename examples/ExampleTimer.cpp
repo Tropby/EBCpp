@@ -21,10 +21,10 @@
  *      Author: Carsten (Tropby)
  */
 
-#include <iostream>
-
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"
+#include "../src/profile/EBLogger.hpp"
+#include "../src/profile/EBProfile.hpp"
 
 using namespace std;
 using namespace EBCpp;
@@ -33,18 +33,28 @@ using namespace EBCpp;
  * @brief Example to show the function of an timer
  *
  */
-class ExampleTimer : public EBObject
+class ExampleTimer : public EBObject<ExampleTimer>
 {
 public:
     /**
      * @brief Construct a new Example Timer object
      *
-     * @param parent Parent of this object
      */
-    ExampleTimer(EBObject* parent) : EBObject(parent), timer(this)
+    ExampleTimer() 
     {
-        timer.timeout.connect(*this, &ExampleTimer::timeout);
+        EB_PROFILE_FUNC();
+
+        timer.timeout.connect(this, &ExampleTimer::timeout);
         timer.start(1000);
+    }
+
+    /**
+     * @brief Destroy the Example Timer object
+     * 
+     */
+    ~ExampleTimer()
+    {
+        timer.timeout.disconnect(this, &ExampleTimer::timeout);
     }
 
 private:
@@ -59,11 +69,13 @@ private:
      */
     EB_SLOT(timeout)
     {
+        EB_PROFILE_FUNC();
+
         static int i = 0;
-        cout << "timeout " << i++ << endl;
+        EB_LOG("timeout " << ++i);
 
         if (i == 5)
-            EBEventLoop::getInstance().exit();
+            EBEventLoop::getInstance()->exit();
     }
 };
 
@@ -74,7 +86,7 @@ private:
  */
 int main()
 {
-    ExampleTimer tt(nullptr);
-    EBEventLoop::getInstance().exec();
+    ExampleTimer exampleTimer;
+    EBEventLoop::getInstance()->exec();
     return 0;
 }

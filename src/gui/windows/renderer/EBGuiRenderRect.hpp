@@ -33,15 +33,15 @@ namespace EBCpp
 class EBGuiRenderRect : public EBGuiRenderRectBase
 {
 public:
-    EBGuiRenderRect(EBObject* parent, int x, int y, int w, int h,
-                    EBGuiColor borderColor = EBGuiColor(nullptr, 0, 0, 0)) :
-        EBGuiRenderRectBase(parent, x, y, w, h, borderColor)
+    EBGuiRenderRect(int x, int y, int w, int h, EBObjectPointer<EBGuiColor> borderColor = EB_COLOR_BLACK) :
+        EBGuiRenderRectBase(x, y, w, h, borderColor)
     {
     }
 
     virtual void render(Gdiplus::Graphics& graphics)
     {
-        Gdiplus::Pen pen(Gdiplus::Color(borderColor.getA(), borderColor.getR(), borderColor.getG(), borderColor.getB()));        
+        Gdiplus::Pen pen(
+        Gdiplus::Color(borderColor->getA(), borderColor->getR(), borderColor->getG(), borderColor->getB()));
         graphics.DrawRectangle(&pen, x, y, w, h);
     }
 

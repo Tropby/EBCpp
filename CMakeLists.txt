@@ -15,6 +15,12 @@ if(WIN32)
 endif()
 
 # Compile EBCppExampleFile
+add_executable(EBCppExample examples/Example.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExample -Wl,-subsystem,console)
+endif()
+
+# Compile EBCppExampleFile
 add_executable(EBCppExampleFile examples/ExampleFile.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleFile -Wl,-subsystem,console)

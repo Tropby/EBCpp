@@ -34,10 +34,11 @@ namespace EBCpp
 class EBGuiTextLine : public EBGuiWidget
 {
 public:
-    EBGuiTextLine(EBObject* parent) : EBGuiWidget(parent), textColor(EB_COLOR_BLACK), borderColor(EB_COLOR_BLACK), timer(this)
+    EBGuiTextLine() :
+        EBGuiWidget(), textColor(EB_COLOR_BLACK), borderColor(EB_COLOR_BLACK), timer(EBCpp::EBObjectBase::createObject<EBTimer>()), cursorPos(0)
     {
-        timer.timeout.connect(*this, &EBGuiTextLine::timeout);
-        timer.startSingleShot(50);
+        timer->timeout.connect(this, &EBGuiTextLine::timeout);
+        timer->startSingleShot(50);
     }
 
     void setText(std::string text)
@@ -50,12 +51,12 @@ public:
         return this->text;
     }
 
-    void setTextColor(EBGuiColor& textColor)
+    void setTextColor(EBObjectPointer<EBGuiColor> textColor)
     {
         this->textColor = textColor;
     }
 
-    void setBorderColor(EBGuiColor& borderColor)
+    void setBorderColor(EBObjectPointer<EBGuiColor> borderColor)
     {
         this->borderColor = borderColor;
     }
@@ -123,22 +124,26 @@ protected:
         invalidate();
     }
 
-    virtual void draw(std::list<EBGuiRenderer*>& list)
+    virtual void draw(std::list< EBObjectPointer<EBGuiRenderer> >& list)
     {
-        EBGuiWidget* p = parentWidget();
+        EBObjectPointer<EBGuiWidget> p = parentWidget();
         int px = p->getX();
-        int py = p->getY();
-
-        list.push_back(new EBGuiRenderRect(this, x + px, y + py, w, h, borderColor));
-        list.push_back(new EBGuiRenderRect(this, x + px + 1, y + py + 1, w - 1, h - 1, borderColor));
+        int py = p->getY();        
+        list.push_back( EBCpp::EBObjectBase::createObject< EBGuiRenderRect>( x + px, y + py, w, h, borderColor)->cast<EBGuiRenderer>());
+        list.push_back(
+        EBCpp::EBObjectBase::createObject<EBGuiRenderRect>(x + px + 1, y + py + 1, w - 1, h - 1, borderColor)
+        ->cast<EBGuiRenderer>());
 
         if (isFocused())
         {
-            list.push_back(new EBGuiRenderTextLineWithCursor(this, x + px, y + py, w, text, cursorPos));
+            list.push_back(
+            EBCpp::EBObjectBase::createObject<EBGuiRenderTextLineWithCursor>(x + px, y + py, w, text, cursorPos)
+            ->cast<EBGuiRenderer>());
         }
         else
         {
-            list.push_back(new EBGuiRenderTextLine(this, x + px, y + py, w, text));
+            list.push_back(
+            EBCpp::EBObjectBase::createObject<EBGuiRenderTextLine>(x + px, y + py, w, text)->cast<EBGuiRenderer>());
         }
     }
 
@@ -146,18 +151,18 @@ private:
 
     EB_SLOT(timeout)
     {
-        timer.startSingleShot(120);
+        timer->startSingleShot(120);
         invalidate();
     }
 
     bool mouseIsDown;
 
-    EBTimer timer;
+    EBObjectPointer<EBTimer> timer;
 
     std::string text;
     int cursorPos;
-    EBGuiColor textColor;
-    EBGuiColor borderColor;
+    EBObjectPointer < EBGuiColor > textColor;
+    EBObjectPointer < EBGuiColor > borderColor;
 };
 
 } // namespace EBCpp

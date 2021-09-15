@@ -26,6 +26,7 @@
 #include <functional>
 #include <thread>
 #include <chrono>
+#include <memory>
 
 #include "EBEvent.hpp"
 #include "EBSemaphore.hpp"
@@ -33,10 +34,13 @@
 namespace EBCpp
 {
 
+class EBTimer;
+typedef EBObjectPointer<EBTimer> EBTimerPtr;
+
 /**
  * @brief The EBTimer can provide times events
  */
-class EBTimer : public EBObject
+class EBTimer : public EBObject<EBTimer>
 {
 public:
     /**
@@ -44,7 +48,8 @@ public:
      *
      * @param parent Parent of the EBTimer object
      */
-    EBTimer(EBObject* parent) : EBObject(parent), timerRunning(true), singleShot(false), time(-1), thread(nullptr)
+    EBTimer() :
+        EBObject(), timerRunning(true), singleShot(false), time(-1), thread(nullptr)
     {
     }
 

@@ -33,8 +33,8 @@ namespace EBCpp
 class EBGuiButton : public EBGuiWidget
 {
 public:
-    EBGuiButton(EBObject* parent) :
-        EBGuiWidget(parent), textColor(EB_COLOR_BLACK), borderColor(EB_COLOR_BLACK), mouseIsDown(false)
+    EBGuiButton() :
+        EBGuiWidget(), textColor(EB_COLOR_BLACK), borderColor(EB_COLOR_BLACK), mouseIsDown(false)
     {
     }
 
@@ -48,12 +48,12 @@ public:
         return this->text;
     }
 
-    void setTextColor(EBGuiColor & textColor)
+    void setTextColor(EBObjectPointer<EBGuiColor> textColor)
     {
         this->textColor = textColor;
     }
 
-    void setBorderColor( EBGuiColor & borderColor )
+    void setBorderColor(EBObjectPointer<EBGuiColor> borderColor)
     {
         this->borderColor = borderColor;
     }
@@ -102,24 +102,29 @@ protected:
         return true;
     }
 
-    virtual void draw(std::list<EBGuiRenderer*>& list)
+    virtual void draw(std::list<EBObjectPointer<EBGuiRenderer> >& list)
     {
-        EBGuiWidget* p = parentWidget();
+        EBObjectPointer<EBGuiWidget> p = parentWidget();
         int px = p->getX();
         int py = p->getY();
 
-        list.push_back(new EBGuiRenderText(this, x + px, y + py, w, h, text, textColor, EB_HOR_ALIGN_CENTER, EB_VERT_ALIGN_CENTER));
-        list.push_back(new EBGuiRenderRect(this, x + px, y + py, w, h, borderColor));
+        list.push_back(EBCpp::EBObjectBase::createObject<EBGuiRenderText>(x + px, y + py, w, h, text, textColor,
+                                                                          EB_HOR_ALIGN_CENTER, EB_VERT_ALIGN_CENTER)
+                       ->cast<EBGuiRenderer>());
+        list.push_back(EBCpp::EBObjectBase::createObject<EBGuiRenderRect>( x + px, y + py, w, h, borderColor)->cast<EBGuiRenderer>());
         if( mouseIsDown )
-            list.push_back(new EBGuiRenderRect(this, x + px + 1, y + py + 1, w - 1, h - 1, borderColor));
-        else        
-            list.push_back(new EBGuiRenderRect(this, x + px, y + py, w - 1, h - 1, borderColor));
+            list.push_back(
+            EBCpp::EBObjectBase::createObject<EBGuiRenderRect>(x + px + 1, y + py + 1, w - 1, h - 1, borderColor)
+            ->cast<EBGuiRenderer>());
+        else
+            list.push_back(EBCpp::EBObjectBase::createObject<EBGuiRenderRect>(x + px, y + py, w - 1, h - 1, borderColor)
+                           ->cast<EBGuiRenderer>());
     }
 
 private:
     std::string text;
-    EBGuiColor textColor;
-    EBGuiColor borderColor;
+    EBObjectPointer<EBGuiColor> textColor;
+    EBObjectPointer<EBGuiColor> borderColor;
 
     bool mouseIsDown;
 };

@@ -36,9 +36,9 @@ namespace EBCpp
 class EBGuiRenderTextLine : public EBGuiRenderTextLineBase
 {
 public:
-    EBGuiRenderTextLine(EBObject* parent, int x, int y, int w, std::string text,
-                        EBGuiColor fontColor = EB_COLOR_BLACK) :
-        EBGuiRenderTextLineBase(parent, x, y, w, text, fontColor)
+    EBGuiRenderTextLine(int x, int y, int w, std::string text,
+                        EBObjectPointer<EBGuiColor> fontColor = EB_COLOR_BLACK) :
+        EBGuiRenderTextLineBase(x, y, w, text, fontColor)
     {
     }
 
@@ -48,9 +48,9 @@ public:
         Gdiplus::Font font(&fontFamily, 24, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);
         Gdiplus::PointF pointF(x, y);
         Gdiplus::StringFormat stringFormat;
-      
+
         Gdiplus::SolidBrush solidBrush(
-        Gdiplus::Color(fontColor.getA(), fontColor.getR(), fontColor.getG(), fontColor.getB()));
+        Gdiplus::Color(fontColor->getA(), fontColor->getR(), fontColor->getG(), fontColor->getB()));
 
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         std::wstring w = converter.from_bytes(text);

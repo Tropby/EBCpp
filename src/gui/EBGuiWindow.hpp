@@ -31,7 +31,7 @@ namespace EBCpp
 class EBGuiWindowBase : public EBGuiWidget
 {    
 public:
-    EBGuiWindowBase(EBObject* parent) : EBGuiWidget(parent)
+    EBGuiWindowBase() : EBGuiWidget()
     {
     }
 
@@ -51,7 +51,7 @@ protected :
 
     virtual void resized(int w, int h)
     {
-        EBGuiWidget* widget = this->widgets.front();
+        EBObjectPointer<EBGuiWidget> widget = this->widgets.front();
         widget->setX(0);
         widget->setY(0);
         widget->setWidth(w);

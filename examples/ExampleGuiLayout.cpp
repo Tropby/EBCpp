@@ -32,74 +32,73 @@
 #include "../src/gui/EBGuiTextLine.hpp"
 
 #include <iostream>
+#include <memory>
 
-class ExampleGuiLayout : public EBCpp::EBObject
+class ExampleGuiLayout : public EBCpp::EBObject < ExampleGuiLayout>
 {
 public:
-    ExampleGuiLayout() : EBObject(nullptr), window(this)
+    ExampleGuiLayout() 
     {
-        window.closed.connect(*this, &ExampleGuiLayout::windowClosed);
-        EBCpp::EBGuiHorizontalLayout* layout = new EBCpp::EBGuiHorizontalLayout(&window);
-        window.addWidget(layout);
+        window.closed.connect(this, &ExampleGuiLayout::windowClosed);
+               
+        window.addWidget(&layout);
 
-        layout->addElement(1);
-        layout->addElement(1);
-        layout->addElement(1);
-        layout->addElement(1);
+        layout.addElement(1);
+        layout.addElement(1);
+        layout.addElement(1);
+        layout.addElement(1);
 
         EBCpp::EBGuiPadding p;
         p.left = 5;
         p.top = 10;
         p.right = 10;
         p.bottom = 5;
-        layout->setPadding(p);
+        layout.setPadding(p);
 
         EBCpp::EBGuiPadding cp;
         cp.left = 5;
         cp.top = 10;
         cp.right = 10;
         cp.bottom = 5;
-        layout->setCellPadding(cp);
+        layout.setCellPadding(cp);
 
-        button1 = new EBCpp::EBGuiButton(layout);
-        layout->addWidget(button1);
-        button1->setText("1");
-        button1->setMaxHeight(200);
-        button1->clicked.connect(*this, &ExampleGuiLayout::buttonClicked);
+        layout.addWidget(&button1);
+        button1.setText("1");
+        button1.setMaxHeight(200);
+        button1.clicked.connect(this, &ExampleGuiLayout::buttonClicked);
 
-        button2 = new EBCpp::EBGuiButton(layout);
-        layout->addWidget(button2);
-        button2->setText("2");
-        button2->setMaxHeight(100);
-        button2->clicked.connect(*this, &ExampleGuiLayout::buttonClicked);
+        layout.addWidget(&button2);
+        button2.setText("2");
+        button2.setMaxHeight(100);
+        button2.clicked.connect(this, &ExampleGuiLayout::buttonClicked);
 
-        label = new EBCpp::EBGuiLabel(layout);
-        layout->addWidget(label);
-        label->setText("???");
+        layout.addWidget(&label);
+        label.setText("???");
 
-        EBCpp::EBGuiTextLine* textLine = new EBCpp::EBGuiTextLine(layout);
-        layout->addWidget(textLine);
-        textLine->setText("test");
+        layout.addWidget(&textLine);
+        textLine.setText("test");
     }
 
 private:
     EBCpp::EBGuiWindow window;
 
-    EBCpp::EBGuiButton* button1;
-    EBCpp::EBGuiButton* button2;
-    EBCpp::EBGuiLabel* label;
+    EBCpp::EBGuiButton button1;
+    EBCpp::EBGuiButton button2;
+    EBCpp::EBGuiLabel label;
+    EBCpp::EBGuiHorizontalLayout layout;
+    EBCpp::EBGuiTextLine textLine;
 
     EB_SLOT(windowClosed)
     {
-        EBCpp::EBEventLoop::getInstance().exit();
+        EBCpp::EBEventLoop::getInstance()->exit();
     }
 
     EB_SLOT(buttonClicked)
     {
-        EBCpp::EBGuiButton* button = (EBCpp::EBGuiButton*)sender;        
+        EBCpp::EBObjectPointer<EBCpp::EBGuiButton> button = sender->cast<EBCpp::EBGuiButton>();
         std::string str = "Button Clicked: " + button->getText();
 
-        label->setText(str);
+        label.setText(str);
     }
 };
 
@@ -111,6 +110,6 @@ private:
 int main()
 {
     ExampleGuiLayout gui;
-    EBCpp::EBEventLoop::getInstance().exec();
+    EBCpp::EBEventLoop::getInstance()->exec();
     return 0;
 }

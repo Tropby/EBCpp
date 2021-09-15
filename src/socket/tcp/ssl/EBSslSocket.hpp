@@ -43,7 +43,7 @@ public:
      *
      * @param parent Parent of the EBSslSocket instance
      */
-    EBSslSocket(EBObject* parent) : EBTcpSocket(parent)
+    EBSslSocket()
     {
     }
 
@@ -55,8 +55,8 @@ public:
      * @param client client informations
      * @param parent Parent of the EBSslSocket instance
      */
-    EBSslSocket(EBObject* parent, SSL* ssl, SOCKET socketId, struct sockaddr_in client) :
-        EBTcpSocket(parent, socketId, client), ssl(ssl)
+    EBSslSocket(SSL* ssl, SOCKET socketId, struct sockaddr_in client) :
+        EBTcpSocket(socketId, client), ssl(ssl)
     {
     }
 
@@ -108,7 +108,7 @@ public:
      * @param data string to send
      * @return int bytes written to the tcp socket
      */
-    virtual int write(std::string data)
+    virtual int write(const std::string& data)
     {
         int len = -1;
         try
@@ -186,7 +186,50 @@ protected:
     virtual int receiveData(char* buffer, int size)
     {
         // Read next block of data
-        return SSL_read(ssl, buffer, size);
+        int nbytes = SSL_read(ssl, buffer, size);
+
+        if( nbytes <= 0 )
+        {
+            int error = SSL_get_error(ssl, nbytes);
+            switch(error)
+            {
+                case SSL_ERROR_NONE:
+                    std::cout << "SSL_ERROR_NONE" << std::endl;
+                    break;
+                case SSL_ERROR_ZERO_RETURN:
+                    std::cout << "SSL_ERROR_ZERO_RETURN" << std::endl;
+                    break;
+                case SSL_ERROR_WANT_READ:
+                    std::cout << "SSL_ERROR_WANT_READ" << std::endl;
+                    break;
+                case SSL_ERROR_WANT_WRITE:
+                    std::cout << "SSL_ERROR_WANT_WRITE" << std::endl;
+                    break;
+                case SSL_ERROR_WANT_CONNECT:
+                    std::cout << "SSL_ERROR_WANT_CONNECT" << std::endl;
+                    break;
+                case SSL_ERROR_WANT_ACCEPT:
+                    std::cout << "SSL_ERROR_WANT_ACCEPT" << std::endl;
+                    break;
+                case SSL_ERROR_WANT_X509_LOOKUP:
+                    std::cout << "SSL_ERROR_WANT_X509_LOOKUP" << std::endl;
+                    break;
+                case SSL_ERROR_WANT_ASYNC:
+                    std::cout << "SSL_ERROR_WANT_ASYNC" << std::endl;
+                    break;
+                case SSL_ERROR_WANT_ASYNC_JOB:
+                    std::cout << "SSL_ERROR_WANT_ASYNC_JOB" << std::endl;
+                    break;
+                case SSL_ERROR_SYSCALL:
+                    std::cout << "SSL_ERROR_SYSCALL" << std::endl;
+                    break;
+                case SSL_ERROR_SSL:
+                    std::cout << "SSL_ERROR_SSL" << std::endl;
+                    break;
+                }
+        }
+
+        return nbytes;
     }
 
 private:

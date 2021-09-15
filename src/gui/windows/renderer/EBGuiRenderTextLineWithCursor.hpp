@@ -36,9 +36,9 @@ namespace EBCpp
 class EBGuiRenderTextLineWithCursor : public EBGuiRenderTextLineWithCursorBase
 {
 public:
-    EBGuiRenderTextLineWithCursor(EBObject* parent, int x, int y, int maxWidth, std::string text, int cursorPos,
-                                  EBGuiColor fontColor = EB_COLOR_BLACK) :
-        EBGuiRenderTextLineWithCursorBase(parent, x, y, maxWidth, text, cursorPos, fontColor)
+    EBGuiRenderTextLineWithCursor(int x, int y, int maxWidth, std::string text,
+                                  int cursorPos, EBObjectPointer < EBGuiColor> fontColor = EB_COLOR_BLACK) :
+        EBGuiRenderTextLineWithCursorBase(x, y, maxWidth, text, cursorPos, fontColor)
     {
     }
 
@@ -48,9 +48,9 @@ public:
         Gdiplus::Font font(&fontFamily, 24, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);
         Gdiplus::PointF pointF(x, y);
         Gdiplus::StringFormat stringFormat;
-      
+
         Gdiplus::SolidBrush solidBrush(
-        Gdiplus::Color(fontColor.getA(), fontColor.getR(), fontColor.getG(), fontColor.getB()));
+        Gdiplus::Color(fontColor->getA(), fontColor->getR(), fontColor->getG(), fontColor->getB()));
 
         std::string preText = text.substr(0, cursorPos);
         std::string sufText = text.substr(cursorPos);
@@ -86,7 +86,7 @@ public:
         // Draw String bevor Cursor!
         graphics.DrawString(preTextw.c_str(), -1, &font, pointF, &stringFormat, &solidBrush);
 
-        Gdiplus::Pen pen(Gdiplus::Color(fontColor.getA(), fontColor.getR(), fontColor.getG(), fontColor.getB()));
+        Gdiplus::Pen pen(Gdiplus::Color(fontColor->getA(), fontColor->getR(), fontColor->getG(), fontColor->getB()));
         pointF.X = pointF.X + outRect.Width + 5;
 
         Gdiplus::PointF pointCursor1(pointF.X, y + 4);

@@ -33,11 +33,11 @@ namespace EBCpp
 class EBGuiRenderTextBase : public EBGuiRenderer
 {
 public:
-    EBGuiRenderTextBase(EBObject* parent, int x, int y, int w, int h, std::string text,
-                        EBGuiColor fontColor = EB_COLOR_BLACK,
+    EBGuiRenderTextBase(int x, int y, int w, int h, std::string text,
+                        EBObjectPointer<EBGuiColor> fontColor = EB_COLOR_BLACK,
                         EBGuiHorizontalAlignment horizontalAlignment = EBGuiHorizontalAlignment::EB_HOR_ALIGN_LEFT,
                         EBGuiVerticalAlignment verticalAlignment = EBGuiVerticalAlignment::EB_VERT_ALIGN_TOP) :
-        EBGuiRenderer(parent),
+        EBGuiRenderer(),
         x(x), y(y), w(w), h(h), text(text), fontColor(fontColor), horizontalAlignment(horizontalAlignment),
         verticalAlignment(verticalAlignment)
     {
@@ -49,7 +49,7 @@ protected:
     int w;
     int h;
     std::string text;
-    EBGuiColor fontColor;
+    EBObjectPointer<EBGuiColor> fontColor;
     EBGuiHorizontalAlignment horizontalAlignment;
     EBGuiVerticalAlignment verticalAlignment;
 };

@@ -24,24 +24,71 @@
 #pragma once
 
 #include "../EBObject.hpp"
+#include "EBLogger.hpp"
+#include <chrono>
 
-#define EB_PROFILE_FUNC
-#define EB_PROFILE_CLASS
+#ifdef EB_PROFILE_CONSOLE
+    #define EB_PROFILE 
+#endif
 
-namespace EBCpp {
+#ifdef EB_PROFILE
+    #define EB_PROFILE_FUNC() EBCpp::EBProfileCall _ebprofilecall(__FILE__, __LINE__, __func__, this->watchCount());
+    #define EB_PROFILE_CLASS()
+#else
+    #define EB_PROFILE_FUNC()
+    #define EB_PROFILE_CLASS()
+#endif
 
-class EBProfileCall;
+namespace EBCpp
+{
 
-class EBProfile : public EBObject{
+class EBProfileCall : public EBObject<EBProfileCall>
+{
 public:
-    virtual ~EBProfile(){}
+    EBProfileCall(std::string file, int line, std::string method, int sharedPointer) :
+        file(file), line(line), method(method), sharedPointer(sharedPointer)
+    {
+        start = std::chrono::high_resolution_clock::now();
+        EB_LOG("START [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::_counter << " SPtr: " << sharedPointer << "] >> " << file
+                              << ":" << line << " @ " << method);
+    }
 
-    std::shared_ptr<EBProfile> getInstance();
+    ~EBProfileCall()
+    {
+        auto stop = std::chrono::high_resolution_clock::now();
+
+        auto int_s = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+        EB_LOG("STOP [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::_counter
+                             << " SPtr: " << sharedPointer << "] >> " << file << ":" << line << " @ " << method
+                             << " (T=" << int_s.count() << " us)");
+    }
 
 private:
-    EBProfile(){}
+    std::string file;
+    std::string method;
+    int line;
+    int sharedPointer;
+    std::chrono::time_point<std::chrono::high_resolution_clock> start;
+};
 
-    std::shared_ptr<EBProfile> instance;
-}
+class EBProfile : public EBObject<EBProfile>
+{
+public:
+    static EBObjectPointer<EBProfile> getInstance()
+    {
+        if (instance == nullptr)
+        {
+            instance = EBObjectPointer<EBProfile>(new EBProfile());
+        }
+        return instance;
+    }
 
-}
+private:
+    EBProfile()
+    {
+    }
+
+    static inline EBObjectPointer<EBProfile> instance = EBObjectPointer<EBProfile>(nullptr);
+};
+} // namespace EBCpp

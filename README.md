@@ -9,26 +9,70 @@ The events are synchronised to one thread. Therefore the events are thread-safe.
 * [Installation](#installation)
 * [Example](#example)
 
-## Example
+## Installation
 
-The following example shows the usage of an `EBTimer` that prints a message.
+EBCpp is a header only framework. You include the "*.hpp" files and the system is working. Its that easy.
+
+## Pointer
+
+With EBCpp you should not use raw C pointer.  You should use `EBCpp::EBObjectBase::createObject<T>()`. The following example shows how to use the pointers.
 
 ```C++
-#include "src/EBEventLoop.hpp"
-#include "src/EBTimer.hpp"
+#include "../src/EBObject.hpp"
 
-using namespace std;
 using namespace EBCpp;
 
-class ExampleTimer : public EBObject
+class Example : public EBObject<Example>
 {
 public:
-    ExampleTimer(EBObject* parent) : 
-        EBObject(parent),
-        timer(this)
+    Example(int c) : c(c)
     {
-        timer.timeout.connect(*this, &ExampleTimer::timeout);
-        timer.start( 1000 );
+    }
+
+    void hello()
+    {
+        std::cout << "Hello :) c is " << c << std::endl;
+    }
+
+private:
+    int c;
+};
+
+int main()
+{
+    {
+        EBObjectPointer<Example> example = EBObjectBase::createObject<Example>(15);
+        example->hello();
+    }
+    // Object will be destroyed at this point, because no more EBObjectPointers are pointing to it.
+}
+
+```
+
+## Example
+
+The following example shows the usage of an `EBTimer` that prints 5 messages and exists.
+
+```C++
+#include "../src/EBEventLoop.hpp"
+#include "../src/EBTimer.hpp"
+#include "../src/profile/EBLogger.hpp"
+#include "../src/profile/EBProfile.hpp"
+
+using namespace EBCpp;
+
+class ExampleTimer : public EBObject<ExampleTimer>
+{
+public:
+    ExampleTimer() 
+    {
+        timer.timeout.connect(this, &ExampleTimer::timeout);
+        timer.start(1000);
+    }
+
+    ~ExampleTimer()
+    {
+        timer.timeout.disconnect(this, &ExampleTimer::timeout);
     }
 
 private:
@@ -36,16 +80,20 @@ private:
 
     EB_SLOT(timeout)
     {
-        static int i = 0;
-        cout << "timeout " << i++ << endl;
-    }
+        EB_PROFILE_FUNC();
 
+        static int i = 0;
+        EB_LOG("timeout " << ++i);
+
+        if (i == 5)
+            EBEventLoop::getInstance()->exit();
+    }
 };
 
 int main()
 {
-    ExampleTimer tt(nullptr);
-    EBEventLoop::getInstance().exec();
+    ExampleTimer exampleTimer;
+    EBEventLoop::getInstance()->exec();
     return 0;
 }
 ```

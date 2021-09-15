@@ -34,7 +34,7 @@ namespace EBCpp
 class EBGuiRenderer : public EBGuiRendererBase
 {
 public:
-    EBGuiRenderer(EBObject* parent) : EBGuiRendererBase(parent)
+    EBGuiRenderer() : EBGuiRendererBase()
     {
     }
 

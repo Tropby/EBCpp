@@ -25,6 +25,7 @@
 #include <iostream>
 #include <string>
 
+#include "../src/EBObject.hpp"
 #include "../src/EBEvent.hpp"
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"
@@ -36,18 +37,18 @@
  * @brief Example to show the function of the TCP server
  *
  */
-class ExampleHttpsServer : public EBCpp::EBObject
+class ExampleHttpsServer : public EBCpp::EBObject<ExampleHttpsServer>
 {
 public:
     /**
      * @brief Construct a new Example Tcp Server object
      *
      */
-    ExampleHttpsServer() :
-        EBCpp::EBObject(nullptr), server(this), sslServer(this, "../examples/testCert.pem", "../examples/testKey.pem")
+    ExampleHttpsServer() : sslServer("../examples/testCert.pem", "../examples/testKey.pem")
     {
-        server.newRequest.connect(*this, &ExampleHttpsServer::requestReady);
-        server.setTcpServer(&sslServer);
+        server.newRequest.connect(this, &ExampleHttpsServer::requestReady);
+        auto test = &sslServer;
+        server.setTcpServer(test);
 
         if (sslServer.bind(8958, "127.0.0.1"))
         {
@@ -69,7 +70,7 @@ public:
      * @param sender The sender object (Http Server)
      * @param request The request object ready to be answered
      */
-    EB_SLOT_WITH_ARGS(requestReady, EBCpp::EBHttpRequest* request)
+    EB_SLOT_WITH_ARGS(requestReady, EBCpp::EBObjectPointer<EBCpp::EBHttpRequest> request)
     {
         static int count = 0;
 
@@ -90,7 +91,7 @@ public:
                     "</form><hr />"
                     + std::string(v.begin(), v.end()) + "<hr />"
                     + request->getPostParameter("te=st") + "<hr />"
-                    + EBObject::getObjectsInfo() + "<hr />"
+                    + "<hr />"
                 "</body>"
             "</html>");
     }
@@ -103,5 +104,5 @@ private:
 int main()
 {
     ExampleHttpsServer ExampleHttpsServer;
-    EBCpp::EBEventLoop::getInstance().exec();
+    EBCpp::EBEventLoop::getInstance()->exec();
 }

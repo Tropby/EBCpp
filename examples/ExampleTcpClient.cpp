@@ -34,7 +34,7 @@
  * @brief Example to show the function of a tcp client
  *
  */
-class ExampleTcpClient : public EBCpp::EBObject
+class ExampleTcpClient : public EBCpp::EBObject<ExampleTcpClient>
 {
 public:
     /**
@@ -42,15 +42,18 @@ public:
      *
      * @param parent Parent of this object
      */
-    ExampleTcpClient(EBCpp::EBObject* parent) : EBCpp::EBObject(parent), socket(this)
+    ExampleTcpClient() 
     {
-        socket.connected.connect(*this, &ExampleTcpClient::connected);
-        socket.disconnected.connect(*this, &ExampleTcpClient::disconnected);
-        socket.error.connect(*this, &ExampleTcpClient::error);
-        socket.readReady.connect(*this, &ExampleTcpClient::readReady);
+        socket.connected.connect(this, &ExampleTcpClient::connected);
+        socket.disconnected.connect(this, &ExampleTcpClient::disconnected);
+        socket.error.connect(this, &ExampleTcpClient::error);
+        socket.readReady.connect(this, &ExampleTcpClient::readReady);
 
         socket.setFileName("tcp://127.0.0.1:8958");
-        socket.open(EBCpp::EBIODevice::READ_WRITE);
+        if( !socket.open(EBCpp::EBIODevice<EBCpp::EBTcpSocket>::READ_WRITE) )
+        {
+            std::cout << "Can not connect!" << std::endl;
+        }
     }
 
     /**
@@ -75,7 +78,7 @@ public:
     EB_SLOT(disconnected)
     {
         std::cout << "disconnected" << std::endl;
-        EBCpp::EBEventLoop::getInstance().exit();
+        EBCpp::EBEventLoop::getInstance()->exit();
     }
 
     /**
@@ -88,14 +91,16 @@ public:
     EB_SLOT(readReady)
     {
         char buffer[1024];
-        EBCpp::EBTcpSocket* socket = static_cast<EBCpp::EBTcpSocket*>(sender);
+        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
 
         int nbytes = socket->read(buffer, 1024);
-        std::string s(buffer, nbytes);
-
-        std::cout << "read Ready: " << s << std::endl;
-
-        socket->close();
+        if (nbytes > 0)
+        {
+            std::string s(buffer, nbytes);
+            std::cout << "read Ready: " << s << std::endl;
+            socket->write(s);
+            socket->close();
+        }
     }
 
     /**
@@ -122,6 +127,6 @@ private:
  */
 int main()
 {
-    ExampleTcpClient exampleTcpClient(nullptr);
-    EBCpp::EBEventLoop::getInstance().exec();
+    ExampleTcpClient exampleTcpClient;
+    EBCpp::EBEventLoop::getInstance()->exec();
 }

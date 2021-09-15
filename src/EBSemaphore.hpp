@@ -36,7 +36,7 @@ namespace EBCpp
  * @brief Semaphore implementation for EBCpp
  *
  */
-class EBSemaphore : public EBObject
+class EBSemaphore : public EBObject<EBSemaphore>
 {
 public:
     /**
@@ -45,7 +45,7 @@ public:
      * @param startCount Number of tokens the semaphore can provide after the creation
      * @param parent Parent EBCpp object
      */
-    EBSemaphore(uint32_t startCount, EBObject* parent = nullptr) : EBObject(parent), tokens(startCount)
+    EBSemaphore(uint32_t startCount) : EBObject(), tokens(startCount)
     {
     }
 

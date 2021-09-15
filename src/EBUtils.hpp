@@ -97,6 +97,12 @@ public:
         return stream.str();
     }
 
+    /**
+     * @brief returns the lower case of an string
+     * 
+     * @param s Input string
+     * @return std::string The input string in lower case
+     */
     static std::string toLower( std::string s )
     {
         std::transform(s.begin(), s.end(), s.begin(), 
@@ -105,6 +111,12 @@ public:
         return s;
     }
 
+    /**
+     * @brief Decodes an URL.
+     * 
+     * @param s Encoded URL
+     * @return std::string Decodes URL
+     */
     static std::string urlDecode( std::string s )
     {
         std::string ret;
@@ -132,6 +144,11 @@ public:
         return ret;
     }
 
+    /**
+     * @brief Returns the uptime of the application in milliseconds.
+     * 
+     * @return int64_t Milliseconds since the software was started.
+     */
     static int64_t uptime()
     {
         static std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();

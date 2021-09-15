@@ -58,6 +58,10 @@ public:
     {
     }
 
+    /**
+     * @brief Destroy the EBSlotCall object
+     * 
+     */
     ~EBSlotCall()
     {
     }

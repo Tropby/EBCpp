@@ -121,6 +121,12 @@ public:
         thread = new std::thread(std::bind(&EBTimer::run, this));
     }
 
+    /**
+     * @brief Checks if the timer is currently running.
+     * 
+     * @return true if the timer is running.
+     * @return false if the timer is not running.
+     */
     bool isRunning()
     {
         return timerRunning;

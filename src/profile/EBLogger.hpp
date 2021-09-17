@@ -27,22 +27,46 @@
 #include <mutex>
 #include <sstream>
 
-#define EB_LOG(msg)                                                                                                    \
+#define EB_LOG(type, msg)                                                                                              \
     {                                                                                                                  \
         std::stringstream _ss;                                                                                         \
         _ss << msg;                                                                                                    \
-        EBCpp::EBLogger::getInstance()->log(_ss);                                                                      \
+        EBCpp::EBLogger::getInstance()->log(type, _ss);                                                                \
     }
 
 namespace EBCpp
 {
 
+/**
+ * @brief Logger class that handles all log calls
+ *
+ */
 class EBLogger : public EBObject<EBLogger>
 {
 public:
+    /**
+     * @brief Log type.
+     *        The logger can filter logs to create different logs
+     *        for different programm states (Debug / Release)
+     *
+     */
+    enum LOG_TYPE
+    {
+        LOG_DEBUG = 1,
+        LOG_PROFILE = 2,
+        LOG_WARNING = 4,
+        LOG_ERROR = 8,
+        LOG_CRITICAL = 16
+    };
+
+    /**
+     * @brief Get the Singelton Instance object
+     *
+     * @return EBObjectPointer<EBLogger>&
+     */
     static EBObjectPointer<EBLogger>& getInstance()
     {
-        if( instance == nullptr )
+        if (instance == nullptr)
         {
             instance = EBObjectPointer<EBLogger>(new EBLogger());
         }
@@ -50,20 +74,46 @@ public:
         return instance;
     }
 
-    void log(const std::stringstream & message)
+    /**
+     * @brief Log a message to the current Log-Methods
+     *
+     * @param type Type of the log message
+     * @param message Message that should be logged
+     */
+    void log(const LOG_TYPE type, const std::stringstream& message)
     {
+        std::string strType = "UNKNOWN";
+        switch (type)
+        {
+            LOG_TYPE::LOG_DEBUG:
+            {
+                strType = "DEBUG";
+            }
+            break;
+            LOG_TYPE::LOG_PROFILE : break;
+            LOG_TYPE::LOG_WARNING : break;
+            LOG_TYPE::LOG_ERROR : break;
+            LOG_TYPE::LOG_CRITICAL : break;
+        }
+
         std::lock_guard<std::mutex> guard(mutex);
 
+        /// TODO: Use LogFile and other classes to send log messages to sinks
         std::cout << message.str() << std::endl;
     }
 
 private:
+    /**
+     * @brief Construct a new EBLogger object
+     *
+     */
     EBLogger()
     {
     }
 
     static inline EBObjectPointer<EBLogger> instance = EBObjectPointer<EBLogger>(nullptr);
     std::mutex mutex;
+    LOG_TYPE typesToLog;
 };
 
 } // namespace EBCpp

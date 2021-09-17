@@ -41,7 +41,6 @@ public:
     /**
      * @brief Construct a new EBSslSocket object
      *
-     * @param parent Parent of the EBSslSocket instance
      */
     EBSslSocket()
     {
@@ -53,7 +52,6 @@ public:
      * @param ssl Ssl structure
      * @param socketId socket id of the tcp connection
      * @param client client informations
-     * @param parent Parent of the EBSslSocket instance
      */
     EBSslSocket(SSL* ssl, SOCKET socketId, struct sockaddr_in client) :
         EBTcpSocket(socketId, client), ssl(ssl)

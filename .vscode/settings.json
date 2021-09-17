@@ -1,4 +1,5 @@
 {
+    "doxygen_runner.configuration_file_override": "${workspaceFolder}/Doxyfile",
     "C_Cpp.default.configurationProvider": "go2sh.cmake-integration",
     "files.associations": {
         "array": "cpp",

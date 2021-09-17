@@ -26,6 +26,8 @@
 #include "../EBObject.hpp"
 #include <fstream>
 
+#error DO NOT USE THIS FILE!
+
 namespace EBCpp
 {
 

@@ -51,9 +51,8 @@ public:
      *
      * @param certFileName Cert file name
      * @param keyFileName Key file name
-     * @param parent Parent object of the tcp server
      */
-    EBSslServer(std::string certFileName, std::string keyFileName) : EBTcpServer()
+    EBSslServer(std::string certFileName, std::string keyFileName)
     {
         SSL_load_error_strings();
         OpenSSL_add_ssl_algorithms();

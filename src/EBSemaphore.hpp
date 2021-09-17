@@ -43,7 +43,6 @@ public:
      * @brief Construct a new EBSemaphore object
      *
      * @param startCount Number of tokens the semaphore can provide after the creation
-     * @param parent Parent EBCpp object
      */
     EBSemaphore(uint32_t startCount) : EBObject(), tokens(startCount)
     {

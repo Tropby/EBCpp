@@ -152,7 +152,7 @@ public:
     }
 
     /**
-     * @brief Connects a event to an callback method of the receiving object using an event loop
+     * @brief Connects an event to a callback method of the receiving object using an event loop
      *
      * @tparam X Type of the receiving object (automatic set)
      * @tparam T Type of the receiving object  (automatic set)
@@ -168,8 +168,42 @@ public:
         connections.push_back(this->template createObject<EBConnection<args...>>(eventLoop, receiver, t));
     }
 
+     /**
+     * @brief Connects an event to a callback method of the receiving object using the default event loop
+     *
+     * @tparam X Type of the receiving object (automatic set)
+     * @tparam T Type of the receiving object  (automatic set)
+     * @tparam Types Parameters of the function that will receive the event (automatic set)
+     * @param receiver The receiver instance (EBObject) of the event
+     * @param function The function of the receiver object that is called if the event is emitted
+     */
     template <class X, class T, class... Types>
-    void disconnect(EBObjectPointer<EBEventLoop> eventLoop, X receiver, void (T::*function)(Types...)) 
+    void connect(X receiver, void (T::*function)(Types...))
+    {
+        connect(EBEventLoop::getInstance(), receiver, function);
+    }
+
+    /**
+     * @brief Disconnects alll slots from this event
+     * 
+     */
+    void disconnectAll()
+    {
+        connections.clear();
+    }
+
+    /**
+     * @brief Disconnects an event from a callback method of the receiving object using an event loop
+     *
+     * @tparam X Type of the receiving object (automatic set)
+     * @tparam T Type of the receiving object  (automatic set)
+     * @tparam Types Parameters of the function that will receive the event (automatic set)
+     * @param eventLoop The EBEventLoop the event is connected to
+     * @param receiver The receiver instance (EBObject) of the event
+     * @param function The function of the receiver object that is called if the event is emitted
+     */
+    template <class X, class T, class... Types>
+    void disconnect(EBObjectPointer<EBEventLoop> eventLoop, X receiver, void (T::*function)(Types...))
     {
         for (EBObjectPointer<EBConnection<args...>>& con : connections)
         {
@@ -182,21 +216,15 @@ public:
             auto t = EBCpp::bind(function, receiver);
             auto ct = con->getFunction();
 
-            if (cr == r && ce == e && getAddress(t) == getAddress(ct) )
+            if (cr == r && ce == e && getAddress(t) == getAddress(ct))
             {
                 connections.remove(con);
             }
         }
     }
 
-    template <class X, class T, class... Types>
-    void disconnect(X receiver, void (T::*function)(Types...))
-    {
-        disconnect(EBEventLoop::getInstance(), receiver, function);
-    }
-
     /**
-     * @brief Connects a event to an callback method of the receiving object using the default event loop
+     * @brief Disconnects an event from a callback method of the receiving object using the default event loop
      *
      * @tparam X Type of the receiving object (automatic set)
      * @tparam T Type of the receiving object  (automatic set)
@@ -205,9 +233,9 @@ public:
      * @param function The function of the receiver object that is called if the event is emitted
      */
     template <class X, class T, class... Types>
-    void connect(X receiver, void (T::*function)(Types...))
+    void disconnect(X receiver, void (T::*function)(Types...))
     {
-        connect(EBEventLoop::getInstance(), receiver, function);
+        disconnect(EBEventLoop::getInstance(), receiver, function);
     }
 
     /**

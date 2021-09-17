@@ -46,9 +46,8 @@ public:
     /**
      * @brief Construct a new EBTcpSocket object
      *
-     * @param parent Parent of the EBTcpSocket instance
      */
-    EBTcpSocket() : EBIODevice(), socketId(-1), thread(nullptr), connectionState(false)
+    EBTcpSocket() : socketId(-1), thread(nullptr), connectionState(false)
     {
         EB_PROFILE_FUNC();
         
@@ -67,7 +66,6 @@ public:
     /**
      * @brief Construct a new EBTcpServerSocket object
      *
-     * @param parent EBTcpServer that have created the object
      * @param socketId socket id of the tcp connection
      * @param client client informations
      */
@@ -291,6 +289,10 @@ public:
         thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpSocket::run, this)));
     }
 
+    /**
+     * @brief Waiting for the Thread to join it with the current thread
+     * 
+     */
     void joinThread()
     {
         EB_PROFILE_FUNC();

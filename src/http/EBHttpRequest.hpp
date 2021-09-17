@@ -45,6 +45,11 @@ public:
         readReady(tcpSocket->template cast<EBObject<EBObjectBase>>());
     }
 
+    /**
+     * @brief Get the Data that was received by the EBHttpRequest
+     * 
+     * @return std::vector<char> the data
+     */
     std::vector<char> getData()
     {
         return data;
@@ -117,6 +122,12 @@ public:
         responseCode = code;
     }
 
+    /**
+     * @brief Get the Post Parameter
+     * 
+     * @param key The key of the parameter that should be returned
+     * @return std::string the value of the parameter
+     */
     std::string getPostParameter(std::string key)
     {
         return postParameter[key];

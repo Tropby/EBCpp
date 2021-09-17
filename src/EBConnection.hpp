@@ -69,16 +69,31 @@ public:
         eventLoop->emit(sc);
     }
 
+    /**
+     * @brief Get the Event Loop object
+     * 
+     * @return const EBObjectPointer<EBEventLoop>& 
+     */
     const EBObjectPointer<EBEventLoop>& getEventLoop() const
     {
         return eventLoop;
     }
 
+    /**
+     * @brief Get the Receiver object
+     * 
+     * @return const EBObjectPointer<EBObject<EBObjectBase>>& 
+     */
     const EBObjectPointer<EBObject<EBObjectBase>>& getReceiver() const
     {
         return receiver;
     }
 
+    /**
+     * @brief Get the Function object
+     * 
+     * @return const std::function<void(EBObjectPointer<EBObject<EBObjectBase>>, args...)>& 
+     */
     const std::function<void(EBObjectPointer<EBObject<EBObjectBase>>, args...)>& getFunction() const
     {
         return function;

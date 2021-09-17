@@ -42,6 +42,10 @@ class EBObjectPointerBase;
 template <class T>
 class EBObjectPointer;
 
+/**
+ * @brief Base class of EBCpp. Every class should inherit this class
+ * 
+ */
 class EBObjectBase
 {
 public:
@@ -203,17 +207,32 @@ public:
         pointer = nullptr;
     }
 
+    /**
+     * @brief 
+     * 
+     * @param other 
+     * @return true 
+     * @return false 
+     */
     bool operator==(const EBObjectPointerBase& other)
     {
         return this->pointer == other.pointer;
     }
 
+    /**
+     * @brief 
+     * 
+     * @param other 
+     * @return true 
+     * @return false 
+     */
     bool operator!=(const EBObjectPointerBase& other)
     {
         return this->pointer != other.pointer;
     }
 
 protected:
+    //! Pointer to the object that is observed by this pointer instance
     EBObjectBase* pointer;
 };
 
@@ -264,7 +283,7 @@ public:
     T* operator->()
     {
         if (pointer == nullptr)
-            throw EB_EXCEPTION("Can not get pointer from a EBObjectPointer that is null!");
+            EB_EXCEPTION("Can not get pointer from a EBObjectPointer that is null!");
 
         return static_cast<T*>(pointer);
     }
@@ -277,7 +296,7 @@ public:
     T* get() const
     {
         if (pointer == nullptr)
-            throw EB_EXCEPTION("Can not get pointer from a EBObjectPointer that is null!");
+            EB_EXCEPTION("Can not get pointer from a EBObjectPointer that is null!");
 
         return static_cast<T*>(pointer);
     }

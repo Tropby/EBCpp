@@ -30,6 +30,7 @@
 #include "EBConnection.hpp"
 #include "EBEventLoop.hpp"
 #include "EBObject.hpp"
+#include "profile/EBProfile.hpp"
 
 #define EB_SIGNAL(signalName) EBCpp::EBEvent<> signalName
 #define EB_SLOT(slotName) void slotName(EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> sender)
@@ -207,18 +208,20 @@ public:
     {
         for (EBObjectPointer<EBConnection<args...>>& con : connections)
         {
+            /// TODO: Check if the functions are equal.
+            auto t = EBCpp::bind(function, receiver);
+            auto ct = con->getFunction();
+
             EBObjectPointer<EBObject<EBObjectBase>> r = receiver;
             EBObjectPointer<EBObject<EBObjectBase>> cr = con->getReceiver();
 
             EBObjectPointer<EBEventLoop> e = eventLoop;
             EBObjectPointer<EBEventLoop> ce = con->getEventLoop();
 
-            auto t = EBCpp::bind(function, receiver);
-            auto ct = con->getFunction();
-
-            if (cr == r && ce == e && getAddress(t) == getAddress(ct))
+            if (cr == r && ce == e)
             {
                 connections.remove(con);
+                return;
             }
         }
     }
@@ -264,13 +267,7 @@ public:
 private:
     std::list<EBObjectPointer<EBConnection<args...>>> connections;
 
-    template <typename T, typename... U>
-    size_t getAddress(std::function<T(U...)> f)
-    {
-        typedef T(fnType)(U...);
-        fnType** fnPointer = f.template target<fnType*>();
-        return (size_t)*fnPointer;
-    }
+  
 };
 
 } // namespace EBCpp

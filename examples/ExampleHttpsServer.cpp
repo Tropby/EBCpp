@@ -25,9 +25,9 @@
 #include <iostream>
 #include <string>
 
-#include "../src/EBObject.hpp"
 #include "../src/EBEvent.hpp"
 #include "../src/EBEventLoop.hpp"
+#include "../src/EBObject.hpp"
 #include "../src/EBTimer.hpp"
 #include "../src/http/EBHttpServer.hpp"
 #include "../src/socket/tcp/EBTcpSocket.hpp"
@@ -76,24 +76,27 @@ public:
 
         std::vector<char> v = request->getData();
 
-        request->sendReply(
-            "<html>"
-                "<head>"
-                    "<title>Hello World (" + std::to_string(++count) + ")</title>"
-                "</head>"
-                "<body>"        
-                    "Hello World!<br />"
-                    "Called: " + std::to_string(++count) + "<hr />" 
-                    "<form method=\"POST\">"
-                        "<input type=\"text\" name=\"te=st\" />"
-                        "<input type=\"text\" name=\"Blub\" />"
-                        "<input type=\"submit\" />"
-                    "</form><hr />"
-                    + std::string(v.begin(), v.end()) + "<hr />"
-                    + request->getPostParameter("te=st") + "<hr />"
-                    + "<hr />"
-                "</body>"
-            "</html>");
+        request->sendReply("<html>"
+                           "<head>"
+                           "<title>Hello World (" +
+                           std::to_string(++count) +
+                           ")</title>"
+                           "</head>"
+                           "<body>"
+                           "Hello World!<br />"
+                           "Called: " +
+                           std::to_string(++count) +
+                           "<hr />"
+                           "<form method=\"POST\">"
+                           "<input type=\"text\" name=\"te=st\" />"
+                           "<input type=\"text\" name=\"Blub\" />"
+                           "<input type=\"submit\" />"
+                           "</form><hr />" +
+                           std::string(v.begin(), v.end()) + "<hr />" + request->getPostParameter("te=st") + "<hr />" +
+                           request->getPostParameter("Blub") +
+                           "<hr />"
+                           "</body>"
+                           "</html>");
     }
 
 private:

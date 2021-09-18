@@ -22,6 +22,14 @@ else()
     target_link_libraries(EBCppExample pthread)        
 endif()
 
+# Compile EBCppExcampleSignalSlot
+add_executable(EBCppExampleSignalSlot examples/ExampleSignalSlot.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleSignalSlot -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleSignalSlot pthread)        
+endif()
+
 # Compile EBCppExampleFile
 add_executable(EBCppExampleFile examples/ExampleFile.cpp)
 if(WIN32)

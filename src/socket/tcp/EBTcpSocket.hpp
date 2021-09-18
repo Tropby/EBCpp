@@ -30,7 +30,7 @@
 #include "../../EBIODevice.hpp"
 #include "../../EBSemaphore.hpp"
 #include "../../EBUtils.hpp"
-
+#include "../../profile/EBProfile.hpp"
 #include "EBTcpHeader.hpp"
 
 namespace EBCpp
@@ -40,7 +40,7 @@ namespace EBCpp
  * @brief Socket to handle a tcp connection
  *
  */
-class EBTcpSocket : public EBIODevice < EBTcpSocket >
+class EBTcpSocket : public EBIODevice<EBTcpSocket>
 {
 public:
     /**
@@ -50,7 +50,7 @@ public:
     EBTcpSocket() : socketId(-1), thread(nullptr), connectionState(false)
     {
         EB_PROFILE_FUNC();
-        
+
         static bool inited = false;
         if (!inited)
         {
@@ -172,15 +172,15 @@ public:
         {
             connectionState = false;
 
-#ifdef __WIN32__                    
-                shutdown(socketId, SD_SEND);
-#else                
-                shutdown(socketId, SHUT_WR);
-#endif                    
+#ifdef __WIN32__
+            shutdown(socketId, SD_SEND);
+#else
+            shutdown(socketId, SHUT_WR);
+#endif
 
             return true;
         }
-        return false;        
+        return false;
     }
 
     /**
@@ -291,7 +291,7 @@ public:
 
     /**
      * @brief Waiting for the Thread to join it with the current thread
-     * 
+     *
      */
     void joinThread()
     {
@@ -299,7 +299,7 @@ public:
 
         if (thread)
         {
-            if( thread->joinable() )
+            if (thread->joinable())
             {
                 thread->join();
             }
@@ -309,7 +309,7 @@ public:
 
     /**
      * @brief Returns true if the end of stream is reached
-     * 
+     *
      * @return true if at the end of the io stream
      * @return false otherwise
      */
@@ -439,21 +439,21 @@ private:
             {
             // Discriptor disconnected
             case 0:
-#ifdef __WIN32__                    
-                    ::closesocket(socketId);
-#else                
-                    ::close(socketId);
-#endif                    
+#ifdef __WIN32__
+                ::closesocket(socketId);
+#else
+                ::close(socketId);
+#endif
 
                 EB_EMIT(disconnected);
                 return;
 
             case -1:
-#ifdef __WIN32__                    
+#ifdef __WIN32__
                 ::closesocket(socketId);
-#else                
+#else
                 ::close(socketId);
-#endif                    
+#endif
 
                 // if not closed send error message otherwise send disconnected
                 if (connectionState)

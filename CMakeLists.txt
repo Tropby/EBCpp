@@ -50,22 +50,24 @@ if(WIN32)
     target_link_libraries(EBCppExampleHttpServer wsock32 ws2_32 -Wl,-subsystem,console)
 endif()
 
-# Compile EBCppExampleGui 
-add_executable(EBCppExampleGui examples/ExampleGui.cpp)
 if(WIN32)
-    target_link_libraries(EBCppExampleGui gdiplus -Wl,-subsystem,console)
-endif()
+    # Compile EBCppExampleGui 
+    add_executable(EBCppExampleGui examples/ExampleGui.cpp)
+    if(WIN32)
+        target_link_libraries(EBCppExampleGui gdiplus -Wl,-subsystem,console)
+    endif()
 
-# Compile EBCppExampleImage
-add_executable(EBCppExampleGuiImage examples/ExampleGuiImage.cpp)
-if(WIN32)
-    target_link_libraries(EBCppExampleGuiImage gdiplus -Wl,-subsystem,console)
-endif()
+    # Compile EBCppExampleImage
+    add_executable(EBCppExampleGuiImage examples/ExampleGuiImage.cpp)
+    if(WIN32)
+        target_link_libraries(EBCppExampleGuiImage gdiplus -Wl,-subsystem,console)
+    endif()
 
-# Compile EBCppExampleGuiLayout
-add_executable(EBCppExampleGuiLayout examples/ExampleGuiLayout.cpp)
-if(WIN32)
-    target_link_libraries(EBCppExampleGuiLayout gdiplus -Wl,-subsystem,console)
+    # Compile EBCppExampleGuiLayout
+    add_executable(EBCppExampleGuiLayout examples/ExampleGuiLayout.cpp)
+    if(WIN32)
+        target_link_libraries(EBCppExampleGuiLayout gdiplus -Wl,-subsystem,console)
+    endif()
 endif()
 
 find_package(OpenSSL)
@@ -76,7 +78,7 @@ if(OPENSSL_FOUND)
     if(WIN32)
         target_link_libraries(EBCppExampleSSLClient OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     else()
-        target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL)
+        target_link_libraries(EBCppExampleSSLClient OpenSSL::Crypto OpenSSL::SSL)
     endif()
 
     # Compile EBCppExampleSSLServer 
@@ -85,7 +87,7 @@ if(OPENSSL_FOUND)
     if(WIN32)
         target_link_libraries(EBCppExampleSSLServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     else()
-        target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL)
+        target_link_libraries(EBCppExampleSSLServer OpenSSL::Crypto OpenSSL::SSL)
     endif()    
 
     # Compile EBCppExampleHttpsServer 

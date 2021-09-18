@@ -72,7 +72,7 @@ private:
         EB_PROFILE_FUNC();
 
         static int i = 0;
-        EB_LOG("timeout " << ++i);
+        EB_LOG(EBLogger::LOG_DEBUG, "timeout " << ++i);
 
         if (i == 5)
             EBEventLoop::getInstance()->exit();

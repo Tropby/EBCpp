@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,7 +42,7 @@ public:
      *
      * @param parent The parent of the IODevice
      */
-    EBFile(EBObject* parent) : EBIODevice(parent)
+    EBFile() : EBIODevice()
     {
     }
 

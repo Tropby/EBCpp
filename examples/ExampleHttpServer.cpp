@@ -36,17 +36,18 @@
  * @brief Example to show the function of the TCP server
  *
  */
-class ExampleHttpServer : public EBCpp::EBObject
+class ExampleHttpServer : public EBCpp::EBObject<ExampleHttpServer>
 {
 public:
     /**
      * @brief Construct a new Example Tcp Server object
      *
      */
-    ExampleHttpServer() : EBCpp::EBObject(nullptr), server(this), tcpServer(this)
+    ExampleHttpServer() 
     {
-        server.newRequest.connect(*this, &ExampleHttpServer::requestReady);
-        server.setTcpServer(&tcpServer);
+        server.newRequest.connect(this, &ExampleHttpServer::requestReady);
+        auto test = &tcpServer;
+        server.setTcpServer(test);
 
         if (tcpServer.bind(8958, "127.0.0.1"))
         {
@@ -68,10 +69,18 @@ public:
      * @param sender The sender object (Http Server)
      * @param request The request object ready to be answered
      */
-    EB_SLOT_WITH_ARGS(requestReady, EBCpp::EBHttpRequest* request)
+    EB_SLOT_WITH_ARGS(requestReady, EBCpp::EBObjectPointer<EBCpp::EBHttpRequest> request)
     {
         static int count = 0;
-        request->sendReply("<html><head><title>Hello World!</title></head><body>Hello World!<br />Called: " + std::to_string(++count) +  "</body></html>");
+        request->sendReply("<html><head><title>Hello World!</title>"
+                           "<meta http-equiv='refresh' content='1' />"
+                            "</head>"
+                            "<body>"
+                            "Hello World!<br />"
+                            "Called: " +
+                           std::to_string(++count) +
+                           "</body>"
+                           "</html>");
     }
 
 private:
@@ -82,5 +91,5 @@ private:
 int main()
 {
     ExampleHttpServer exampleHttpServer;
-    EBCpp::EBEventLoop::getInstance().exec();
+    EBCpp::EBEventLoop::getInstance()->exec();
 }

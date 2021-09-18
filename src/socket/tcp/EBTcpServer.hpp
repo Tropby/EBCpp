@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@
 #include <memory>
 #include <thread>
 
+#include "../../profile/EBProfile.hpp"
 #include "../../EBEvent.hpp"
 #include "../../EBObject.hpp"
 
@@ -41,7 +42,7 @@ namespace EBCpp
  * @brief Creates a TCP server
  *
  */
-class EBTcpServer : public EBObject
+class EBTcpServer : public EBObject <EBTcpServer>
 {
 public:
     /**
@@ -49,8 +50,9 @@ public:
      *
      * @param parent Parent object of the tcp server
      */
-    EBTcpServer(EBObject* parent) : EBObject(parent), socketId(-1), bound(false), thread(nullptr)
+    EBTcpServer() :  socketId(-1), bound(false), thread(nullptr)
     {
+        EB_PROFILE_FUNC();
     }
 
     /**
@@ -63,6 +65,11 @@ public:
      */
     virtual bool bind(uint16_t port, std::string bindIp = "0.0.0.0")
     {
+        EB_PROFILE_FUNC();
+
+        if (thread != nullptr)
+            return false;
+
 #ifdef __WIN32__
         WORD versionWanted = MAKEWORD(1, 1);
         WSADATA wsaData;
@@ -90,7 +97,7 @@ public:
         }
 
         bound = true;
-        thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpServer::acceptConnections, this)));
+        thread = new std::thread(std::bind(&EBTcpServer::acceptConnections, this));
         return true;
     }
 
@@ -99,12 +106,15 @@ public:
      */
     void unbind()
     {
+        EB_PROFILE_FUNC();
+
         bound = false;
         ::close(socketId);
 
-        if (thread)
+        if (thread != nullptr)
         {
             thread->join();
+            thread = nullptr;
         }
     }
 
@@ -113,7 +123,7 @@ public:
      *
      * This signal will be called for each tcp connection that will be established
      */
-    EB_SIGNAL_WITH_ARGS(newConnection, EBTcpSocket*);
+    EB_SIGNAL_WITH_ARGS(newConnection, EBObjectPointer<EBTcpSocket>);
 
 protected:
     //! current socket id
@@ -124,15 +134,17 @@ protected:
      *
      * @return EBTcpSocket* The socket. Otherwise nullptr
      */
-    virtual EBTcpSocket* nextConnection()
+    virtual EBObjectPointer<EBTcpSocket> nextConnection()
     {
+        EB_PROFILE_FUNC();
+
         struct sockaddr_in cli;
         socklen_t len = sizeof(cli);
 
         SOCKET connfd = ::accept(socketId, reinterpret_cast<sockaddr*>(&cli), &len);
         if (connfd >= 0)
         {
-            EBTcpSocket* socket = new EBTcpSocket(this, connfd, cli);
+            EBObjectPointer<EBTcpSocket> socket = this->createObject<EBTcpSocket>(connfd, cli);
             socket->startThread();
             return socket;
         }
@@ -142,18 +154,42 @@ protected:
 
 private:
     bool bound;
-    std::unique_ptr<std::thread> thread;
-    std::list<EBTcpSocket*> clients;
+    std::thread* thread;
+    std::list< EBObjectPointer<EBTcpSocket> > clients;
+
+    EB_SLOT(disconnected)
+    {
+        EB_PROFILE_FUNC();
+
+        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
+        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> toDelete(nullptr);
+
+        for (auto c : clients)
+        {
+            if( c.get() == socket.get() )
+            {
+                toDelete = c;
+            }
+        }
+
+        if( toDelete.get() != nullptr )
+        {
+            clients.remove(toDelete);
+        }
+    }
 
     void acceptConnections()
     {
+        EB_PROFILE_FUNC();
+
         EBUtils::setThreadName("EBSslServer #" + std::to_string(socketId));
 
         while (bound)
         {
-            EBTcpSocket* socket = nextConnection();
+            EBObjectPointer<EBTcpSocket> socket = nextConnection();
             if (socket != nullptr)
             {
+                socket->disconnected.connect(this, &EBTcpServer::disconnected);
                 clients.push_back(socket);
                 EB_EMIT_WITH_ARGS(newConnection, socket);
             }

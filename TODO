@@ -1,0 +1,25 @@
+EBCore:
+
+    EBTimer:
+        ☐ Make the timer stopable (wait condition, was not working as intended)
+
+    EBSerialPort:
+        ☐ Create a serial port class that is using a thread to read from the serial port    
+
+EBGui:
+    Currently EBGui is only defined for windows applications
+
+    ☐ Renderer should use a static list of render items 
+        The render should not create the list at every update call
+
+    ☐ All GDI-Plus Renderer should only once create its Brushes, Colors and Pens
+
+    EBGuiImage:
+        ✔ Load an image from file (BMP, JPG, PNG) @done(21-09-18 16:56)
+            Use the operating system if possible
+            Maybe use an external library?
+
+        ✔ Show the image for gdi+ (windows) in an widget @done(21-09-18 16:56)
+        ✔ Scale image to fit the widget @done(21-09-18 16:56)
+        ☐ Scale with keep aspect ratio
+        

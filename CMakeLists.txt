@@ -15,6 +15,12 @@ if(WIN32)
 endif()
 
 # Compile EBCppExampleFile
+add_executable(EBCppExample examples/Example.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExample -Wl,-subsystem,console)
+endif()
+
+# Compile EBCppExampleFile
 add_executable(EBCppExampleFile examples/ExampleFile.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleFile -Wl,-subsystem,console)
@@ -42,6 +48,24 @@ endif()
 add_executable(EBCppExampleHttpServer examples/ExampleHttpServer.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleHttpServer wsock32 ws2_32 -Wl,-subsystem,console)
+endif()
+
+# Compile EBCppExampleGui 
+add_executable(EBCppExampleGui examples/ExampleGui.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleGui gdiplus -Wl,-subsystem,console)
+endif()
+
+# Compile EBCppExampleImage
+add_executable(EBCppExampleGuiImage examples/ExampleGuiImage.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleGuiImage gdiplus -Wl,-subsystem,console)
+endif()
+
+# Compile EBCppExampleGuiLayout
+add_executable(EBCppExampleGuiLayout examples/ExampleGuiLayout.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleGuiLayout gdiplus -Wl,-subsystem,console)
 endif()
 
 find_package(OpenSSL)

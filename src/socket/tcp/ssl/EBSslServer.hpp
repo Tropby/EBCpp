@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,7 +43,7 @@ namespace EBCpp
  * @brief Creates a TCP server
  *
  */
-class EBSslServer : public EBTcpServer
+class EBSslServer : public EBTcpServer 
 {
 public:
     /**
@@ -51,9 +51,8 @@ public:
      *
      * @param certFileName Cert file name
      * @param keyFileName Key file name
-     * @param parent Parent object of the tcp server
      */
-    EBSslServer(EBObject* parent, std::string certFileName, std::string keyFileName) : EBTcpServer(parent)
+    EBSslServer(std::string certFileName, std::string keyFileName)
     {
         SSL_load_error_strings();
         OpenSSL_add_ssl_algorithms();
@@ -92,7 +91,7 @@ public:
     }
 
 protected:
-    virtual EBTcpSocket* nextConnection()
+    virtual EBObjectPointer<EBTcpSocket> nextConnection()
     {
         struct sockaddr_in cli;
         socklen_t len = sizeof(cli);
@@ -106,9 +105,9 @@ protected:
             int state = SSL_accept(ssl);
             if (state > 0)
             {
-                EBSslSocket* socket = new EBSslSocket(this, ssl, connfd, cli);
+                EBObjectPointer<EBSslSocket> socket = this->createObject<EBSslSocket>(ssl, connfd, cli);
                 socket->startThread();
-                return socket;
+                return socket->template cast < EBTcpSocket >();
             }
             else
             {

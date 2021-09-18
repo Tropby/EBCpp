@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,13 +29,24 @@
 
 #include "EBConnection.hpp"
 #include "EBEventLoop.hpp"
+#include "EBObject.hpp"
 
 #define EB_SIGNAL(signalName) EBCpp::EBEvent<> signalName
-#define EB_SLOT(slotName) void slotName(EBCpp::EBObject* sender)
-#define EB_EMIT(signalName) signalName.emit(this)
+#define EB_SLOT(slotName) void slotName(EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> sender)
+#define EB_EMIT(signalName)                                                                                            \
+    {                                                                                                                  \
+        EBObjectPointer<EBObject<EBObjectBase>> _cast = cast<EBObject<EBObjectBase>>();                                \
+        signalName.emit(_cast);                                                                                        \
+    }
 
-#define EB_SLOT_WITH_ARGS(slotName, args...) void slotName(EBCpp::EBObject* sender, args)
-#define EB_EMIT_WITH_ARGS(signalName, args...) signalName.emit(this, args)
+#define EB_SLOT_WITH_ARGS(slotName, args...)                                                                           \
+    void slotName(EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> sender, args)    
+#define EB_EMIT_WITH_ARGS(signalName, args...)                                                                         \
+    {                                                                                                                  \
+        EBObjectPointer<EBObject<EBObjectBase>> _cast = cast<EBObject<EBObjectBase>>();                                \
+        signalName.emit(_cast, args);                                                                                  \
+    }
+
 #define EB_SIGNAL_WITH_ARGS(signalName, args...) EBCpp::EBEvent<args> signalName
 
 namespace EBCpp
@@ -87,9 +98,9 @@ namespace EBCpp
  * @return std::function<void (Types...)> Function pointer
  */
 template <class T, class... Types, class X, int... indices>
-std::function<void(Types...)> bind(void (T::*f)(Types...), X& object, std::integer_sequence<int, indices...>)
+std::function<void(Types...)> bind(void (T::*f)(Types...), X object, std::integer_sequence<int, indices...>)
 {
-    return std::bind(f, &object, EBPlaceholder<indices + 1>::ph...);
+    return std::bind(f, object, EBPlaceholder<indices + 1>::ph...);
 }
 
 /**
@@ -103,9 +114,8 @@ std::function<void(Types...)> bind(void (T::*f)(Types...), X& object, std::integ
  * @return std::function<void (Types...)> Function pointer
  */
 template <class T, class... Types, class X>
-std::function<void(Types...)> bind(void (T::*f)(Types...), X& object)
+std::function<void(Types...)> bind(void (T::*f)(Types...), X object)
 {
-
     return EBCpp::bind(f, object, std::make_integer_sequence<int, sizeof...(Types)>());
 }
 } // namespace EBCpp
@@ -113,15 +123,13 @@ std::function<void(Types...)> bind(void (T::*f)(Types...), X& object)
 namespace EBCpp
 {
 
-class EBObject;
-
 /**
  * @brief This objects handles an event
  *
  * @tparam args Parameter list of the event (eg. int, std::string, ...)
  */
 template <typename... args>
-class EBEvent : EBObject
+class EBEvent : public EBObject<EBEvent<args...>>
 {
 public:
     /**
@@ -129,7 +137,7 @@ public:
      *
      * @param parent The parent can be set if the event is not an instance of the object that emits it
      */
-    EBEvent(EBObject* parent = nullptr) : EBObject(parent)
+    EBEvent() : EBObject<EBEvent<args...>>()
     {
     }
 
@@ -139,10 +147,12 @@ public:
      */
     ~EBEvent()
     {
+        // Destroy Event connections
+        connections.clear();
     }
 
     /**
-     * @brief Connects a event to an callback method of the receiving object using an event loop
+     * @brief Connects an event to a callback method of the receiving object using an event loop
      *
      * @tparam X Type of the receiving object (automatic set)
      * @tparam T Type of the receiving object  (automatic set)
@@ -152,13 +162,14 @@ public:
      * @param function The function of the receiver object that is called if the event is emitted
      */
     template <class X, class T, class... Types>
-    void connect(EBEventLoop& eventLoop, X& receiver, void (T::*function)(Types...))
+    void connect(EBObjectPointer<EBEventLoop> eventLoop, X receiver, void (T::*function)(Types...))
     {
-        connections.push_back(std::make_shared<EBConnection<args...>>( eventLoop, receiver, EBCpp::bind(function, receiver) ) );
+        auto t = EBCpp::bind(function, receiver);
+        connections.push_back(this->template createObject<EBConnection<args...>>(eventLoop, receiver, t));
     }
 
-    /**
-     * @brief Connects a event to an callback method of the receiving object using the default event loop
+     /**
+     * @brief Connects an event to a callback method of the receiving object using the default event loop
      *
      * @tparam X Type of the receiving object (automatic set)
      * @tparam T Type of the receiving object  (automatic set)
@@ -167,9 +178,64 @@ public:
      * @param function The function of the receiver object that is called if the event is emitted
      */
     template <class X, class T, class... Types>
-    void connect(X& receiver, void (T::*function)(Types...))
+    void connect(X receiver, void (T::*function)(Types...))
     {
         connect(EBEventLoop::getInstance(), receiver, function);
+    }
+
+    /**
+     * @brief Disconnects alll slots from this event
+     * 
+     */
+    void disconnectAll()
+    {
+        connections.clear();
+    }
+
+    /**
+     * @brief Disconnects an event from a callback method of the receiving object using an event loop
+     *
+     * @tparam X Type of the receiving object (automatic set)
+     * @tparam T Type of the receiving object  (automatic set)
+     * @tparam Types Parameters of the function that will receive the event (automatic set)
+     * @param eventLoop The EBEventLoop the event is connected to
+     * @param receiver The receiver instance (EBObject) of the event
+     * @param function The function of the receiver object that is called if the event is emitted
+     */
+    template <class X, class T, class... Types>
+    void disconnect(EBObjectPointer<EBEventLoop> eventLoop, X receiver, void (T::*function)(Types...))
+    {
+        for (EBObjectPointer<EBConnection<args...>>& con : connections)
+        {
+            EBObjectPointer<EBObject<EBObjectBase>> r = receiver;
+            EBObjectPointer<EBObject<EBObjectBase>> cr = con->getReceiver();
+
+            EBObjectPointer<EBEventLoop> e = eventLoop;
+            EBObjectPointer<EBEventLoop> ce = con->getEventLoop();
+
+            auto t = EBCpp::bind(function, receiver);
+            auto ct = con->getFunction();
+
+            if (cr == r && ce == e && getAddress(t) == getAddress(ct))
+            {
+                connections.remove(con);
+            }
+        }
+    }
+
+    /**
+     * @brief Disconnects an event from a callback method of the receiving object using the default event loop
+     *
+     * @tparam X Type of the receiving object (automatic set)
+     * @tparam T Type of the receiving object  (automatic set)
+     * @tparam Types Parameters of the function that will receive the event (automatic set)
+     * @param receiver The receiver instance (EBObject) of the event
+     * @param function The function of the receiver object that is called if the event is emitted
+     */
+    template <class X, class T, class... Types>
+    void disconnect(X receiver, void (T::*function)(Types...))
+    {
+        disconnect(EBEventLoop::getInstance(), receiver, function);
     }
 
     /**
@@ -187,16 +253,24 @@ public:
      * @param sender
      * @param p
      */
-    void emit(EBObject* sender, args... p)
+    void emit(EBObjectPointer<EBObject<EBObjectBase>>& sender, args... p)
     {
-        for (std::shared_ptr<EBConnection<args...>> c : connections)
+        for (EBObjectPointer<EBConnection<args...>>& c : connections)
         {
             c->emit(sender, p...);
         }
     }
 
 private:
-    std::list< std::shared_ptr<EBConnection<args...>>> connections;
+    std::list<EBObjectPointer<EBConnection<args...>>> connections;
+
+    template <typename T, typename... U>
+    size_t getAddress(std::function<T(U...)> f)
+    {
+        typedef T(fnType)(U...);
+        fnType** fnPointer = f.template target<fnType*>();
+        return (size_t)*fnPointer;
+    }
 };
 
 } // namespace EBCpp

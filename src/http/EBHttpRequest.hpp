@@ -68,7 +68,7 @@ public:
         tcpSocket->write("\r\n");
         tcpSocket->write(data);
         tcpSocket->close();
-        tcpSocket->readReady.disconnect();
+        tcpSocket->readReady.disconnect(this, &EBHttpRequest::readReady);
         EB_EMIT(finished);
     }
 

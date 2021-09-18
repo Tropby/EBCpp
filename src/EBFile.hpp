@@ -34,7 +34,7 @@ namespace EBCpp
  * @brief Interface description of an input/output device
  *
  */
-class EBFile : public EBIODevice
+class EBFile : public EBIODevice < EBFile>
 {
 public:
     /**
@@ -42,7 +42,7 @@ public:
      *
      * @param parent The parent of the IODevice
      */
-    EBFile() : EBIODevice()
+    EBFile() 
     {
     }
 

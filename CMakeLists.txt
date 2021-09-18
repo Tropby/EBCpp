@@ -127,5 +127,3 @@ if( DOXYGEN_FOUND )
 else(DOXYGEN_FOUND)
     message("doxygen not found building without doxygen documentation") 
 endif(DOXYGEN_FOUND)  
-
-add_executable(EBCppTest test/test.cpp)

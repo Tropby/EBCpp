@@ -75,6 +75,8 @@ if(OPENSSL_FOUND)
     target_include_directories(EBCppExampleSSLClient PRIVATE ${OPENSSL_INCLUDE_DIR})
     if(WIN32)
         target_link_libraries(EBCppExampleSSLClient OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL)
     endif()
 
     # Compile EBCppExampleSSLServer 
@@ -82,6 +84,8 @@ if(OPENSSL_FOUND)
     target_include_directories(EBCppExampleSSLServer PRIVATE ${OPENSSL_INCLUDE_DIR})
     if(WIN32)
         target_link_libraries(EBCppExampleSSLServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL)
     endif()    
 
     # Compile EBCppExampleHttpsServer 
@@ -89,6 +93,8 @@ if(OPENSSL_FOUND)
     target_include_directories(EBCppExampleHttpsServer PRIVATE ${OPENSSL_INCLUDE_DIR})
     if(WIN32)
         target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL)
     endif()        
 endif()
 

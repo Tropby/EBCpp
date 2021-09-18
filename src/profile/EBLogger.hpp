@@ -85,21 +85,24 @@ public:
         std::string strType = "UNKNOWN";
         switch (type)
         {
-            LOG_TYPE::LOG_DEBUG:
-            {
-                strType = "DEBUG";
-            }
+        case LOG_DEBUG: {
+            strType = "DEBUG";
+        }
+        break;
+        case LOG_TYPE::LOG_PROFILE:
             break;
-            LOG_TYPE::LOG_PROFILE : break;
-            LOG_TYPE::LOG_WARNING : break;
-            LOG_TYPE::LOG_ERROR : break;
-            LOG_TYPE::LOG_CRITICAL : break;
+        case LOG_TYPE::LOG_WARNING:
+            break;
+        case LOG_TYPE::LOG_ERROR:
+            break;
+        case LOG_TYPE::LOG_CRITICAL:
+            break;
         }
 
         std::lock_guard<std::mutex> guard(mutex);
 
         /// TODO: Use LogFile and other classes to send log messages to sinks
-        std::cout << message.str() << std::endl;
+        std::cout << strType << ": " << message.str() << std::endl;
     }
 
 private:

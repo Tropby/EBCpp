@@ -27,6 +27,7 @@
 #define EB_COLOR_RED EBCpp::EBObjectBase::createObject<EBGuiColor>(0xFF, 0x00, 0x00, 0xFF)
 #define EB_COLOR_BLUE EBCpp::EBObjectBase::createObject<EBGuiColor > (0x00, 0xFF, 0x00, 0xFF)
 #define EB_COLOR_GREEN EBCpp::EBObjectBase::createObject<EBGuiColor>(0x00, 0x00, 0xFF, 0xFF)
+#define EB_COLOR_WHITE EBCpp::EBObjectBase::createObject<EBGuiColor>(0xFF, 0xFF, 0xFF, 0xFF)
 
 namespace EBCpp
 {

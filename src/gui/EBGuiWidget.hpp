@@ -24,7 +24,9 @@
 #pragma once
 
 #include "../EBObject.hpp"
+#include "renderer/EBGuiColor.hpp"
 #include "renderer/EBGuiRenderRect.hpp"
+#include "renderer/EBGuiRenderFillRect.hpp"
 #include "renderer/EBGuiRenderText.hpp"
 #include "renderer/EBGuiRenderTextLine.hpp"
 #include "renderer/EBGuiRenderTextLineWithCursor.hpp"
@@ -38,7 +40,7 @@ class EBGuiWidget : public EBObject<EBGuiWidget>
 public:
     EBGuiWidget() :
         EBObject(), visible(false), widgetParent(nullptr), w(0), h(0), x(0), y(0), minW(0), minH(0),
-        maxW(INT_MAX), maxH(INT_MAX)
+        maxW(INT_MAX), maxH(INT_MAX), backgroundColor(EB_COLOR_BLACK)
     {
     }
 
@@ -332,7 +334,8 @@ protected:
 
     virtual void draw(std::list<EBObjectPointer<EBGuiRenderer> >& list)
     {
-        EBObjectPointer<EBGuiRenderRect> rect = EBCpp::EBObjectBase::createObject<EBGuiRenderRect>(x, y, x + w, y + h);
+        EBObjectPointer<EBGuiRenderFillRect> rect =
+        EBCpp::EBObjectBase::createObject<EBGuiRenderFillRect>(x, y, x + w, y + h);
         list.push_back(rect->cast<EBGuiRenderer>());
     }
 
@@ -352,6 +355,7 @@ protected:
 
     std::list<EBObjectPointer<EBGuiWidget>> widgets;
     EBObjectPointer<EBGuiWidget> widgetParent;
+    EBObjectPointer<EBGuiColor> backgroundColor;
 };
 
 } // namespace EBCpp

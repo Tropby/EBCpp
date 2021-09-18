@@ -56,6 +56,12 @@ if(WIN32)
     target_link_libraries(EBCppExampleGui gdiplus -Wl,-subsystem,console)
 endif()
 
+# Compile EBCppExampleImage
+add_executable(EBCppExampleGuiImage examples/ExampleGuiImage.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleGuiImage gdiplus -Wl,-subsystem,console)
+endif()
+
 # Compile EBCppExampleGuiLayout
 add_executable(EBCppExampleGuiLayout examples/ExampleGuiLayout.cpp)
 if(WIN32)

@@ -18,36 +18,48 @@ endif()
 add_executable(EBCppExample examples/Example.cpp)
 if(WIN32)
     target_link_libraries(EBCppExample -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExample pthread)        
 endif()
 
 # Compile EBCppExampleFile
 add_executable(EBCppExampleFile examples/ExampleFile.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleFile -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleFile pthread)        
 endif()
 
 # Compile EBCppExampleTimer 
 add_executable(EBCppExampleTimer examples/ExampleTimer.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleTimer -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleTimer pthread)        
 endif()
 
 # Compile EBCppExampleTcpClient 
 add_executable(EBCppExampleTcpClient examples/ExampleTcpClient.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleTcpClient wsock32 ws2_32 -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleTcpClient pthread)        
 endif()
 
 # Compile EBCppExampleTcpServer 
 add_executable(EBCppExampleTcpServer examples/ExampleTcpServer.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleTcpServer wsock32 ws2_32 -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleTcpServer pthread)        
 endif()
 
 # Compile EBCppExampleHttpServer 
 add_executable(EBCppExampleHttpServer examples/ExampleHttpServer.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleHttpServer wsock32 ws2_32 -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleHttpServer pthread)        
 endif()
 
 if(WIN32)
@@ -55,18 +67,24 @@ if(WIN32)
     add_executable(EBCppExampleGui examples/ExampleGui.cpp)
     if(WIN32)
         target_link_libraries(EBCppExampleGui gdiplus -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleGui pthread)        
     endif()
 
     # Compile EBCppExampleImage
     add_executable(EBCppExampleGuiImage examples/ExampleGuiImage.cpp)
     if(WIN32)
         target_link_libraries(EBCppExampleGuiImage gdiplus -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleGui pthread)        
     endif()
 
     # Compile EBCppExampleGuiLayout
     add_executable(EBCppExampleGuiLayout examples/ExampleGuiLayout.cpp)
     if(WIN32)
         target_link_libraries(EBCppExampleGuiLayout gdiplus -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleGuiLayout pthread)        
     endif()
 endif()
 
@@ -78,7 +96,7 @@ if(OPENSSL_FOUND)
     if(WIN32)
         target_link_libraries(EBCppExampleSSLClient OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     else()
-        target_link_libraries(EBCppExampleSSLClient OpenSSL::Crypto OpenSSL::SSL)
+        target_link_libraries(EBCppExampleSSLClient OpenSSL::Crypto OpenSSL::SSL pthread)
     endif()
 
     # Compile EBCppExampleSSLServer 
@@ -87,7 +105,7 @@ if(OPENSSL_FOUND)
     if(WIN32)
         target_link_libraries(EBCppExampleSSLServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     else()
-        target_link_libraries(EBCppExampleSSLServer OpenSSL::Crypto OpenSSL::SSL)
+        target_link_libraries(EBCppExampleSSLServer OpenSSL::Crypto OpenSSL::SSL pthread)
     endif()    
 
     # Compile EBCppExampleHttpsServer 
@@ -96,7 +114,7 @@ if(OPENSSL_FOUND)
     if(WIN32)
         target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     else()
-        target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL)
+        target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL pthread)
     endif()        
 endif()
 

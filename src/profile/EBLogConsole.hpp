@@ -32,32 +32,31 @@ namespace EBCpp
 
 /**
  * @brief Class to log all data to a logfile
- * 
+ *
  */
-class EBLogFile : public EBLog
+class EBLogConsole : public EBLog
 {
 public:
     /**
-     * @brief Construct a new EBLogFile object
-     * 
+     * @brief Construct a new EBLogConsole object
+     *
      */
-    EBLogFile()
+    EBLogConsole()
     {
-        logfile.open("logfile.log");
     }
 
     /**
      * @brief Log a message to the file storage
-     * 
+     *
      * @param message Message to store
      */
     virtual void log(const std::string& message)
     {
-        logfile << message << std::endl;
+        std::cout << message << std::endl;
     }
 
 private:
-    std::ofstream logfile;
+
 };
 
 } // namespace EBCpp

@@ -92,7 +92,7 @@ public:
         }
         else
         {
-            EB_LOG(EBLogger::LOG_DEBUG, "Can not load file " << filename);
+            EB_LOG_DEBUG(EBLogger::LOG_DEBUG, "Can not load file " << filename);
         }
     }
 };

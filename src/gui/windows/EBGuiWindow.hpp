@@ -113,22 +113,28 @@ private:
                 int height = rect.bottom - rect.top;
 
                 HDC hdcMem = CreateCompatibleDC(hdc);
-                HBITMAP MemBitmap = CreateCompatibleBitmap(hdc, width, height); // Breite und Höhe musst du anpassen
+                HBITMAP MemBitmap = CreateCompatibleBitmap(hdc, width, height); // Breite und HÃ¶he musst du anpassen
                 HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem, MemBitmap);
 
                 Gdiplus::Graphics graphics(hdcMem);
 
+                // Prepare the widget bounderies
                 for (EBObjectPointer<EBGuiWidget> w : widgets)
                 {
                     w->prepare(0, 0, width, height);
                 }
+                
+                // Fill the Background wird white
                 Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 255, 255));
                 graphics.FillRectangle(&brush, 0, 0, width, height);
 
+                // Create the Widget 
                 std::list< EBObjectPointer<EBGuiRenderer> > list;
                 for (EBObjectPointer<EBGuiWidget> w : widgets)
                 {
+                    // Create rendering instructions for the widget
                     w->render(list);
+
                     for (EBObjectPointer<EBGuiRenderer> l : list)
                     {
                         l->render(graphics);

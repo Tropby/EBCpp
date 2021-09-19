@@ -53,8 +53,7 @@ public:
      * @param socketId socket id of the tcp connection
      * @param client client informations
      */
-    EBSslSocket(SSL* ssl, SOCKET socketId, struct sockaddr_in client) :
-        EBTcpSocket(socketId, client), ssl(ssl)
+    EBSslSocket(SSL* ssl, SOCKET socketId, struct sockaddr_in client) : EBTcpSocket(socketId, client), ssl(ssl)
     {
     }
 
@@ -64,11 +63,11 @@ public:
      */
     virtual ~EBSslSocket()
     {
-        //SSL_shutdown(ssl);
-        close();     
-        joinThread();   
-        SSL_free(ssl);  
-        ssl = 0;      
+        // SSL_shutdown(ssl);
+        close();
+        joinThread();
+        SSL_free(ssl);
+        ssl = 0;
     }
 
     /**
@@ -97,7 +96,7 @@ public:
             }
         }
 
-        return len;        
+        return len;
     }
 
     /**
@@ -111,7 +110,7 @@ public:
         int len = -1;
         try
         {
-            if( isOpened() )
+            if (isOpened())
             {
                 len = SSL_write(ssl, data.c_str(), data.length());
                 if (len < 0)
@@ -131,16 +130,15 @@ public:
                 }
             }
         }
-        catch(const std::exception& e)
+        catch (const std::exception& e)
         {
             std::cerr << e.what() << '\n';
         }
-        
+
         return len;
     }
 
 protected:
-
     /**
      * @brief Creates a socket and connects to the host
      *
@@ -186,45 +184,45 @@ protected:
         // Read next block of data
         int nbytes = SSL_read(ssl, buffer, size);
 
-        if( nbytes <= 0 )
+        if (nbytes <= 0)
         {
             int error = SSL_get_error(ssl, nbytes);
-            switch(error)
+            switch (error)
             {
-                case SSL_ERROR_NONE:
-                    std::cout << "SSL_ERROR_NONE" << std::endl;
-                    break;
-                case SSL_ERROR_ZERO_RETURN:
-                    std::cout << "SSL_ERROR_ZERO_RETURN" << std::endl;
-                    break;
-                case SSL_ERROR_WANT_READ:
-                    std::cout << "SSL_ERROR_WANT_READ" << std::endl;
-                    break;
-                case SSL_ERROR_WANT_WRITE:
-                    std::cout << "SSL_ERROR_WANT_WRITE" << std::endl;
-                    break;
-                case SSL_ERROR_WANT_CONNECT:
-                    std::cout << "SSL_ERROR_WANT_CONNECT" << std::endl;
-                    break;
-                case SSL_ERROR_WANT_ACCEPT:
-                    std::cout << "SSL_ERROR_WANT_ACCEPT" << std::endl;
-                    break;
-                case SSL_ERROR_WANT_X509_LOOKUP:
-                    std::cout << "SSL_ERROR_WANT_X509_LOOKUP" << std::endl;
-                    break;
-                case SSL_ERROR_WANT_ASYNC:
-                    std::cout << "SSL_ERROR_WANT_ASYNC" << std::endl;
-                    break;
-                case SSL_ERROR_WANT_ASYNC_JOB:
-                    std::cout << "SSL_ERROR_WANT_ASYNC_JOB" << std::endl;
-                    break;
-                case SSL_ERROR_SYSCALL:
-                    std::cout << "SSL_ERROR_SYSCALL" << std::endl;
-                    break;
-                case SSL_ERROR_SSL:
-                    std::cout << "SSL_ERROR_SSL" << std::endl;
-                    break;
-                }
+            case SSL_ERROR_NONE:
+                EB_LOG_ERROR("SSL_ERROR_NONE");
+                break;
+            case SSL_ERROR_ZERO_RETURN:
+                EB_LOG_ERROR("SSL_ERROR_ZERO_RETURN");
+                break;
+            case SSL_ERROR_WANT_READ:
+                EB_LOG_ERROR("SSL_ERROR_WANT_READ");
+                break;
+            case SSL_ERROR_WANT_WRITE:
+                EB_LOG_ERROR("SSL_ERROR_WANT_WRITE");
+                break;
+            case SSL_ERROR_WANT_CONNECT:
+                EB_LOG_ERROR("SSL_ERROR_WANT_CONNECT");
+                break;
+            case SSL_ERROR_WANT_ACCEPT:
+                EB_LOG_ERROR("SSL_ERROR_WANT_ACCEPT");
+                break;
+            case SSL_ERROR_WANT_X509_LOOKUP:
+                EB_LOG_ERROR("SSL_ERROR_WANT_X509_LOOKUP");
+                break;
+            case SSL_ERROR_WANT_ASYNC:
+                EB_LOG_ERROR("SSL_ERROR_WANT_ASYNC");
+                break;
+            case SSL_ERROR_WANT_ASYNC_JOB:
+                EB_LOG_ERROR("SSL_ERROR_WANT_ASYNC_JOB");
+                break;
+            case SSL_ERROR_SYSCALL:
+                EB_LOG_ERROR("SSL_ERROR_SYSCALL");
+                break;
+            case SSL_ERROR_SSL:
+                EB_LOG_ERROR("SSL_ERROR_SSL");
+                break;
+            }
         }
 
         return nbytes;

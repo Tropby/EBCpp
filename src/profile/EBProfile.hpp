@@ -44,14 +44,14 @@ namespace EBCpp
 
 /**
  * @brief Class thats provides informations of an EBProfileCall
- * 
+ *
  */
 class EBProfileCall : public EBObject<EBProfileCall>
 {
 public:
     /**
      * @brief Construct a new EBProfileCall object
-     * 
+     *
      * @param file __FILE__ Current file
      * @param line __LINE__ Current line
      * @param method  __FUNCTION__ Name of the current function
@@ -61,13 +61,14 @@ public:
         file(file), line(line), method(method), sharedPointer(sharedPointer)
     {
         start = std::chrono::high_resolution_clock::now();
-        EB_LOG( EBLogger::LOG_DEBUG, "START [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::_counter
-                              << " SPtr: " << sharedPointer << "] >> " << file << ":" << line << " @ " << method);
+        EB_LOG_PROFILE("START [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::_counter
+                                      << " SPtr: " << sharedPointer << "] >> " << file << ":" << line << " @ "
+                                      << method);
     }
 
     /**
      * @brief Destroy the EBProfileCall object
-     * 
+     *
      */
     ~EBProfileCall()
     {
@@ -75,10 +76,9 @@ public:
 
         auto int_s = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
-        EB_LOG(EBLogger::LOG_DEBUG, "STOP [Obj: " << EBObjectBase::_counter
-                                                  << " ObjP: " << EBObjectPointerBase::_counter
-                                                  << " SPtr: " << sharedPointer << "] >> " << file << ":" << line
-                                                  << " @ " << method << " (T=" << int_s.count() << " us)");
+        EB_LOG_PROFILE("STOP [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::_counter
+                                     << " SPtr: " << sharedPointer << "] >> " << file << ":" << line << " @ " << method
+                                     << " (T=" << int_s.count() << " us)");
     }
 
 private:
@@ -99,17 +99,16 @@ private:
 };
 
 /**
- * @brief Class EBProfile proviedes the funktionality to log and 
+ * @brief Class EBProfile proviedes the funktionality to log and
  *        proifile the behavior of an software written with EBCpp
  *
  */
 class EBProfile : public EBObject<EBProfile>
 {
 public:
-
     /**
      * @brief Get the Singelton object
-     * 
+     *
      * @return EBObjectPointer<EBProfile> Singelton object
      */
     static EBObjectPointer<EBProfile> getInstance()
@@ -124,7 +123,7 @@ public:
 private:
     /**
      * @brief Construct a new EBProfile object
-     * 
+     *
      */
     EBProfile()
     {

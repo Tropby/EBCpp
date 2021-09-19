@@ -46,6 +46,7 @@ int main()
 
     signal.helloWorldCalled.connect((&slot).get(), &ExampleSlot::helloWorld);
     signal.helloWorld();
+    signal.helloWorldCalled.disconnect((&slot).get(), &ExampleSlot::helloWorld);
 
     EBEventLoop::getInstance()->exec();
 }

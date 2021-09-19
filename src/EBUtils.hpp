@@ -83,6 +83,18 @@ public:
     }
 
     /**
+     * @brief Get the Thread Name object
+     * 
+     * @return std::string Name of the current thread
+     */
+    static std::string getThreadName()
+    {
+        char buffer[128];
+        pthread_getname_np(pthread_self(), buffer, sizeof buffer);
+        return buffer;
+    }
+
+    /**
      * @brief converts an integer/long to its hex representation
      *
      * @tparam T Type of the parameter i
@@ -99,44 +111,42 @@ public:
 
     /**
      * @brief returns the lower case of an string
-     * 
+     *
      * @param s Input string
      * @return std::string The input string in lower case
      */
-    static std::string toLower( std::string s )
+    static std::string toLower(std::string s)
     {
-        std::transform(s.begin(), s.end(), s.begin(), 
-            [](unsigned char c){ return std::tolower(c); }
-        );
+        std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
         return s;
     }
 
     /**
      * @brief Decodes an URL.
-     * 
+     *
      * @param s Encoded URL
      * @return std::string Decodes URL
      */
-    static std::string urlDecode( std::string s )
+    static std::string urlDecode(std::string s)
     {
         std::string ret;
         char ch;
 
-        for( int i = 0; i < s.length(); i++ )
+        for (int i = 0; i < s.length(); i++)
         {
-            if( s[i] == '%' ) 
+            if (s[i] == '%')
             {
                 int ii;
-                sscanf( s.substr(i+1,2).c_str(), "%x", &ii );
-                ch=static_cast<char>(ii);
+                sscanf(s.substr(i + 1, 2).c_str(), "%x", &ii);
+                ch = static_cast<char>(ii);
                 ret += ch;
                 i = i + 2;
             }
-            else if( s[i] == '+' )
+            else if (s[i] == '+')
             {
                 ret += " ";
             }
-            else 
+            else
             {
                 ret += s[i];
             }
@@ -146,15 +156,15 @@ public:
 
     /**
      * @brief Returns the uptime of the application in milliseconds.
-     * 
+     *
      * @return int64_t Milliseconds since the software was started.
      */
     static int64_t uptime()
     {
-        static std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-        return std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+        return std::chrono::duration_cast<std::chrono::milliseconds>(end - programmStartTime).count();
     }
+    static inline std::chrono::steady_clock::time_point programmStartTime = std::chrono::steady_clock::now();
 
     /**
      * @brief Trims a string and returns the trimmed string
@@ -175,6 +185,49 @@ public:
             --right;
 
         return s.substr(left, 1 + right - left);
+    }
+
+    static std::string currentDateTimeString()
+    {
+        return currentDateString() + "T" + currentTimeString();
+    }
+
+    static std::string currentDateString()
+    {
+        auto now = std::chrono::system_clock::now();
+        // convert to std::time_t in order to convert to std::tm (broken time)
+        auto timer = std::chrono::system_clock::to_time_t(now);
+
+        // convert to broken time
+        std::tm bt = *std::localtime(&timer);
+
+        std::ostringstream oss;
+
+        oss << std::put_time(&bt, "%Y-%m-%d"); // YYYY-MM-DD
+
+        return oss.str();
+    }
+
+    static std::string currentTimeString()
+    { 
+        auto now = std::chrono::system_clock::now();
+
+        // get number of milliseconds for the current second
+        // (remainder after division into seconds)
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+
+        // convert to std::time_t in order to convert to std::tm (broken time)
+        auto timer = std::chrono::system_clock::to_time_t(now);
+
+        // convert to broken time
+        std::tm bt = *std::localtime(&timer);
+
+        std::ostringstream oss;
+
+        oss << std::put_time(&bt, "%H:%M:%S"); // HH:MM:SS
+        oss << '.' << std::setfill('0') << std::setw(3) << ms.count();
+
+        return oss.str();
     }
 };
 

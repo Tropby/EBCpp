@@ -24,40 +24,31 @@
 #pragma once
 
 #include "../EBObject.hpp"
-#include "EBLog.hpp"
 #include <fstream>
+
 
 namespace EBCpp
 {
 
 /**
  * @brief Class to log all data to a logfile
- * 
+ *
  */
-class EBLogFile : public EBLog
+class EBLog : public EBObject<EBLog>
 {
 public:
     /**
-     * @brief Construct a new EBLogFile object
-     * 
+     * @brief Construct a new EBLog object
+     *
      */
-    EBLogFile()
-    {
-        logfile.open("logfile.log");
-    }
+    EBLog(){}
 
     /**
-     * @brief Log a message to the file storage
-     * 
+     * @brief Log a message
+     *
      * @param message Message to store
      */
-    virtual void log(const std::string& message)
-    {
-        logfile << message << std::endl;
-    }
-
-private:
-    std::ofstream logfile;
+    virtual void log(const std::string& message) = 0;
 };
 
 } // namespace EBCpp

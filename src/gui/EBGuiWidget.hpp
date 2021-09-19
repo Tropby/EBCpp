@@ -68,7 +68,10 @@ public:
 
     void render(std::list<EBObjectPointer<EBGuiRenderer> >& list)
     {
+        // Create drawing for the current widget
         draw(list);
+
+        // Create drawings for all child widgets
         for (EBObjectPointer<EBGuiWidget>& w : widgets)
         {
             w->render(list);

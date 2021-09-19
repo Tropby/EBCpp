@@ -24,8 +24,17 @@
 #pragma once
 
 #include "../EBObject.hpp"
+#include "../EBUtils.hpp"
+#include "EBLog.hpp"
+#include "EBLogConsole.hpp"
 #include <mutex>
 #include <sstream>
+
+#define EB_LOG_DEBUG(msg) EB_LOG(EBCpp::EBLogger::LOG_DEBUG, msg)
+#define EB_LOG_PROFILE(msg) EB_LOG(EBCpp::EBLogger::LOG_PROFILE, msg)
+#define EB_LOG_WARNING(msg) EB_LOG(EBCpp::EBLogger::LOG_WARNING, msg)
+#define EB_LOG_ERROR(msg) EB_LOG(EBCpp::EBLogger::LOG_ERROR, msg)
+#define EB_LOG_CRITICAL(msg) EB_LOG(EBCpp::EBLogger::LOG_CRITICAL, msg)
 
 #define EB_LOG(type, msg)                                                                                              \
     {                                                                                                                  \
@@ -34,7 +43,7 @@
         EBCpp::EBLogger::getInstance()->log(type, _ss);                                                                \
     }
 
-namespace EBCpp
+               namespace EBCpp
 {
 
 /**
@@ -74,6 +83,11 @@ public:
         return instance;
     }
 
+    static void addLogger(EBObjectPointer<EBLog> log)
+    {
+        getInstance()->logger.push_back(log);
+    }
+
     /**
      * @brief Log a message to the current Log-Methods
      *
@@ -85,24 +99,39 @@ public:
         std::string strType = "UNKNOWN";
         switch (type)
         {
-        case LOG_DEBUG: {
+        case LOG_DEBUG:
             strType = "DEBUG";
-        }
-        break;
+            break;
         case LOG_TYPE::LOG_PROFILE:
+            strType = "PROFILE";
             break;
         case LOG_TYPE::LOG_WARNING:
+            strType = "WARNING";
             break;
         case LOG_TYPE::LOG_ERROR:
+            strType = "ERROR";
             break;
         case LOG_TYPE::LOG_CRITICAL:
+            strType = "CRITICAL";
             break;
         }
 
         std::lock_guard<std::mutex> guard(mutex);
 
-        /// TODO: Use LogFile and other classes to send log messages to sinks
-        std::cout << strType << ": " << message.str() << std::endl;
+        std::stringstream msg;
+        msg << EBUtils::currentDateTimeString() << " " << strType << " [tid: " << std::this_thread::get_id()
+            << ", tname: '" + EBUtils::getThreadName() + "', uptime: " << EBUtils::uptime() << "] " << message.str();
+
+        // Add Logger if no logger is available!
+        if (logger.empty())
+        {
+            logger.push_back(EBObjectPointer<EBLog>(new EBLogConsole()));
+        }
+
+        for (auto log : logger)
+        {
+            log->log(msg.str());
+        }
     }
 
 private:
@@ -115,8 +144,10 @@ private:
     }
 
     static inline EBObjectPointer<EBLogger> instance = EBObjectPointer<EBLogger>(nullptr);
-    std::mutex mutex;
-    LOG_TYPE typesToLog;
+
+    std::list<EBObjectPointer<EBLog>> logger;
+
+    std::mutex mutex;    
 };
 
 } // namespace EBCpp

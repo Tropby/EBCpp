@@ -29,6 +29,8 @@
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBObject.hpp"
 #include "../src/EBTimer.hpp"
+#include "../src/profile/EBLogger.hpp"
+#include "../src/profile/EBLogFile.hpp"
 #include "../src/http/EBHttpServer.hpp"
 #include "../src/socket/tcp/EBTcpSocket.hpp"
 #include "../src/socket/tcp/ssl/EBSslServer.hpp"
@@ -76,27 +78,27 @@ public:
 
         std::vector<char> v = request->getData();
 
-        request->sendReply("<html>"
-                           "<head>"
-                           "<title>Hello World (" +
-                           std::to_string(++count) +
-                           ")</title>"
-                           "</head>"
-                           "<body>"
-                           "Hello World!<br />"
-                           "Called: " +
-                           std::to_string(++count) +
-                           "<hr />"
-                           "<form method=\"POST\">"
-                           "<input type=\"text\" name=\"te=st\" />"
-                           "<input type=\"text\" name=\"Blub\" />"
-                           "<input type=\"submit\" />"
-                           "</form><hr />" +
+        EB_LOG_DEBUG("New Request!");
+
+        request->sendReply("<html> \
+                <head> \
+                    <title>Hello World (" +
+                           std::to_string(++count) + ")</title> \
+                </head> \
+                <body> \
+                    Hello World!<br /> \
+                    Called: " +
+                           std::to_string(++count) + "<hr /> \
+                    <form method=\"POST\"> \
+                        <input type=\"text\" name=\"te=st\" /> \
+                        <input type=\"text\" name=\"Blub\" /> \
+                        <input type=\"submit\" /> \
+                    </form> \
+                    <hr />" +
                            std::string(v.begin(), v.end()) + "<hr />" + request->getPostParameter("te=st") + "<hr />" +
-                           request->getPostParameter("Blub") +
-                           "<hr />"
-                           "</body>"
-                           "</html>");
+                           request->getPostParameter("Blub ") + "<hr /> \
+                </body> \
+            </html>");
     }
 
 private:
@@ -106,6 +108,7 @@ private:
 
 int main()
 {
+    EBCpp::EBLogger::getInstance()->addLogger(EBCpp::EBObjectPointer<EBCpp::EBLog>(new EBCpp::EBLogFile()));
     ExampleHttpsServer ExampleHttpsServer;
     EBCpp::EBEventLoop::getInstance()->exec();
 }

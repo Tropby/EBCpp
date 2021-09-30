@@ -1,0 +1,66 @@
+<script>
+
+    let connection = null;
+
+    // Connect to the server
+    function connect() {
+
+        var loc = window.location, new_uri;
+        if (loc.protocol === "https:") {
+            new_uri = "wss:";
+        } else {
+            new_uri = "ws:";
+        }
+        new_uri += "//" + loc.host;
+        new_uri += loc.pathname + "echo";
+
+        connection = new WebSocket(new_uri, ['chat', 'test']);
+
+        connection.onopen = function () {
+            log("connected!");
+        };
+
+        // Log errors
+        connection.onerror = function (error) {
+            log('WebSocket Error ' + JSON.stringify(error));
+        };
+
+        // Log messages from the server
+        connection.onmessage = function (e) {
+            log('Received: ' + e.data);
+        };
+
+        connection.onclose = function(e) {
+            log('disconnected!');
+        }
+    }
+
+    function disconnect()
+    {
+        connection.close();
+    }
+
+    // log to the textarea
+    function log(msg) {
+        let ta = document.getElementById("result");
+        ta.value = ta.value + msg + "\n";
+    }
+
+    // Send messages to the server
+    function send() {
+        let value = document.getElementById("text").value;
+        log("Send: " + value);
+        if (connection != null)
+            connection.send(value);
+        else
+            log("Connection is not set!");
+    }
+
+</script>
+<h1>Echo Test</h1>
+<button onclick="connect();">Connect</button><br /><br />
+<button onclick="disconnect();">Disconnect</button><br /><br />
+<input type="text" id="text" value="echo test" />
+<button onclick="send();">Send</button>
+<br /><br />
+<textarea id="result" style="width: 500px; height: 400px;"></textarea>

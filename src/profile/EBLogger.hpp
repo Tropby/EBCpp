@@ -27,8 +27,10 @@
 #include "../EBUtils.hpp"
 #include "EBLog.hpp"
 #include "EBLogConsole.hpp"
+
 #include <mutex>
 #include <sstream>
+#include <regex>
 
 #define EB_LOG_DEBUG(msg) EB_LOG(EBCpp::EBLogger::LOG_DEBUG, msg)
 #define EB_LOG_PROFILE(msg) EB_LOG(EBCpp::EBLogger::LOG_PROFILE, msg)
@@ -128,9 +130,14 @@ public:
             logger.push_back(EBObjectPointer<EBLog>(new EBLogConsole()));
         }
 
+        std::string strMsg = msg.str();
+
+        strMsg = EBUtils::replaceString(strMsg, "\n", "\\n");
+        strMsg = EBUtils::replaceString(strMsg, "\r", "\\r");
+
         for (auto log : logger)
         {
-            log->log(msg.str());
+            log->log(strMsg);
         }
     }
 

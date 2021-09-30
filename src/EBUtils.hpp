@@ -229,6 +229,17 @@ public:
 
         return oss.str();
     }
+
+    static std::string replaceString(std::string subject, std::string search, std::string replace)
+    {
+        size_t pos = 0;
+        while ((pos = subject.find(search, pos)) != std::string::npos)
+        {
+            subject.replace(pos, search.length(), replace);
+            pos += replace.length();
+        }
+        return subject;
+    }
 };
 
 } // namespace EBCpp

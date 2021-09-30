@@ -91,7 +91,7 @@ public:
      * @param length Size of the data in bytes
      * @return int Bytes written to the output device
      */
-    virtual int write(char* data, int length)
+    virtual int write(const char* data, int length)
     {
         file.write( data, length );
         return length;
@@ -155,8 +155,25 @@ public:
     }
 
     /**
-     * @brief Returns true if the end of stream is reached
+     * @brief Reads the whole file as string
      * 
+     * @return std::string the file content
+     */
+    virtual std::string readAll()
+    {
+        std::string result;
+
+        char c[1024];
+        while( int n = read(c, 1024) )
+        {
+            result += std::string(c, n);
+        }
+        return result;
+    }
+
+    /**
+     * @brief Returns true if the end of stream is reached
+     *
      * @return true if at the end of the io stream
      * @return false otherwise
      */

@@ -89,7 +89,7 @@ public:
      * @param length Size of the data in bytes
      * @return int Bytes written to the output device
      */
-    virtual int write(char* data, int length) = 0;
+    virtual int write(const char* data, int length) = 0;
 
     /**
      * @brief Writes a string to the output device
@@ -106,7 +106,7 @@ public:
      * @param maxLength Size of the buffer
      * @return int Bytes read
      */
-    virtual int read(char* data, int maxLength) = 0;
+    virtual int read(char* data, int maxLength) = 0;    
 
     /**
      * @brief Checks if the data buffer contains "\\n"

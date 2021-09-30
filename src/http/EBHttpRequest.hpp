@@ -40,14 +40,33 @@ public:
      */
     void setSocket(EBObjectPointer<EBTcpSocket> tcpSocket)
     {
+        if( this->tcpSocket != nullptr )
+        {
+            this->tcpSocket->readReady.disconnect(this, &EBHttpRequest::readReady);
+        }
+
         this->tcpSocket = tcpSocket;
-        tcpSocket->readReady.connect(this, &EBHttpRequest::readReady);
-        readReady(tcpSocket->template cast<EBObject<EBObjectBase>>());
+
+        if (this->tcpSocket != nullptr)
+        {
+            tcpSocket->readReady.connect(this, &EBHttpRequest::readReady);
+            readReady(tcpSocket->template cast<EBObject<EBObjectBase>>());
+        }
+        else
+        {
+            // Send finish. The request can not use a nullptr as connection
+            EB_EMIT(finished);
+        }
+    }
+
+    EBObjectPointer<EBTcpSocket> getSocket()
+    {
+        return this->tcpSocket;
     }
 
     /**
      * @brief Get the Data that was received by the EBHttpRequest
-     * 
+     *
      * @return std::vector<char> the data
      */
     std::vector<char> getData()

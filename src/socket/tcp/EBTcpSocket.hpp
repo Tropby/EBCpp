@@ -190,7 +190,7 @@ public:
      * @param length Length of the data
      * @return int bytes written to the tcp socket
      */
-    virtual int write(char* data, int length)
+    virtual int write(const char* data, int length)
     {
         EB_PROFILE_FUNC();
 

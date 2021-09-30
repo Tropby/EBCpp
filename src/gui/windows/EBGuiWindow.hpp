@@ -33,6 +33,7 @@
 #include <windows.h>
 
 #include "../../EBEvent.hpp"
+#include "../../EBSemaphore.hpp"
 
 #ifndef WINMAIN
 #define WINMAIN
@@ -41,7 +42,6 @@ int main();
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
     hInstance = hInstance;
-
     return main();
 }
 #endif
@@ -52,7 +52,7 @@ namespace EBCpp
 class EBGuiWindow : public EBGuiWindowBase
 {
 public:
-    EBGuiWindow() : EBGuiWindowBase(), windowThread(std::thread(&EBGuiWindow::createWindow, this))
+    EBGuiWindow() : EBGuiWindowBase(), hwnd(0), windowThread(std::thread(&EBGuiWindow::createWindow, this))
     {
     }
 
@@ -61,12 +61,21 @@ public:
         windowThread.join();
     }
 
+    virtual void setTitle(std::string title)
+    {
+        // WAITING FOR WINDOW CREATED
+        /// TODO: Wait condition
+        while (!hwnd)
+            ;
+        SetWindowText(hwnd, title.c_str());
+    }
+
     virtual void invalidate()
     {
         InvalidateRect(hwnd, NULL, FALSE);
     }
 
-    virtual void resized( int w, int h )
+    virtual void resized(int w, int h)
     {
         EBGuiWindowBase::resized(w, h);
     }
@@ -123,13 +132,13 @@ private:
                 {
                     w->prepare(0, 0, width, height);
                 }
-                
+
                 // Fill the Background wird white
                 Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 255, 255));
                 graphics.FillRectangle(&brush, 0, 0, width, height);
 
-                // Create the Widget 
-                std::list< EBObjectPointer<EBGuiRenderer> > list;
+                // Create the Widget
+                std::list<EBObjectPointer<EBGuiRenderer>> list;
                 for (EBObjectPointer<EBGuiWidget> w : widgets)
                 {
                     // Create rendering instructions for the widget
@@ -141,8 +150,8 @@ private:
                     }
                 }
 
-                BitBlt(hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right, ps.rcPaint.bottom, hdcMem, ps.rcPaint.left,
-                    ps.rcPaint.top, SRCCOPY);
+                BitBlt(hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right, ps.rcPaint.bottom, hdcMem,
+                       ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
 
                 // Free Memory
                 SelectObject(hdcMem, hbmOld);
@@ -164,7 +173,7 @@ private:
         case WM_LBUTTONDOWN: {
             WORD xPos = lParam & 0x0000FFFF;
             WORD yPos = (lParam >> 16) & 0x0000FFFF;
-            if( handleMouseDown(xPos, yPos) )
+            if (handleMouseDown(xPos, yPos))
                 return 0;
             break;
         }
@@ -172,7 +181,7 @@ private:
         case WM_LBUTTONUP: {
             WORD xPos = lParam & 0x0000FFFF;
             WORD yPos = (lParam >> 16) & 0x0000FFFF;
-            if( handleMouseUp(xPos, yPos) )
+            if (handleMouseUp(xPos, yPos))
                 return 0;
             break;
         }
@@ -225,10 +234,10 @@ private:
         wc.hCursor = LoadCursor(hInstance, IDC_ARROW);
         RegisterClass(&wc);
 
-        hwnd = CreateWindowEx(0,                    // Optional window styles.
-                              CLASS_NAME,           // Window class
-                              TEXT("No Title Set"), // Window text
-                              WS_OVERLAPPEDWINDOW,  // Window style
+        hwnd = CreateWindowEx(0,                                              // Optional window styles.
+                              CLASS_NAME,                                     // Window class
+                              TEXT("No Title Set"),                           // Window text
+                              WS_TILEDWINDOW /* & ~WS_SIZEBOX & ~WS_SYSMENU */, // Window style
 
                               // Size and position
                               CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
@@ -241,7 +250,7 @@ private:
 
         if (hwnd == NULL)
         {
-            throw new std::exception();
+            EB_EXCEPTION("Can not create window!");
         }
 
         ShowWindow(hwnd, SW_SHOW);

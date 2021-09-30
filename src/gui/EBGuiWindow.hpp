@@ -49,6 +49,8 @@ protected :
         return EBGuiWidget::setMousePos(x, y);
     }
 
+    virtual void setTitle(std::string title) = 0;
+
     virtual void resized(int w, int h)
     {
         EBObjectPointer<EBGuiWidget> widget = this->widgets.front();

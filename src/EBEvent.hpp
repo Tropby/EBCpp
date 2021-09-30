@@ -266,8 +266,6 @@ public:
 
 private:
     std::list<EBObjectPointer<EBConnection<args...>>> connections;
-
-  
 };
 
 } // namespace EBCpp

@@ -35,6 +35,7 @@ public:
     ExampleGuiImage()
     {
         window.closed.connect(this, &ExampleGuiImage::windowClosed);
+        window.setTitle("GUI Image Test");
         window.addWidget(&widget);
 
         widget.setX(20);
@@ -87,7 +88,7 @@ private:
  * @return int Exit code (0)
  */
 int main()
-{
+{    
     ExampleGuiImage gui;
     EBCpp::EBEventLoop::getInstance()->exec();
     return 0;

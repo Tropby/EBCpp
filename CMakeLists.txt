@@ -70,16 +70,15 @@ else()
     target_link_libraries(EBCppExampleHttpServer pthread)        
 endif()
 
-# Compile EBCppExampleSerialPort
-add_executable(EBCppExampleSerialPort examples/ExampleSerialPort.cpp)
 if(WIN32)
-    target_link_libraries(EBCppExampleSerialPort wsock32 ws2_32 -Wl,-subsystem,console)
-else()
-    target_link_libraries(EBCppExampleSerialPort pthread)        
-endif()
+    # Compile EBCppExampleSerialPort
+    add_executable(EBCppExampleSerialPort examples/ExampleSerialPort.cpp)
+    if(WIN32)
+        target_link_libraries(EBCppExampleSerialPort wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleSerialPort pthread)        
+    endif()
 
-
-if(WIN32)
     # Compile EBCppExampleGui 
     add_executable(EBCppExampleGui examples/ExampleGui.cpp)
     if(WIN32)

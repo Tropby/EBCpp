@@ -79,6 +79,7 @@ public:
             // Upgrade the http request to an websocket connection!
             sockets.push_back(createObject<EBCpp::EBWebSocket>(request));
             sockets.back()->textFrameReceived.connect(this, &ExampleWebSocketServer::textFrameReceived);
+            sockets.back()->binaryFrameReceived.connect(this, &ExampleWebSocketServer::binaryFrameReceived);
             sockets.back()->disconnected.connect(this, &ExampleWebSocketServer::disconnected);
         }
         else
@@ -103,6 +104,21 @@ public:
         for( auto socket : sockets )
         {
             socket->sendTextFrame(text);
+        }
+    }
+
+    /**
+     * @brief Binary frame received
+     *        Send the binary data to all clients.
+     * 
+     * @param data The binary data that was received
+     */
+    EB_SLOT_WITH_ARGS(binaryFrameReceived, std::vector<uint8_t> data )
+    {
+        EB_LOG_DEBUG("Binary Data received [" << data.size() << "]");
+        for (auto socket : sockets)
+        {
+            socket->sendBinaryFrame(data);
         }
     }
 

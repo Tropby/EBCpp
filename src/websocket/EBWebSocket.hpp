@@ -52,6 +52,10 @@ public:
         tcpSocket->write("\r\n");
     }
 
+    /**
+     * @brief Destroy the EBWebSocket object
+     * 
+     */
     ~EBWebSocket()
     {
         tcpSocket = nullptr;
@@ -89,6 +93,12 @@ public:
     EB_SIGNAL_WITH_ARGS(textFrameReceived, std::string);
 
     /**
+     * @brief EB_SIGNAL binaryFrameReceived
+     *
+     */
+    EB_SIGNAL_WITH_ARGS(binaryFrameReceived, std::vector<uint8_t>);
+
+    /**
      * @brief EB_SIGNAL finished
      *
      * This signal will be emitted if the request is finished and the
@@ -96,9 +106,14 @@ public:
      */
     EB_SIGNAL(finished);
 
-    void sendTextFrame(std::string text)
+    void sendTextFrame(std::string& text) 
     {
         send(OC_TEXT_FRAME, text.c_str(), text.size(), false);
+    }
+
+    void sendBinaryFrame(std::vector<uint8_t>& data) 
+    {
+        send(OC_BINARY_FRAME, reinterpret_cast<char*>(data.data()), data.size(), false);
     }
 
 private:
@@ -136,13 +151,14 @@ private:
     } opcode;
     uint64_t pos;
 
+    /// TODO: data must be created and destroyed by payload + 1
     unsigned char data[1024];
     unsigned char mask[4];
     bool isMask;
 
     bool fin;
 
-    void send(OPCODE opcode, const char* body, uint64_t size, bool mask = false)
+    void send(OPCODE opcode, const char* body, uint64_t size, bool mask = false) 
     {
         char c[1024];
         int pos = 0;
@@ -210,6 +226,7 @@ private:
                 readState = RS_PAYLOAD;
                 break;
 
+            // Read the payload size
             case RS_PAYLOAD: {
 
                 isMask = ((d & 0x80) == 0x80);
@@ -237,6 +254,7 @@ private:
                 break;
             }
 
+            // Read two more bytes for 16 bit payload size
             case RS_PAYLOAD16:
                 payloadSize <<= 8;
                 payloadSize |= d;
@@ -251,6 +269,7 @@ private:
                 }
                 break;
 
+            // Read 8 more bytes for 64 bit payload size
             case RS_PAYLOAD64:
                 payloadSize <<= 8;
                 payloadSize |= d;
@@ -265,6 +284,7 @@ private:
                 }
                 break;
 
+            // Read the mask
             case RS_MASK:
                 mask[pos++] = d;
                 if (pos == 4)
@@ -277,6 +297,7 @@ private:
                 }
                 break;
 
+            // Read the actual payload
             case RS_DATA:
                 if (isMask)
                     data[pos++] = d ^ mask[pos % 4];
@@ -295,10 +316,18 @@ private:
         {
             switch (opcode)
             {
-            case OC_TEXT_FRAME: {
+            case OC_TEXT_FRAME:
+            {
                 data[pos] = 0x00;
                 std::string dataStr(reinterpret_cast<char*>(data));
                 EB_EMIT_WITH_ARGS(textFrameReceived, dataStr);
+                break;
+            }
+
+            case OC_BINARY_FRAME:
+            {
+                std::vector<uint8_t> binaryData = std::vector<uint8_t>(data, data + payloadSize);
+                EB_EMIT_WITH_ARGS(binaryFrameReceived, binaryData);
                 break;
             }
 

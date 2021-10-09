@@ -154,7 +154,7 @@ private:
 
     std::list<EBObjectPointer<EBLog>> logger;
 
-    std::mutex mutex;    
+    std::mutex mutex;
 };
 
 } // namespace EBCpp

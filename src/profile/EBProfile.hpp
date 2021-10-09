@@ -42,6 +42,57 @@
 namespace EBCpp
 {
 
+class EBProfileCall;
+typedef EBObjectPointer<EBProfileCall> EBProfileCallPtr;
+
+/**
+ * @brief Class EBProfile proviedes the funktionality to log and
+ *        proifile the behavior of an software written with EBCpp
+ *
+ */
+class EBProfile : public EBObject<EBProfile>
+{
+public:
+    /**
+     * @brief Get the Singelton object
+     *
+     * @return EBObjectPointer<EBProfile> Singelton object
+     */
+    static EBObjectPointer<EBProfile> getInstance()
+    {
+        /// TODO: Add instance for each Thread.
+        if (instance == nullptr)
+        {
+            instance = EBObjectPointer<EBProfile>(new EBProfile());
+        }
+        return instance;
+    }
+
+    void addToStack(EBProfileCallPtr profileCall)
+    {
+        callStack.push_back(profileCall);
+    }
+
+    void removeFromStack(EBProfileCallPtr profileCall)
+    {
+        callStack.pop_back();
+    }
+
+private:
+    /**
+     * @brief Construct a new EBProfile object
+     *
+     */
+    EBProfile()
+    {
+    }
+
+    //! Singelton object of the EBProfile class
+    static inline EBObjectPointer<EBProfile> instance = EBObjectPointer<EBProfile>(nullptr);
+
+    std::list<EBProfileCallPtr> callStack;
+};
+
 /**
  * @brief Class thats provides informations of an EBProfileCall
  *
@@ -61,6 +112,9 @@ public:
         file(file), line(line), method(method), sharedPointer(sharedPointer)
     {
         start = std::chrono::high_resolution_clock::now();
+
+        EBProfile::getInstance()->addToStack(this);
+
         EB_LOG_PROFILE("START [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::_counter
                                       << " SPtr: " << sharedPointer << "] >> " << file << ":" << line << " @ "
                                       << method);
@@ -73,8 +127,9 @@ public:
     ~EBProfileCall()
     {
         auto stop = std::chrono::high_resolution_clock::now();
-
         auto int_s = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+        EBProfile::getInstance()->removeFromStack(this);
 
         EB_LOG_PROFILE("STOP [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::_counter
                                      << " SPtr: " << sharedPointer << "] >> " << file << ":" << line << " @ " << method
@@ -98,38 +153,4 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> start;
 };
 
-/**
- * @brief Class EBProfile proviedes the funktionality to log and
- *        proifile the behavior of an software written with EBCpp
- *
- */
-class EBProfile : public EBObject<EBProfile>
-{
-public:
-    /**
-     * @brief Get the Singelton object
-     *
-     * @return EBObjectPointer<EBProfile> Singelton object
-     */
-    static EBObjectPointer<EBProfile> getInstance()
-    {
-        if (instance == nullptr)
-        {
-            instance = EBObjectPointer<EBProfile>(new EBProfile());
-        }
-        return instance;
-    }
-
-private:
-    /**
-     * @brief Construct a new EBProfile object
-     *
-     */
-    EBProfile()
-    {
-    }
-
-    //! Singelton object of the EBProfile class
-    static inline EBObjectPointer<EBProfile> instance = EBObjectPointer<EBProfile>(nullptr);
-};
 } // namespace EBCpp

@@ -13,7 +13,7 @@ EBNetwork:
         ✔ Create a websocket class (for Http/Https Server) @done(21-09-30 18:57)
         ✔ Upgrade Http-Requests @done(21-09-30 18:57)
         ✔ Implement TextFrame @done(21-09-30 18:57)
-        ☐ Implement BinaryFrame
+        ✔ Implement BinaryFrame @done(21-10-09 19:47)
         ☐ Implement Ping/Pong
 
     EBUdpSocket:

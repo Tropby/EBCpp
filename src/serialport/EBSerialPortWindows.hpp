@@ -26,6 +26,7 @@
 #ifdef __WIN32__
 
 #include "../EBIODevice.hpp"
+#include "../profile/EBProfile.hpp"
 #include "EBSerialPortBase.hpp"
 #include <windows.h>
 
@@ -84,8 +85,8 @@ public:
         serialInfo.BaudRate = baudrate;
         serialInfo.fBinary = TRUE;
         serialInfo.fParity = TRUE;
-        serialInfo.fErrorChar = TRUE;
-        serialInfo.fNull = TRUE;
+        serialInfo.fErrorChar = FALSE;
+        serialInfo.fNull = FALSE;
         serialInfo.fAbortOnError = FALSE; // TODO
         serialInfo.ByteSize = byteSize;
 
@@ -253,7 +254,7 @@ private:
             OVERLAPPED osReader = {0};
             osReader.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
             if (osReader.hEvent == NULL)
-                EB_EXCEPTION("Can not set commmask for serial port!");
+                EB_EXCEPTION("Can not create osReader.hEvent!");
 
             if (!waitingOnRead)
             {
@@ -266,9 +267,12 @@ private:
                 }
                 else
                 {
-                    const std::lock_guard<std::mutex> lock(mutex);
-                    data.push_back(buffer);
-                    EB_EMIT(readReady);
+                    if( dwRead > 0 )
+                    {
+                        const std::lock_guard<std::mutex> lock(mutex);
+                        data.push_back(buffer);
+                        EB_EMIT(readReady);
+                    }
                 }
             }
 
@@ -290,12 +294,13 @@ private:
                         EB_EMIT(readReady);
                     }
                     waitingOnRead = false;
-                    CloseHandle(osReader.hEvent);
+                    
                     break;
                 case WAIT_TIMEOUT:
                     break;
                 }
             }
+            CloseHandle(osReader.hEvent);
         }
     }
 };

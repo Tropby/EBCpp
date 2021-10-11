@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include "../EBEvent.hpp"
+
 namespace EBCpp
 {
 class EBSerialPortBase : public EBIODevice<EBSerialPortBase>
@@ -107,6 +109,7 @@ public:
     {
         const std::lock_guard<std::mutex> lock(mutex);
 
+        int test = this->data.size();
         int size = this->data.size() < maxLength ? this->data.size() : maxLength;
 
         for (int i = 0; i < size; i++)

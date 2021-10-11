@@ -94,6 +94,18 @@ public:
         return buffer;
     }
 
+    static std::string binToHex(char * data, uint32_t len)
+    {
+        std::stringstream stream;
+        while (len > 0)
+        {
+            stream << std::setfill('0') << std::setw(2) << std::hex << (int)(uint8_t)*data;
+            data++;
+            len--;
+        }
+        return stream.str();
+    }
+
     /**
      * @brief converts an integer/long to its hex representation
      *

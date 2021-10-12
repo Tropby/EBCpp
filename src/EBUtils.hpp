@@ -121,6 +121,13 @@ public:
         return stream.str();
     }
 
+    static std::string charToHex(char i)
+    {
+        std::stringstream stream;
+        stream << "0x" << std::setfill('0') << std::setw(2) << std::hex << (int)i;
+        return stream.str();
+    }
+
     /**
      * @brief returns the lower case of an string
      *
@@ -251,6 +258,34 @@ public:
             pos += replace.length();
         }
         return subject;
+    }
+
+    static unsigned char calCRC8(unsigned char* data, unsigned char length)
+    {
+        unsigned char bit_counter;
+        unsigned char feedback_bit;
+        unsigned char i;
+        unsigned char crc = 0xFF;
+        unsigned char inByte;
+
+        for (i = 0; i < length; i++)
+        {
+            bit_counter = 8;
+            inByte = *data;
+            data++;
+            do
+            {
+                feedback_bit = (crc ^ inByte) & 0x01;
+                if (feedback_bit)
+                    crc = crc ^ 0x18;
+                crc = (crc >> 1) & 0x7F;
+                if (feedback_bit)
+                    crc = crc | 0x80;
+                inByte >>= 1;
+                bit_counter--;
+            } while (bit_counter > 0);
+        }
+        return crc;
     }
 };
 

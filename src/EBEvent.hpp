@@ -36,15 +36,15 @@
 #define EB_SLOT(slotName) void slotName(EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> sender)
 #define EB_EMIT(signalName)                                                                                            \
     {                                                                                                                  \
-        EBObjectPointer<EBObject<EBObjectBase>> _cast = cast<EBObject<EBObjectBase>>();                                \
+        EBCpp::EBObjectPointer<EBCpp::EBObject<EBObjectBase>> _cast = cast<EBCpp::EBObject<EBObjectBase>>();           \
         signalName.emit(_cast);                                                                                        \
     }
 
 #define EB_SLOT_WITH_ARGS(slotName, args...)                                                                           \
-    void slotName(EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> sender, args)    
+    void slotName(EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> sender, args)
 #define EB_EMIT_WITH_ARGS(signalName, args...)                                                                         \
     {                                                                                                                  \
-        EBObjectPointer<EBObject<EBObjectBase>> _cast = cast<EBObject<EBObjectBase>>();                                \
+        EBCpp::EBObjectPointer<EBCpp::EBObject<EBObjectBase>> _cast = cast<EBCpp::EBObject<EBObjectBase>>();           \
         signalName.emit(_cast, args);                                                                                  \
     }
 

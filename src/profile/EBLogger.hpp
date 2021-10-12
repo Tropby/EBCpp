@@ -32,6 +32,7 @@
 #include <sstream>
 #include <regex>
 
+#define EB_LOG_INFO(msg) EB_LOG(EBCpp::EBLogger::LOG_INFO, msg)
 #define EB_LOG_DEBUG(msg) EB_LOG(EBCpp::EBLogger::LOG_DEBUG, msg)
 #define EB_LOG_PROFILE(msg) EB_LOG(EBCpp::EBLogger::LOG_PROFILE, msg)
 #define EB_LOG_WARNING(msg) EB_LOG(EBCpp::EBLogger::LOG_WARNING, msg)
@@ -67,7 +68,8 @@ public:
         LOG_PROFILE = 2,
         LOG_WARNING = 4,
         LOG_ERROR = 8,
-        LOG_CRITICAL = 16
+        LOG_CRITICAL = 16,
+        LOG_INFO = 32
     };
 
     /**

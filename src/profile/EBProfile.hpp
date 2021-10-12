@@ -115,7 +115,7 @@ public:
 
         EBProfile::getInstance()->addToStack(this);
 
-        EB_LOG_PROFILE("START [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::_counter
+        EB_LOG_PROFILE("START [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::getCounter()
                                       << " SPtr: " << sharedPointer << "] >> " << file << ":" << line << " @ "
                                       << method);
     }
@@ -131,7 +131,7 @@ public:
 
         EBProfile::getInstance()->removeFromStack(this);
 
-        EB_LOG_PROFILE("STOP [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::_counter
+        EB_LOG_PROFILE("STOP [Obj: " << EBObjectBase::_counter << " ObjP: " << EBObjectPointerBase::getCounter()
                                      << " SPtr: " << sharedPointer << "] >> " << file << ":" << line << " @ " << method
                                      << " (T=" << int_s.count() << " us)");
     }

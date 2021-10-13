@@ -244,7 +244,7 @@ private:
     {
         EB_PROFILE_FUNC();
 
-        char buffer;
+        char buffer[16];
         bool waitingOnRead;
         DWORD dwRead;
 
@@ -258,7 +258,8 @@ private:
 
             if (!waitingOnRead)
             {
-                if (!ReadFile(handle, &buffer, 1, &dwRead, &osReader))
+                // Read more than 1 byte
+                if (!ReadFile(handle, buffer, 16, &dwRead, &osReader))
                 {
                     if (GetLastError() != ERROR_IO_PENDING)
                         EB_EXCEPTION("Can not read from serial port!");
@@ -267,11 +268,15 @@ private:
                 }
                 else
                 {
-                    if( dwRead > 0 )
+                    if (dwRead > 0)
                     {
                         const std::lock_guard<std::mutex> lock(mutex);
-                        data.push_back(buffer);
-                        EB_EMIT(readReady);
+
+                        bool emit = data.size() == 0;
+                        for (int i = 0; i < dwRead; i++)
+                            data.push_back(buffer[i]);
+                        if (emit)
+                            EB_EMIT(readReady);
                     }
                 }
             }
@@ -290,11 +295,14 @@ private:
                     else
                     {
                         const std::lock_guard<std::mutex> lock(mutex);
-                        data.push_back(buffer);
-                        EB_EMIT(readReady);
+                        bool emit = data.size() == 0;
+                        for (int i = 0; i < dwRead; i++)
+                            data.push_back(buffer[i]);
+                        if (emit)
+                            EB_EMIT(readReady);
                     }
                     waitingOnRead = false;
-                    
+
                     break;
                 case WAIT_TIMEOUT:
                     break;

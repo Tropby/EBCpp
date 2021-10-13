@@ -128,10 +128,10 @@ public:
         return buffer;
     }
 
-    static std::string charToHex(char i)
+    static std::string charToHex(uint8_t i)
     {
         std::stringstream stream;
-        stream << "0x" << std::setfill('0') << std::setw(2) << std::hex << (int)i;
+        stream << "0x" << std::setfill('0') << std::setw(2) << std::hex << (uint16_t)i;
         return stream.str();
     }
 

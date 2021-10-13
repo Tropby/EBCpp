@@ -236,7 +236,7 @@ private:
             std::cerr << ex.what() << '\n';
         }
 
-        if (contentSize > 0)
+        if (headerFinished && contentSize > 0)
         {
             while (!tcpSocket->atEnd())
             {

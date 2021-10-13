@@ -121,6 +121,13 @@ public:
         return stream.str();
     }
 
+    static std::string currentWorkingDirectory()
+    {
+        char buffer[1024];
+        getcwd(buffer, 1024);
+        return buffer;
+    }
+
     static std::string charToHex(char i)
     {
         std::stringstream stream;

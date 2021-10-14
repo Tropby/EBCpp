@@ -116,6 +116,11 @@ public:
         closed = true;
     }
 
+    int getCount()
+    {
+        return events.size();
+    }
+
 private:
     std::list< EBObjectPointer<EBSlotCall> > events;
     std::mutex mutex;

@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@ namespace EBCpp
  * @brief Implementation of a http server
  *
  */
-class EBHttpServer : public EBObject
+class EBHttpServer : public EBObject<EBHttpServer>
 {
 public:
     /**
@@ -43,7 +43,7 @@ public:
      *
      * @param parent Parent of the http server object
      */
-    EBHttpServer(EBObject* parent) : EBObject(parent), tcpServer(nullptr)
+    EBHttpServer() : tcpServer(nullptr)
     {
     }
 
@@ -59,12 +59,12 @@ public:
      * @return true
      * @return false
      */
-    bool setTcpServer(EBTcpServer* server)
+    bool setTcpServer(EBObjectPointer<EBTcpServer>& server)
     {
         if (server == nullptr)
             return false;
         tcpServer = server;
-        tcpServer->newConnection.connect(*this, &EBHttpServer::newConnection);
+        tcpServer->newConnection.connect(this, &EBHttpServer::newConnection);
         return true;
     }
 
@@ -74,11 +74,11 @@ public:
      * Will be emitted if a new http request is ready
      *
      */
-    EB_SIGNAL_WITH_ARGS(newRequest, EBHttpRequest*);
+    EB_SIGNAL_WITH_ARGS(newRequest, EBCpp::EBObjectPointer<EBCpp::EBHttpRequest>);
 
 private:
-    EBTcpServer* tcpServer;
-    std::list<std::shared_ptr<EBHttpRequest>> requests;
+    EBObjectPointer<EBTcpServer> tcpServer;
+    std::list<EBObjectPointer<EBHttpRequest>> requests;
 
     /**
      * @brief EB_SLOT newConnection
@@ -89,11 +89,11 @@ private:
      * @param sender Object that has emmited the signal
      * @param socket New tcp socket
      */
-    EB_SLOT_WITH_ARGS(newConnection, EBTcpSocket* socket)
+    EB_SLOT_WITH_ARGS(newConnection, EBObjectPointer<EBTcpSocket> socket)
     {
-        std::shared_ptr<EBHttpRequest> request = std::make_shared<EBHttpRequest>(this);
-        request->ready.connect(*this, &EBHttpServer::requestReady);
-        request->finished.connect(*this, &EBHttpServer::requestFinished);
+        EBObjectPointer<EBHttpRequest> request = createObject<EBHttpRequest>();
+        request->ready.connect(this, &EBHttpServer::requestReady);
+        request->finished.connect(this, &EBHttpServer::requestFinished);
         requests.push_back(request);
         request->setSocket(socket);
     }
@@ -106,15 +106,17 @@ private:
      */
     EB_SLOT(requestReady)
     {
-        EBHttpRequest* request = static_cast<EBHttpRequest*>(sender);
+        EBCpp::EBObjectPointer<EBCpp::EBHttpRequest> request = sender->cast<EBCpp::EBHttpRequest>();
         EB_EMIT_WITH_ARGS(newRequest, request);
     }
 
     EB_SLOT(requestFinished)
     {
-        for( auto it : requests )
+        EBCpp::EBObjectPointer<EBCpp::EBHttpRequest> request = sender->cast<EBCpp::EBHttpRequest>();
+
+        for( auto & it : requests )
         {
-            if( it.get() == sender )
+            if (it.get() == request.get())
             {
                 requests.remove(it);
                 break;

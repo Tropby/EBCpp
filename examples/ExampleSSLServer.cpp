@@ -37,16 +37,16 @@
  * @brief Example to show the function of the TCP server
  *
  */
-class ExampleSslServer : public EBCpp::EBObject
+class ExampleSslServer : public EBCpp::EBObject<ExampleSslServer>
 {
 public:
     /**
      * @brief Construct a new Example Tcp Server object
      *
      */
-    ExampleSslServer() : EBCpp::EBObject(nullptr), server(this, "../examples/testCert.pem", "../examples/testKey.pem")
+    ExampleSslServer() : server("../examples/testCert.pem", "../examples/testKey.pem")
     {
-        server.newConnection.connect(*this, &ExampleSslServer::newConnection);
+        server.newConnection.connect(this, &ExampleSslServer::newConnection);
         if (server.bind(8958))
         {
             std::cout << "Tcp server now bound on 8958" << std::endl;
@@ -65,15 +65,15 @@ public:
      * @param sender The sender object
      * @param socket The new client socket
      */
-    EB_SLOT_WITH_ARGS(newConnection, EBCpp::EBTcpSocket* socket)
+    EB_SLOT_WITH_ARGS(newConnection, EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket)
     {
         std::cout << "new connection!" << std::endl;
 
-        socket->disconnected.connect(*this, &ExampleSslServer::disconnected);
-        socket->readReady.connect(*this, &ExampleSslServer::readReady);
-        socket->error.connect(*this, &ExampleSslServer::error);
+        socket->disconnected.connect(this, &ExampleSslServer::disconnected);
+        socket->readReady.connect(this, &ExampleSslServer::readReady);
+        socket->error.connect(this, &ExampleSslServer::error);
 
-        socket->write("Hallo :)\n");
+        socket->write("Hallo :)");
     }
 
     /**
@@ -85,9 +85,8 @@ public:
      */
     EB_SLOT(disconnected)
     {
-        EBCpp::EBTcpSocket* socket = static_cast<EBCpp::EBTcpSocket*>(sender);
-        std::cout << "disconnected" << std::endl;
-        delete socket;
+        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
+        std::cout << "disconnected" << std::endl;        
     }
 
     /**
@@ -100,7 +99,7 @@ public:
     EB_SLOT(readReady)
     {
         char buffer[1024];
-        EBCpp::EBTcpSocket* socket = static_cast<EBCpp::EBTcpSocket*>(sender);
+        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
 
         int nbytes = socket->read(buffer, 1024);
         std::string s(buffer, nbytes);
@@ -131,5 +130,5 @@ private:
 int main()
 {
     ExampleSslServer exampleSslServer;
-    EBCpp::EBEventLoop::getInstance().exec();
+    EBCpp::EBEventLoop::getInstance()->exec();
 }

@@ -14,7 +14,7 @@ namespace EBCpp
  * @brief Class that parses the http header
  *
  */
-class EBHttpHeader : public EBObject
+class EBHttpHeader : public EBObject<EBHttpHeader>
 {
 public:
     /**
@@ -22,7 +22,7 @@ public:
      *
      * @param parent Parent object
      */
-    EBHttpHeader(EBObject* parent) : EBObject(parent)
+    EBHttpHeader()
     {
     }
 

@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,8 @@ namespace EBCpp
  * @brief Interface description of an input/output device
  *
  */
-class EBIODevice : public EBObject
+template <class T>
+class EBIODevice : public EBObject<T>
 {
 public:
     /**
@@ -40,7 +41,7 @@ public:
      *
      * @param parent The parent of the IODevice
      */
-    EBIODevice(EBObject* parent) : EBObject(parent)
+    EBIODevice()
     {
     }
 
@@ -88,7 +89,7 @@ public:
      * @param length Size of the data in bytes
      * @return int Bytes written to the output device
      */
-    virtual int write(char* data, int length) = 0;
+    virtual int write(const char* data, int length) = 0;
 
     /**
      * @brief Writes a string to the output device
@@ -96,7 +97,7 @@ public:
      * @param data String to wirte to the output device
      * @return int Bytes written to the output device
      */
-    virtual int write(std::string data) = 0;
+    virtual int write(const std::string& data) = 0;
 
     /**
      * @brief Read data from the socket
@@ -105,7 +106,7 @@ public:
      * @param maxLength Size of the buffer
      * @return int Bytes read
      */
-    virtual int read(char* data, int maxLength) = 0;
+    virtual int read(char* data, int maxLength) = 0;    
 
     /**
      * @brief Checks if the data buffer contains "\\n"

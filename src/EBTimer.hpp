@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,8 @@
 
 #include <functional>
 #include <thread>
+#include <chrono>
+#include <memory>
 
 #include "EBEvent.hpp"
 #include "EBSemaphore.hpp"
@@ -32,10 +34,13 @@
 namespace EBCpp
 {
 
+class EBTimer;
+typedef EBObjectPointer<EBTimer> EBTimerPtr;
+
 /**
  * @brief The EBTimer can provide times events
  */
-class EBTimer : public EBObject
+class EBTimer : public EBObject<EBTimer>
 {
 public:
     /**
@@ -43,7 +48,8 @@ public:
      *
      * @param parent Parent of the EBTimer object
      */
-    EBTimer(EBObject* parent) : EBObject(parent), timerRunning(true), singleShot(false), time(-1), thread(nullptr)
+    EBTimer() :
+        EBObject(), timerRunning(true), singleShot(false), time(-1), thread(nullptr)
     {
     }
 
@@ -115,6 +121,17 @@ public:
         thread = new std::thread(std::bind(&EBTimer::run, this));
     }
 
+    /**
+     * @brief Checks if the timer is currently running.
+     * 
+     * @return true if the timer is running.
+     * @return false if the timer is not running.
+     */
+    bool isRunning()
+    {
+        return timerRunning;
+    }
+
 private:
     bool timerRunning;
     bool singleShot;
@@ -134,10 +151,10 @@ private:
         while (timerRunning)
         {
             // Wait for the timer run out or the timer is canceled
-            {
+            {                
                 //std::unique_lock<std::mutex> lock(mWait);
                 //cvWait.wait_for(lock, std::chrono::milliseconds(time), [&] { return !timerRunning; });
-                usleep(time * 1000.0);
+                std::this_thread::sleep_for(std::chrono::milliseconds(time));
             }
 
             // Emit the timeout event if the timer is still running and the thead should not end

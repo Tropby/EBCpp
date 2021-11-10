@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ namespace EBCpp
  * @brief Interface description of an input/output device
  *
  */
-class EBFile : public EBIODevice
+class EBFile : public EBIODevice < EBFile>
 {
 public:
     /**
@@ -42,7 +42,7 @@ public:
      *
      * @param parent The parent of the IODevice
      */
-    EBFile(EBObject* parent) : EBIODevice(parent)
+    EBFile() 
     {
     }
 
@@ -91,7 +91,7 @@ public:
      * @param length Size of the data in bytes
      * @return int Bytes written to the output device
      */
-    virtual int write(char* data, int length)
+    virtual int write(const char* data, int length)
     {
         file.write( data, length );
         return length;
@@ -155,8 +155,25 @@ public:
     }
 
     /**
-     * @brief Returns true if the end of stream is reached
+     * @brief Reads the whole file as string
      * 
+     * @return std::string the file content
+     */
+    virtual std::string readAll()
+    {
+        std::string result;
+
+        char c[1024];
+        while( int n = read(c, 1024) )
+        {
+            result += std::string(c, n);
+        }
+        return result;
+    }
+
+    /**
+     * @brief Returns true if the end of stream is reached
+     *
      * @return true if at the end of the io stream
      * @return false otherwise
      */

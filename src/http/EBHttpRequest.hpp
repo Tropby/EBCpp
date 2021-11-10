@@ -1,8 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <sstream>
 #include <map>
+#include <sstream>
 
 #include "../EBEvent.hpp"
 #include "../EBObject.hpp"
@@ -16,7 +16,7 @@ namespace EBCpp
 /**
  * @brief Handles a http request
  */
-class EBHttpRequest : public EBObject
+class EBHttpRequest : public EBObject<EBHttpRequest>
 {
 public:
     /**
@@ -24,30 +24,51 @@ public:
      *
      * @param parent Parent of the http request
      */
-    EBHttpRequest(EBObject* parent) :
-        EBObject(parent), tcpSocket(tcpSocket), headerFinished(false), requestHeader(this), replyHeader(this),
-        responseCode(200), firstLine(true)
+    EBHttpRequest() : tcpSocket(nullptr), headerFinished(false), responseCode(200), firstLine(true), readFinished(false)
     {
     }
 
     ~EBHttpRequest()
     {
-        delete tcpSocket;
         tcpSocket = nullptr;
     }
 
     /**
      * @brief Set the socket the request is performed on
-     * 
+     *
      * @param tcpSocket the socket
      */
-    void setSocket(EBTcpSocket* tcpSocket)
+    void setSocket(EBObjectPointer<EBTcpSocket> tcpSocket)
     {
+        if( this->tcpSocket != nullptr )
+        {
+            this->tcpSocket->readReady.disconnect(this, &EBHttpRequest::readReady);
+        }
+
         this->tcpSocket = tcpSocket;
-        tcpSocket->readReady.connect(*this, &EBHttpRequest::readReady);
-        readReady(tcpSocket);
+
+        if (this->tcpSocket != nullptr)
+        {
+            tcpSocket->readReady.connect(this, &EBHttpRequest::readReady);
+            readReady(tcpSocket->template cast<EBObject<EBObjectBase>>());
+        }
+        else
+        {
+            // Send finish. The request can not use a nullptr as connection
+            EB_EMIT(finished);
+        }
     }
 
+    EBObjectPointer<EBTcpSocket> getSocket()
+    {
+        return this->tcpSocket;
+    }
+
+    /**
+     * @brief Get the Data that was received by the EBHttpRequest
+     *
+     * @return std::vector<char> the data
+     */
     std::vector<char> getData()
     {
         return data;
@@ -58,14 +79,15 @@ public:
      *
      * @param data Data to send
      */
-    void sendReply(std::string data) 
+    void sendReply(std::string data)
     {
         tcpSocket->write("HTTP/1.0 " + std::to_string(responseCode) + " Okay\r\n");
         tcpSocket->write(replyHeader.getHeader());
         tcpSocket->write("Content-Length: " + std::to_string(data.size()) + "\r\n");
         tcpSocket->write("\r\n");
         tcpSocket->write(data);
-        tcpSocket->close(); 
+        tcpSocket->close();
+        tcpSocket->readReady.disconnect(this, &EBHttpRequest::readReady);
         EB_EMIT(finished);
     }
 
@@ -119,7 +141,13 @@ public:
         responseCode = code;
     }
 
-    std::string getPostParameter( std::string key )
+    /**
+     * @brief Get the Post Parameter
+     * 
+     * @param key The key of the parameter that should be returned
+     * @return std::string the value of the parameter
+     */
+    std::string getPostParameter(std::string key)
     {
         return postParameter[key];
     }
@@ -133,14 +161,14 @@ public:
 
     /**
      * @brief EB_SIGNAL finished
-     * 
+     *
      * This signal will be emitted if the request is finished and the
      * reply is send to the client.
      */
     EB_SIGNAL(finished);
 
 private:
-    EBTcpSocket* tcpSocket;
+    EBObjectPointer<EBTcpSocket> tcpSocket;
     bool headerFinished;
     int contentSize = -1;
 
@@ -153,6 +181,7 @@ private:
 
     int responseCode;
     bool firstLine;
+    bool readFinished;
 
     std::vector<char> data;
 
@@ -167,6 +196,11 @@ private:
 
     EB_SLOT(readReady)
     {
+        EB_PROFILE_FUNC();
+
+        if (readFinished)
+            return;
+
         try
         {
             if (!headerFinished)
@@ -183,16 +217,16 @@ private:
                     else if (line.size() == 0)
                     {
                         headerFinished = true;
+                        break;
                     }
                     else
                     {
                         requestHeader.processLine(line);
-                        if( contentSize == -1 && requestHeader.contains("content-length") )
+                        if (contentSize == -1 && requestHeader.contains("content-length"))
                         {
                             std::string len = requestHeader.getValue("content-length");
-                            contentSize = std::stoi( len );
+                            contentSize = std::stoi(len);
                         }
-
                     }
                 }
             }
@@ -202,35 +236,34 @@ private:
             std::cerr << ex.what() << '\n';
         }
 
-        if( contentSize > 0 )
+        if (headerFinished && contentSize > 0)
         {
-            while( !tcpSocket->atEnd() )
+            while (!tcpSocket->atEnd())
             {
                 char buffer[1024];
                 int bytesRead = tcpSocket->read(buffer, 1024);
-                for( int i = 0; i < bytesRead; i++ )
-                    data.push_back( buffer[i] );
+                for (int i = 0; i < bytesRead; i++)
+                    data.push_back(buffer[i]);
                 contentSize -= bytesRead;
             }
-
         }
 
         if (headerFinished && contentSize <= 0)
         {
-            if( requestHeader.contains("content-type") )
+            if (requestHeader.contains("content-type"))
             {
-                if( EBUtils::toLower( requestHeader.getValue("content-type") )
-                    .compare("application/x-www-form-urlencoded") == 0 )
+                if (EBUtils::toLower(requestHeader.getValue("content-type"))
+                    .compare("application/x-www-form-urlencoded") == 0)
                 {
                     processPOSTParameters();
                 }
             }
-
+            readFinished = true;
             EB_EMIT(ready);
         }
     }
 
-    void extractMethodProtocolAndPath( std::string line )
+    void extractMethodProtocolAndPath(std::string line)
     {
         std::istringstream f(line);
         std::string s;
@@ -245,23 +278,23 @@ private:
 
         if (!getline(f, s, ' '))
             protocolError();
-        requestProtocol = s;        
+        requestProtocol = s;
     }
 
     void processPOSTParameters()
     {
         std::vector<char> v = getData();
-        std::string param( v.begin(), v.end() );
+        std::string param(v.begin(), v.end());
         std::stringstream ss(param);
 
         std::string token;
-        while(std::getline(ss, token, '&'))
+        while (std::getline(ss, token, '&'))
         {
             std::string key = EBUtils::trim(token.substr(0, token.find('=')));
             std::string value = EBUtils::trim(token.substr(token.find('=') + 1));
 
-            key = EBUtils::urlDecode( key );
-            value = EBUtils::urlDecode( value );
+            key = EBUtils::urlDecode(key);
+            value = EBUtils::urlDecode(value);
 
             postParameter[key] = value;
         }

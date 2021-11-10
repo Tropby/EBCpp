@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,7 @@ namespace EBCpp
  * @brief Event handling class
  *
  */
-class EBEventLoop : public EBObject
+class EBEventLoop : public EBObject<EBEventLoop>
 {
 public:
     /**
@@ -45,23 +45,16 @@ public:
      *
      * @param parent Parent of the event loop
      */
-    EBEventLoop(EBObject* parent) : EBObject(parent), semaphore(0, this)
-    {
-    }
+    EBEventLoop() : EBObject(), semaphore(createObject<EBSemaphore>(0)), closed(false){}
 
     /**
      * @brief Get the main instance (Main Loop)
      *
      * @return EBEventLoop& main event loop
      */
-    static EBEventLoop& getInstance()
+    static EBObjectPointer<EBEventLoop>& getInstance()
     {
-        static std::unique_ptr<EBEventLoop> instance;
-        if (!instance)
-        {
-            instance = std::unique_ptr<EBEventLoop>(new EBEventLoop(nullptr));
-        }
-        return *instance;
+        return instance;
     }
 
     /**
@@ -69,12 +62,12 @@ public:
      *
      * @param slot Slot that should be called
      */
-    void emit(std::shared_ptr<EBSlotCall> slot)
+    void emit(EBObjectPointer<EBSlotCall>& slot)
     {
         mutex.lock();
         events.push_back(slot);
         mutex.unlock();
-        semaphore.release();
+        semaphore->release();
     }
 
     /**
@@ -86,10 +79,11 @@ public:
         while (events.size())
         {
             mutex.lock();
-            std::shared_ptr<EBSlotCall> slot = events.front();
+            EBObjectPointer<EBSlotCall>& slot = events.front();
             mutex.unlock();
 
-            slot->call();
+            if(slot.isValid())
+                slot->call();
 
             mutex.lock();
             events.pop_front();
@@ -104,11 +98,11 @@ public:
     void exec()
     {
         EBUtils::setThreadName("EBEventLoop 0x" + EBUtils::intToHex(reinterpret_cast<long long>(this)));
-        closed = false;
         while (!closed)
         {
-            semaphore.acquire();
+            semaphore->acquire();
             processEvents();
+            destroyObjects();
         }
     }
 
@@ -122,11 +116,17 @@ public:
         closed = true;
     }
 
+    int getCount()
+    {
+        return events.size();
+    }
+
 private:
-    std::list< std::shared_ptr<EBSlotCall> > events;
+    std::list< EBObjectPointer<EBSlotCall> > events;
     std::mutex mutex;
-    EBSemaphore semaphore;
+    EBObjectPointer<EBSemaphore> semaphore;
     bool closed;
+    static inline EBObjectPointer<EBEventLoop> instance = createObject<EBEventLoop>();
 };
 
 } // namespace EBCpp

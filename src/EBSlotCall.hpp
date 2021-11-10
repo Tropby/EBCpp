@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,7 +41,7 @@ namespace EBCpp
  * provides to the call are valid and calls the slot.
  *
  */
-class EBSlotCall : public EBObject
+class EBSlotCall : public EBObject<EBSlotCall>
 {
 public:
     /**
@@ -51,8 +51,18 @@ public:
      * @param receiver The object that slot will be called
      * @param f The method pointer of the receiver object that will be executed
      */
-    EBSlotCall(EBObject* sender, EBObject* receiver, std::function<void()> f) :
-        EBObject(nullptr), sender(sender), receiver(receiver), function(f)
+    EBSlotCall(EBObjectPointer<EBObject<EBObjectBase>>& sender, EBObjectPointer<EBObject<EBObjectBase>>& receiver,
+               std::function<void()>& f) :
+        EBObject(),
+        sender(sender), receiver(receiver), function(f)
+    {
+    }
+
+    /**
+     * @brief Destroy the EBSlotCall object
+     * 
+     */
+    ~EBSlotCall()
     {
     }
 
@@ -61,15 +71,12 @@ public:
      */
     void call()
     {
-        if (EBObject::isValidObject(sender) && EBObject::isValidObject(receiver))
-        {
-            function();
-        }
+        function();
     }
 
 private:
-    EBObject* sender;
-    EBObject* receiver;
+    EBObjectPointer<EBObject<EBObjectBase>> sender;
+    EBObjectPointer<EBObject<EBObjectBase>> receiver;
     std::function<void()> function;
 };
 

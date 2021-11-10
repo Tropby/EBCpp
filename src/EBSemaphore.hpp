@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,16 +36,15 @@ namespace EBCpp
  * @brief Semaphore implementation for EBCpp
  *
  */
-class EBSemaphore : public EBObject
+class EBSemaphore : public EBObject<EBSemaphore>
 {
 public:
     /**
      * @brief Construct a new EBSemaphore object
      *
      * @param startCount Number of tokens the semaphore can provide after the creation
-     * @param parent Parent EBCpp object
      */
-    EBSemaphore(uint32_t startCount, EBObject* parent = nullptr) : EBObject(parent), tokens(startCount)
+    EBSemaphore(uint32_t startCount) : EBObject(), tokens(startCount)
     {
     }
 

@@ -1,0 +1,94 @@
+<script>
+
+    let connection = null;
+
+    // Connect to the server
+    function connect() {
+
+        var loc = window.location, new_uri;
+        if (loc.protocol === "https:") {
+            new_uri = "wss:";
+        } else {
+            new_uri = "ws:";
+        }
+        new_uri += "//" + loc.host;
+        new_uri += loc.pathname + "echo";
+
+        connection = new WebSocket(new_uri, ['chat']);
+
+        connection.onopen = function () {
+            log("connected!");
+        };
+
+        // Log errors
+        connection.onerror = function (error) {
+            log('WebSocket Error ' + JSON.stringify(error));
+        };
+
+        // Log messages from the server
+        connection.onmessage = function (e) {
+            console.log(typeof (e.data));
+            if (e.data instanceof Blob) {
+
+                let fileReader = new FileReader(),
+                    array;
+
+                fileReader.onload = function () {
+                    array = this.result;
+                    log( 'Received Binary Data: 0x' + bufferToHex(array) );
+                };
+
+                fileReader.readAsArrayBuffer(e.data);                
+            }
+            else {
+                log('Received Text: ' + e.data);
+            }
+        };
+
+        connection.onclose = function (e) {
+            log('disconnected!');
+        }
+    }
+
+    function bufferToHex(buffer) {
+            var s = '', h = '0123456789ABCDEF';
+            (new Uint8Array(buffer)).forEach((v) => { s += h[v >> 4] + h[v & 15]; });
+            return s;
+        }
+
+    function disconnect() {
+        connection.close();
+    }
+
+    // log to the textarea
+    function log(msg) {
+        let ta = document.getElementById("result");
+        ta.value = ta.value + msg + "\n";
+    }
+
+    // Send text messages to the server
+    function sendText() {
+        let value = document.getElementById("text").value;
+        log("Send Text: " + value);
+        if (connection != null)
+            connection.send(value);
+        else
+            log("Connection is not set!");
+    }
+
+    function sendBinary() {
+        let buffer = new Uint8Array([0xAF, 0xFE]);
+        log('Send Binary Data: 0x' + bufferToHex(buffer));
+        connection.send(buffer);
+    }
+
+</script>
+<h1>Echo Test</h1>
+<button onclick="connect();">Connect</button><br /><br />
+<button onclick="disconnect();">Disconnect</button><br /><br />
+<input type="text" id="text" value="echo test" />
+<button onclick="sendText();">Send Text</button>
+<br /><br />
+<textarea id="result" style="width: 500px; height: 400px;"></textarea>
+<hr />
+<button onclick="sendBinary();">Send Binary (0xAFFE)</button>

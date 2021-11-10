@@ -1,4 +1,5 @@
 {
+    "doxygen_runner.configuration_file_override": "${workspaceFolder}/Doxyfile",
     "C_Cpp.default.configurationProvider": "go2sh.cmake-integration",
     "files.associations": {
         "array": "cpp",
@@ -55,9 +56,11 @@
         "map": "cpp",
         "csignal": "cpp",
         "numeric": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "codecvt": "cpp"
     },
     "C_Cpp.clang_format_style": "file",
     "formatFiles.excludePattern": "[ default: '**/build, **/.vscode, **/bin' ]",
-    "C_Cpp.errorSquiggles": "Disabled"
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.encoding": "utf8"
 }

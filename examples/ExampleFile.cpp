@@ -31,7 +31,7 @@
  */
 int main()
 {
-    EBCpp::EBFile file(nullptr);
+    EBCpp::EBFile file;
     file.setFileName("../examples/testFile.txt");
     if (file.open(EBCpp::EBFile::READ_ONLY))
     {

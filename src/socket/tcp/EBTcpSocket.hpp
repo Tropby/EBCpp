@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@
 #include "../../EBIODevice.hpp"
 #include "../../EBSemaphore.hpp"
 #include "../../EBUtils.hpp"
-
+#include "../../profile/EBProfile.hpp"
 #include "EBTcpHeader.hpp"
 
 namespace EBCpp
@@ -40,16 +40,17 @@ namespace EBCpp
  * @brief Socket to handle a tcp connection
  *
  */
-class EBTcpSocket : public EBIODevice
+class EBTcpSocket : public EBIODevice<EBTcpSocket>
 {
 public:
     /**
      * @brief Construct a new EBTcpSocket object
      *
-     * @param parent Parent of the EBTcpSocket instance
      */
-    EBTcpSocket(EBObject* parent) : EBIODevice(parent), socketId(-1), thread(nullptr), connectionState(false)
+    EBTcpSocket() : socketId(-1), thread(nullptr), connectionState(false)
     {
+        EB_PROFILE_FUNC();
+
         static bool inited = false;
         if (!inited)
         {
@@ -65,13 +66,14 @@ public:
     /**
      * @brief Construct a new EBTcpServerSocket object
      *
-     * @param parent EBTcpServer that have created the object
      * @param socketId socket id of the tcp connection
      * @param client client informations
      */
-    EBTcpSocket(EBObject* parent, SOCKET socketId, struct sockaddr_in client) :
-        EBIODevice(parent), thread(nullptr), connectionState(true), socketId(socketId), address(client)
+    EBTcpSocket(SOCKET socketId, struct sockaddr_in client) :
+        EBIODevice(), thread(nullptr), connectionState(true), socketId(socketId), address(client)
     {
+        EB_PROFILE_FUNC();
+
 #ifdef __WIN32__
         WORD versionWanted = MAKEWORD(1, 1);
         WSADATA wsaData;
@@ -85,6 +87,8 @@ public:
      */
     virtual ~EBTcpSocket()
     {
+        EB_PROFILE_FUNC();
+
         close();
         joinThread();
     }
@@ -99,6 +103,7 @@ public:
      */
     virtual bool open(EBIODevice::DIRECTION direction)
     {
+        EB_PROFILE_FUNC();
 
         if (direction != READ_WRITE)
             EB_EXCEPTION("Can not open a tcp socket read only or write only.");
@@ -148,6 +153,8 @@ public:
      */
     virtual bool isOpened()
     {
+        EB_PROFILE_FUNC();
+
         return connectionState;
     }
 
@@ -159,19 +166,21 @@ public:
      */
     virtual bool close()
     {
+        EB_PROFILE_FUNC();
+
         if (isOpened())
         {
             connectionState = false;
 
-#ifdef __WIN32__                    
-                shutdown(socketId, SD_SEND);
-#else                
-                shutdown(socketId, SHUT_WR);
-#endif                    
+#ifdef __WIN32__
+            shutdown(socketId, SD_SEND);
+#else
+            shutdown(socketId, SHUT_WR);
+#endif
 
             return true;
         }
-        return false;        
+        return false;
     }
 
     /**
@@ -181,8 +190,10 @@ public:
      * @param length Length of the data
      * @return int bytes written to the tcp socket
      */
-    virtual int write(char* data, int length)
+    virtual int write(const char* data, int length) 
     {
+        EB_PROFILE_FUNC();
+
         return send(socketId, data, length, 0);
     }
 
@@ -192,8 +203,10 @@ public:
      * @param data string to send
      * @return int bytes written to the tcp socket
      */
-    virtual int write(std::string data)
+    virtual int write(const std::string& data) 
     {
+        EB_PROFILE_FUNC();
+
         return send(socketId, data.c_str(), data.length(), 0);
     }
 
@@ -206,6 +219,8 @@ public:
      */
     virtual int read(char* data, int maxLength)
     {
+        EB_PROFILE_FUNC();
+
         const std::lock_guard<std::mutex> lock(mutex);
 
         int size = this->data.size() < maxLength ? this->data.size() : maxLength;
@@ -228,6 +243,8 @@ public:
      */
     virtual bool canReadLine()
     {
+        EB_PROFILE_FUNC();
+
         const std::lock_guard<std::mutex> lock(mutex);
         return (std::find(data.begin(), data.end(), '\n') != data.end());
     }
@@ -240,6 +257,8 @@ public:
      */
     virtual std::string readLine()
     {
+        EB_PROFILE_FUNC();
+
         const std::lock_guard<std::mutex> lock(mutex);
 
         bool found = (std::find(data.begin(), data.end(), '\n') != data.end());
@@ -266,14 +285,21 @@ public:
     //! Starts the receiver thread
     void startThread()
     {
+        EB_PROFILE_FUNC();
         thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpSocket::run, this)));
     }
 
+    /**
+     * @brief Waiting for the Thread to join it with the current thread
+     *
+     */
     void joinThread()
     {
+        EB_PROFILE_FUNC();
+
         if (thread)
         {
-            if( thread->joinable() )
+            if (thread->joinable())
             {
                 thread->join();
             }
@@ -283,14 +309,15 @@ public:
 
     /**
      * @brief Returns true if the end of stream is reached
-     * 
+     *
      * @return true if at the end of the io stream
      * @return false otherwise
      */
     virtual bool atEnd()
     {
+        EB_PROFILE_FUNC();
         return (data.size() == 0);
-    }    
+    }
 
     /**
      * @brief EB_SIGNAL error
@@ -335,6 +362,8 @@ protected:
      */
     virtual bool connect()
     {
+        EB_PROFILE_FUNC();
+
         // Try to get a new socket
         socketId = ::socket(AF_INET, SOCK_STREAM, 0);
         if (socketId == -1)
@@ -379,6 +408,7 @@ private:
      **/
     void run()
     {
+        EB_PROFILE_FUNC();
         EBUtils::setThreadName("TcpSocket #???");
 
         // Socket is allredy known and connected (eg. server sockets)
@@ -388,9 +418,8 @@ private:
             {
                 return;
             }
-            connected.emit(this);
 
-            // EB_EMIT(connected);
+            EB_EMIT(connected);
         }
         else
         {
@@ -410,21 +439,21 @@ private:
             {
             // Discriptor disconnected
             case 0:
-#ifdef __WIN32__                    
-                    ::closesocket(socketId);
-#else                
-                    ::close(socketId);
-#endif                    
+#ifdef __WIN32__
+                ::closesocket(socketId);
+#else
+                ::close(socketId);
+#endif
 
                 EB_EMIT(disconnected);
                 return;
 
             case -1:
-#ifdef __WIN32__                    
+#ifdef __WIN32__
                 ::closesocket(socketId);
-#else                
+#else
                 ::close(socketId);
-#endif                    
+#endif
 
                 // if not closed send error message otherwise send disconnected
                 if (connectionState)

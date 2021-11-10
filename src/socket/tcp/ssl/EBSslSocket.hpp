@@ -1,7 +1,7 @@
 /*
  * EBCpp
  *
- * Copyright (C) 2020 Carsten Grings
+ * Copyright (C) 2020 Carsten (Tropby)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,9 +41,8 @@ public:
     /**
      * @brief Construct a new EBSslSocket object
      *
-     * @param parent Parent of the EBSslSocket instance
      */
-    EBSslSocket(EBObject* parent) : EBTcpSocket(parent)
+    EBSslSocket()
     {
     }
 
@@ -53,10 +52,8 @@ public:
      * @param ssl Ssl structure
      * @param socketId socket id of the tcp connection
      * @param client client informations
-     * @param parent Parent of the EBSslSocket instance
      */
-    EBSslSocket(EBObject* parent, SSL* ssl, SOCKET socketId, struct sockaddr_in client) :
-        EBTcpSocket(parent, socketId, client), ssl(ssl)
+    EBSslSocket(SSL* ssl, SOCKET socketId, struct sockaddr_in client) : EBTcpSocket(socketId, client), ssl(ssl)
     {
     }
 
@@ -66,11 +63,11 @@ public:
      */
     virtual ~EBSslSocket()
     {
-        //SSL_shutdown(ssl);
-        close();     
-        joinThread();   
-        SSL_free(ssl);  
-        ssl = 0;      
+        // SSL_shutdown(ssl);
+        close();
+        joinThread();
+        SSL_free(ssl);
+        ssl = 0;
     }
 
     /**
@@ -99,7 +96,7 @@ public:
             }
         }
 
-        return len;        
+        return len;
     }
 
     /**
@@ -108,12 +105,12 @@ public:
      * @param data string to send
      * @return int bytes written to the tcp socket
      */
-    virtual int write(std::string data)
+    virtual int write(const std::string& data)
     {
         int len = -1;
         try
         {
-            if( isOpened() )
+            if (isOpened())
             {
                 len = SSL_write(ssl, data.c_str(), data.length());
                 if (len < 0)
@@ -133,16 +130,15 @@ public:
                 }
             }
         }
-        catch(const std::exception& e)
+        catch (const std::exception& e)
         {
             std::cerr << e.what() << '\n';
         }
-        
+
         return len;
     }
 
 protected:
-
     /**
      * @brief Creates a socket and connects to the host
      *
@@ -186,7 +182,50 @@ protected:
     virtual int receiveData(char* buffer, int size)
     {
         // Read next block of data
-        return SSL_read(ssl, buffer, size);
+        int nbytes = SSL_read(ssl, buffer, size);
+
+        if (nbytes <= 0)
+        {
+            int error = SSL_get_error(ssl, nbytes);
+            switch (error)
+            {
+            case SSL_ERROR_NONE:
+                EB_LOG_ERROR("SSL_ERROR_NONE");
+                break;
+            case SSL_ERROR_ZERO_RETURN:
+                EB_LOG_ERROR("SSL_ERROR_ZERO_RETURN");
+                break;
+            case SSL_ERROR_WANT_READ:
+                EB_LOG_ERROR("SSL_ERROR_WANT_READ");
+                break;
+            case SSL_ERROR_WANT_WRITE:
+                EB_LOG_ERROR("SSL_ERROR_WANT_WRITE");
+                break;
+            case SSL_ERROR_WANT_CONNECT:
+                EB_LOG_ERROR("SSL_ERROR_WANT_CONNECT");
+                break;
+            case SSL_ERROR_WANT_ACCEPT:
+                EB_LOG_ERROR("SSL_ERROR_WANT_ACCEPT");
+                break;
+            case SSL_ERROR_WANT_X509_LOOKUP:
+                EB_LOG_ERROR("SSL_ERROR_WANT_X509_LOOKUP");
+                break;
+            case SSL_ERROR_WANT_ASYNC:
+                EB_LOG_ERROR("SSL_ERROR_WANT_ASYNC");
+                break;
+            case SSL_ERROR_WANT_ASYNC_JOB:
+                EB_LOG_ERROR("SSL_ERROR_WANT_ASYNC_JOB");
+                break;
+            case SSL_ERROR_SYSCALL:
+                EB_LOG_ERROR("SSL_ERROR_SYSCALL");
+                break;
+            case SSL_ERROR_SSL:
+                EB_LOG_ERROR("SSL_ERROR_SSL");
+                break;
+            }
+        }
+
+        return nbytes;
     }
 
 private:

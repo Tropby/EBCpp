@@ -15,42 +15,113 @@ if(WIN32)
 endif()
 
 # Compile EBCppExampleFile
+add_executable(EBCppExample examples/Example.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExample -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExample pthread)        
+endif()
+
+# Compile EBCppExcampleSignalSlot
+add_executable(EBCppExampleSignalSlot examples/ExampleSignalSlot.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleSignalSlot -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleSignalSlot pthread)        
+endif()
+
+# Compile EBCppExampleFile
 add_executable(EBCppExampleFile examples/ExampleFile.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleFile -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleFile pthread)        
 endif()
 
 # Compile EBCppExampleTimer 
 add_executable(EBCppExampleTimer examples/ExampleTimer.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleTimer -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleTimer pthread)        
 endif()
 
 # Compile EBCppExampleTcpClient 
 add_executable(EBCppExampleTcpClient examples/ExampleTcpClient.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleTcpClient wsock32 ws2_32 -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleTcpClient pthread)        
 endif()
 
 # Compile EBCppExampleTcpServer 
 add_executable(EBCppExampleTcpServer examples/ExampleTcpServer.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleTcpServer wsock32 ws2_32 -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleTcpServer pthread)        
 endif()
 
 # Compile EBCppExampleHttpServer 
 add_executable(EBCppExampleHttpServer examples/ExampleHttpServer.cpp)
 if(WIN32)
     target_link_libraries(EBCppExampleHttpServer wsock32 ws2_32 -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleHttpServer pthread)        
+endif()
+
+if(WIN32)
+    # Compile EBCppExampleSerialPort
+    add_executable(EBCppExampleSerialPort examples/ExampleSerialPort.cpp)
+    if(WIN32)
+        target_link_libraries(EBCppExampleSerialPort wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleSerialPort pthread)        
+    endif()
+
+    # Compile EBCppExampleGui 
+    add_executable(EBCppExampleGui examples/ExampleGui.cpp)
+    if(WIN32)
+        target_link_libraries(EBCppExampleGui gdiplus -Wl,-subsystem,windows)
+    else()
+        target_link_libraries(EBCppExampleGui pthread)        
+    endif()
+
+    # Compile EBCppExampleImage
+    add_executable(EBCppExampleGuiImage examples/ExampleGuiImage.cpp)
+    if(WIN32)
+        target_link_libraries(EBCppExampleGuiImage gdiplus -Wl,-subsystem,windows)
+    else()
+        target_link_libraries(EBCppExampleGui pthread)        
+    endif()
+
+    # Compile EBCppExampleGuiLayout
+    add_executable(EBCppExampleGuiLayout examples/ExampleGuiLayout.cpp)
+    if(WIN32)
+        target_link_libraries(EBCppExampleGuiLayout gdiplus -Wl,-subsystem,windows)
+    else()
+        target_link_libraries(EBCppExampleGuiLayout pthread)        
+    endif()    
 endif()
 
 find_package(OpenSSL)
 if(OPENSSL_FOUND)    
+    # Compile EBCppExampleHttpServer 
+    add_executable(EBCppExampleWebSocketServer examples/ExampleWebSocketServer.cpp)
+    target_include_directories(EBCppExampleWebSocketServer PRIVATE ${OPENSSL_INCLUDE_DIR})
+    if(WIN32)
+        target_link_libraries(EBCppExampleWebSocketServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleWebSocketServer OpenSSL::Crypto OpenSSL::SSL pthread)        
+    endif()
+
     # Compile EBCppExampleSSLClient 
     add_executable(EBCppExampleSSLClient examples/ExampleSSLClient.cpp)
     target_include_directories(EBCppExampleSSLClient PRIVATE ${OPENSSL_INCLUDE_DIR})
     if(WIN32)
         target_link_libraries(EBCppExampleSSLClient OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleSSLClient OpenSSL::Crypto OpenSSL::SSL pthread)
     endif()
 
     # Compile EBCppExampleSSLServer 
@@ -58,6 +129,8 @@ if(OPENSSL_FOUND)
     target_include_directories(EBCppExampleSSLServer PRIVATE ${OPENSSL_INCLUDE_DIR})
     if(WIN32)
         target_link_libraries(EBCppExampleSSLServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleSSLServer OpenSSL::Crypto OpenSSL::SSL pthread)
     endif()    
 
     # Compile EBCppExampleHttpsServer 
@@ -65,6 +138,8 @@ if(OPENSSL_FOUND)
     target_include_directories(EBCppExampleHttpsServer PRIVATE ${OPENSSL_INCLUDE_DIR})
     if(WIN32)
         target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL pthread)
     endif()        
 endif()
 
@@ -85,6 +160,7 @@ if( DOXYGEN_FOUND )
     set(DOXYGEN_DOT_GRAPH_MAX_NODES 100)
     set(DOXYGEN_DOT_TRANSPARENT YES)
     set(DOXYGEN_MACRO_EXPANSION YES)
+    set(DOXYGEN_WARN_ID_UNDOCUMENTED NO)    
 
     set(DOXYGEN_PREDEFINED 
         "EB_SIGNAL(a) = EBCpp::EBEvent<> a"        
@@ -103,5 +179,3 @@ if( DOXYGEN_FOUND )
 else(DOXYGEN_FOUND)
     message("doxygen not found building without doxygen documentation") 
 endif(DOXYGEN_FOUND)  
-
-add_executable(EBCppTest test/test.cpp)

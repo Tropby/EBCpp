@@ -37,7 +37,7 @@
  * @brief Example to show the function of a tcp client
  *
  */
-class ExampleSSLClient : public EBCpp::EBObject
+class ExampleSSLClient : public EBCpp::EBObject < ExampleSSLClient>
 {
 public:
     /**
@@ -45,15 +45,15 @@ public:
      *
      * @param parent Parent of this object
      */
-    ExampleSSLClient(EBCpp::EBObject* parent) : EBCpp::EBObject(parent), socket(this)
+    ExampleSSLClient() 
     {
-        socket.connected.connect(*this, &ExampleSSLClient::connected);
-        socket.disconnected.connect(*this, &ExampleSSLClient::disconnected);
-        socket.error.connect(*this, &ExampleSSLClient::error);
-        socket.readReady.connect(*this, &ExampleSSLClient::readReady);
+        socket.connected.connect(this, &ExampleSSLClient::connected);
+        socket.disconnected.connect(this, &ExampleSSLClient::disconnected);
+        socket.error.connect(this, &ExampleSSLClient::error);
+        socket.readReady.connect(this, &ExampleSSLClient::readReady);
 
         socket.setFileName("tcp://google.com:443");
-        socket.open(EBCpp::EBIODevice::READ_WRITE);
+        socket.open(EBCpp::EBIODevice<EBCpp::EBTcpSocket>::READ_WRITE);
     }
 
     /**
@@ -66,7 +66,8 @@ public:
     EB_SLOT(connected)
     {
         std::cout << "connected" << std::endl;
-        EBCpp::EBTcpSocket* socket = static_cast<EBCpp::EBTcpSocket*>(sender);
+        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
+
         socket->write("GET / HTTP/1.0\r\nhost: www.google.com\r\n\r\n");
     }
 
@@ -80,7 +81,7 @@ public:
     EB_SLOT(disconnected)
     {
         std::cout << "disconnected" << std::endl;
-        EBCpp::EBEventLoop::getInstance().exit();
+        EBCpp::EBEventLoop::getInstance()->exit();
     }
 
     /**
@@ -93,7 +94,7 @@ public:
     EB_SLOT(readReady)
     {
         char buffer[1024];
-        EBCpp::EBSslSocket* socket = static_cast<EBCpp::EBSslSocket*>(sender);
+        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
 
         int nbytes = socket->read(buffer, 1024);
         std::string s(buffer, nbytes);
@@ -125,6 +126,6 @@ private:
  */
 int main()
 {
-    ExampleSSLClient exampleTcpClient(nullptr);
-    EBCpp::EBEventLoop::getInstance().exec();
+    ExampleSSLClient exampleTcpClient;
+    EBCpp::EBEventLoop::getInstance()->exec();
 }

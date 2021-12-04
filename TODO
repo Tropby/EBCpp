@@ -1,11 +1,13 @@
 EBCore:
+    ☐ Sometimes the apps using EBCpp will slow down and can't be killed anymore
 
     EBTimer:
         ☐ Make the timer stopable (wait condition, was not working as intended)
 
     EBSerialPort:
         ✔ Create a serial port class that is using a thread to read from the serial port @done(21-09-30 18:56)
-        ☐ Create a  port for linux
+        ☐ Create a port for linux
+        ☐ Check if mass data transfer will kill the event loop (too much emits)
 
 EBNetwork:
 

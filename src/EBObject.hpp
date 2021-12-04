@@ -80,7 +80,7 @@ public:
      * @return EBObjectPointer<C> Pointer to the created object.
      */
     template <class C, class... argList>
-    static EBObjectPointer<C> createObject(argList... args)
+    static EBObjectPointer<C> createObject(argList... args) 
     {
         C* object = new C(args...);
         objectList.push_back(object);
@@ -313,12 +313,17 @@ public:
             this->pointer->use(this);
     }
 
+    T& operator*()
+    {
+        return (T&)(*this->pointer);
+    }
+
     /**
      * @brief Get the raw pointer for the Object
      *
      * @return T* Returns the raw pointer to the EBObjectBase
      */
-    T* operator->()
+    T* operator->() const
     {
         if (pointer == nullptr)
             EB_EXCEPTION("Can not get pointer from a EBObjectPointer that is null!");

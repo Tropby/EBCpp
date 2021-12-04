@@ -23,7 +23,7 @@
 
 #pragma once
 
-#ifdef __WIN32__
+#if defined(__WIN32__) || defined(_WIN32)
 #include <io.h>
 #include <winsock2.h>
 #include <windows.h>

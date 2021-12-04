@@ -244,7 +244,7 @@ private:
     {
         EB_PROFILE_FUNC();
 
-        char buffer[16];
+        char buffer[1];
         bool waitingOnRead;
         DWORD dwRead;
 
@@ -259,7 +259,7 @@ private:
             if (!waitingOnRead)
             {
                 // Read more than 1 byte
-                if (!ReadFile(handle, buffer, 16, &dwRead, &osReader))
+                if (!ReadFile(handle, buffer, 1, &dwRead, &osReader))
                 {
                     if (GetLastError() != ERROR_IO_PENDING)
                         EB_EXCEPTION("Can not read from serial port!");

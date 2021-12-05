@@ -24,8 +24,10 @@
 #pragma once
 
 #include <fstream>
+#include <sys/stat.h>
 
 #include "EBIODevice.hpp"
+#include "EBString.hpp"
 
 namespace EBCpp
 {
@@ -56,7 +58,23 @@ public:
      */
     virtual bool open(EBIODevice::DIRECTION direction)
     {
-        file.open(getFileName());
+        std::ios_base::openmode om;
+        switch(direction)
+        {
+            case READ_WRITE:
+                om = std::ios::in | std::ios::out;
+                break;
+
+            case READ_ONLY:
+                om = std::ios::in;
+                break;
+
+            case WRITE_ONLY:
+                om = std::ios::out;
+                break;
+        }
+        
+        file.open(getFileName().toStdString(), om | std::ios::binary);
         return file.is_open();
     }
 
@@ -147,11 +165,11 @@ public:
      * @return std::string line data
      * @throws May throws an error if no line is available
      */
-    virtual std::string readLine()
+    virtual const EBString readLine()
     {
         std::string str;
         std::getline(file, str);
-        return str;
+        return EBString(str);
     }
 
     /**
@@ -159,14 +177,14 @@ public:
      * 
      * @return std::string the file content
      */
-    virtual std::string readAll()
+    virtual const EBString readAll()
     {
-        std::string result;
+        EBString result;
 
         char c[1024];
         while( int n = read(c, 1024) )
         {
-            result += std::string(c, n);
+            result += EBString(c, n);
         }
         return result;
     }
@@ -180,6 +198,17 @@ public:
     virtual bool atEnd()
     {
         return file.eof();
+    }
+
+    bool exists()
+    {        
+        return exists(getFileName());
+    }
+
+    static inline bool exists( const EBString& filename )
+    {
+        struct stat buffer;
+        return (stat(filename.dataPtr(), &buffer) == 0);
     }
 
 private:

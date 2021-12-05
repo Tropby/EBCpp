@@ -7,6 +7,7 @@
 #include "../EBEvent.hpp"
 #include "../EBObject.hpp"
 #include "../socket/tcp/EBTcpSocket.hpp"
+#include "../EBString.hpp"
 
 #include "EBHttpHeader.hpp"
 
@@ -72,6 +73,16 @@ public:
     std::vector<char> getData()
     {
         return data;
+    }
+
+    /**
+     * @brief Sends a reply to the http client and closes the connection
+     *
+     * @param data Data to send
+     */
+    void sendReply(EBString& data)
+    {
+        sendReply(data.toStdString());
     }
 
     /**
@@ -207,21 +218,21 @@ private:
             {
                 while (tcpSocket->canReadLine())
                 {
-                    std::string line = EBUtils::trim(tcpSocket->readLine());
+                    EBString line = tcpSocket->readLine().trim();
 
                     if (firstLine)
                     {
                         firstLine = false;
-                        extractMethodProtocolAndPath(line);
+                        extractMethodProtocolAndPath(line.toStdString());
                     }
-                    else if (line.size() == 0)
+                    else if (line.empty())
                     {
                         headerFinished = true;
                         break;
                     }
                     else
                     {
-                        requestHeader.processLine(line);
+                        requestHeader.processLine(line.toStdString());
                         if (contentSize == -1 && requestHeader.contains("content-length"))
                         {
                             std::string len = requestHeader.getValue("content-length");

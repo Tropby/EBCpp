@@ -25,6 +25,9 @@
 
 #include "EBObject.hpp"
 
+#include <string.h>
+#include <string>
+
 namespace EBCpp
 {
 
@@ -36,6 +39,14 @@ public:
         this->size = 0;
         this->data = new char[1];
         this->data[0] = 0x00;
+    }
+
+    EBString(const char* data, uint32_t size)
+    {
+        this->size = size;
+        this->data = new char[this->size + 1];
+        memcpy(this->data, data, this->size + 1);
+        this->data[size] = 0x00;
     }
 
     EBString(const char* data)
@@ -67,6 +78,11 @@ public:
     const char* dataPtr() const
     {
         return this->data;
+    }
+
+    bool empty() const
+    {
+        return length() == 0;
     }
 
     unsigned int length() const
@@ -117,9 +133,9 @@ public:
         return newString;
     }
 
-    int toInt()
+    int toInt(uint8_t base = 10)
     {
-        return std::atoi(data);
+        return std::strtol(data, NULL, base);
     }
 
     std::string toStdString() const
@@ -136,6 +152,19 @@ public:
         }
 
         return pos - this->data;
+    }
+
+    const EBString trim() const
+    {
+        int start = 0;
+        while( isspace(data[start++]) )
+            ;
+
+        int len = length() - 1;
+        while (isspace(data[len--]))
+            ;
+
+        return mid(start - 1, len - start + 3);
     }
 
     bool operator==(const EBString& other) const
@@ -195,7 +224,7 @@ private:
 
 } // namespace EBCpp
 
-std::ostream& operator<<(std::ostream& os, const EBCpp::EBString& str)
+inline std::ostream& operator<<(std::ostream& os, const EBCpp::EBString& str)
 {
     return os << str.dataPtr();
 }

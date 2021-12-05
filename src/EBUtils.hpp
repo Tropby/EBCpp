@@ -28,6 +28,7 @@
 #include <string>
 
 #include "socket/tcp/EBTcpHeader.hpp"
+#include "EBString.hpp"
 
 namespace EBCpp
 {
@@ -43,9 +44,9 @@ public:
      * @brief converts a hostname to its corrosponding ip address
      *
      * @param hostname Hostname that will be converted
-     * @return std::string ip address of the hostname
+     * @return EBString ip address of the hostname
      */
-    static std::string hostnameToIp(std::string hostname)
+    static EBString hostnameToIp(const EBString& hostname)
     {
         struct addrinfo hints, *servinfo, *p;
         struct sockaddr_in* h;
@@ -55,7 +56,7 @@ public:
         hints.ai_family = AF_INET;
         hints.ai_socktype = SOCK_STREAM;
 
-        if ((rv = getaddrinfo(hostname.c_str(), "http", &hints, &servinfo)) != 0)
+        if ((rv = getaddrinfo(hostname.dataPtr(), "http", &hints, &servinfo)) != 0)
         {
             return "";
         }

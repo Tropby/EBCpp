@@ -107,18 +107,18 @@ public:
 
     bool startsWith(const EBString& other) const
     {
-        EBString substr = this->mid(0, other.length());
+        EBString substr(this->mid(0, other.length()));
         return substr == other;
     }
 
-    EBString mid(uint64_t start, uint64_t length = 0) const
+    EBString mid(int64_t start, int64_t length = -1) const
     {
         if (start >= size)
         {
             return "";
         }
 
-        if (length == 0)
+        if (length < 0)
         {
             length = (size - start);
         }
@@ -127,10 +127,10 @@ public:
             length = (size - start);
 
         char newString[length + 1];
-        memcpy(newString, data + start, length);
+        memcpy(newString, data + start, length);        
         newString[length] = 0x00;
 
-        return newString;
+        return EBString(newString, length);
     }
 
     int toInt(uint8_t base = 10)
@@ -157,14 +157,28 @@ public:
     const EBString trim() const
     {
         int start = 0;
-        while( isspace(data[start++]) )
-            ;
+        while( isspace(data[start]) )
+        {
+            start++;
+
+            if (start >= length())
+            {
+                break;
+            }
+        }
+            
 
         int len = length() - 1;
-        while (isspace(data[len--]))
-            ;
+        while (isspace(data[len]))
+        {
+            len--;
+            if (len <= 0)
+            {
+                break;
+            }
+        }            
 
-        return mid(start - 1, len - start + 3);
+        return mid(start, len - start +1);
     }
 
     bool operator==(const EBString& other) const
@@ -181,7 +195,7 @@ public:
     {
         char newData[other.size + 1];
         delete[] data;
-        data = new char[other.size];
+        data = new char[other.size+1];
         this->size = other.size;
         memcpy(data, other.data, other.size + 1);
         return *this;
@@ -208,6 +222,7 @@ public:
     EBString& operator+=(const EBString& other)
     {
         char* newData = new char[this->size + other.size + 1];
+
         memcpy(newData, this->data, this->size);
         delete[] this->data;
         memcpy(newData + this->size, other.data, other.size + 1);

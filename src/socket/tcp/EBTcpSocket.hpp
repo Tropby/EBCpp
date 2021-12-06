@@ -50,17 +50,7 @@ public:
     EBTcpSocket() : socketId(-1), thread(nullptr), connectionState(false)
     {
         EB_PROFILE_FUNC();
-
-        static bool inited = false;
-        if (!inited)
-        {
-#ifdef __WIN32__
-            WORD versionWanted = MAKEWORD(1, 1);
-            WSADATA wsaData;
-            WSAStartup(versionWanted, &wsaData);
-#endif
-            inited = true;
-        }
+        EBUtils::startupTCP();
     }
 
     /**
@@ -73,12 +63,7 @@ public:
         EBIODevice(), thread(nullptr), connectionState(true), socketId(socketId), address(client)
     {
         EB_PROFILE_FUNC();
-
-#ifdef __WIN32__
-        WORD versionWanted = MAKEWORD(1, 1);
-        WSADATA wsaData;
-        WSAStartup(versionWanted, &wsaData);
-#endif
+        EBUtils::startupTCP();
     }
 
     /**
@@ -401,6 +386,7 @@ private:
     bool connectionState;
     std::list<char> data;
     std::mutex mutex;
+    static inline bool inited = false;
 
     /**
      * This method is used for the thread.

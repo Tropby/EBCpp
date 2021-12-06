@@ -85,7 +85,7 @@ public:
 
             int len = bitmapData.Height * std::abs(bitmapData.Stride);
 
-            imagePointer = static_cast<uint8_t*>(malloc(len));
+            imagePointer = new uint8_t[len];
             memcpy(imagePointer, bitmapData.Scan0, len);
 
             bmp.UnlockBits(&bitmapData);

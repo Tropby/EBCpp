@@ -27,8 +27,8 @@
 #include <sstream>
 #include <string>
 
-#include "socket/tcp/EBTcpHeader.hpp"
 #include "EBString.hpp"
+#include "socket/tcp/EBTcpHeader.hpp"
 
 namespace EBCpp
 {
@@ -85,7 +85,7 @@ public:
 
     /**
      * @brief Get the Thread Name object
-     * 
+     *
      * @return std::string Name of the current thread
      */
     static std::string getThreadName()
@@ -95,7 +95,7 @@ public:
         return buffer;
     }
 
-    static std::string binToHex(char * data, uint32_t len)
+    static std::string binToHex(char* data, uint32_t len)
     {
         std::stringstream stream;
         while (len > 0)
@@ -129,10 +129,10 @@ public:
         return buffer;
     }
 
-    static std::string charToHex(uint8_t i)
+    static std::string charToHex(uint8_t i, bool prefix = true)
     {
         std::stringstream stream;
-        stream << "0x" << std::setfill('0') << std::setw(2) << std::hex << (uint16_t)i;
+        stream << (prefix?"0x":"") << std::setfill('0') << std::setw(2) << std::hex << (uint16_t)i;
         return stream.str();
     }
 
@@ -236,7 +236,7 @@ public:
     }
 
     static std::string currentTimeString()
-    { 
+    {
         auto now = std::chrono::system_clock::now();
 
         // get number of milliseconds for the current second
@@ -294,6 +294,20 @@ public:
             } while (bit_counter > 0);
         }
         return crc;
+    }
+
+    static void startupTCP()
+    {
+        static bool inited = false;
+        if (!inited)
+        {
+#ifdef __WIN32__
+            WORD versionWanted = MAKEWORD(1, 1);
+            WSADATA wsaData;
+            WSAStartup(versionWanted, &wsaData);
+            inited = true;
+#endif
+        }
     }
 };
 

@@ -102,7 +102,7 @@ public:
         {
             semaphore->acquire();
             processEvents();
-            destroyObjects();
+            EBObjectWatch::destroyObjects();
         }
     }
 

@@ -70,11 +70,7 @@ public:
         if (thread != nullptr)
             return false;
 
-#ifdef __WIN32__
-        WORD versionWanted = MAKEWORD(1, 1);
-        WSADATA wsaData;
-        WSAStartup(versionWanted, &wsaData);
-#endif
+        EBUtils::startupTCP();
 
         socketId = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -181,6 +177,7 @@ private:
     void acceptConnections()
     {
         EB_PROFILE_FUNC();
+        EB_LOG_DEBUG("TCP Server startet!");
 
         EBUtils::setThreadName("EBSslServer #" + std::to_string(socketId));
 

@@ -34,12 +34,51 @@
 
 #include "EBException.hpp"
 
+#ifndef __WIN32__
+#ifdef _WIN32
+#define __WIN32__
+#endif
+#endif
+
 namespace EBCpp
 {
 
 class EBObjectPointerBase;
 template <class T>
 class EBObjectPointer;
+class EBObjectBase;
+
+class EBObjectWatchBase
+{
+public:
+    static void add(EBObjectBase* ptr)
+    {
+        mutexEBObjectWatchBase.lock();
+
+        objectListEBObjectWatchBase.push_back(ptr);
+
+        mutexEBObjectWatchBase.unlock();
+    }
+
+    static void remove(EBObjectBase* ptr)
+    {
+        mutexEBObjectWatchBase.lock();
+
+        if (std::find(objectListEBObjectWatchBase.begin(), objectListEBObjectWatchBase.end(), ptr) !=
+            objectListEBObjectWatchBase.end())
+        {
+            objectListEBObjectWatchBase.remove(ptr);
+            objectToBeDestroyedEBObjectWatchBase.push_back(ptr);
+        }
+
+        mutexEBObjectWatchBase.unlock();
+    }
+
+protected:
+    static inline std::mutex mutexEBObjectWatchBase;
+    static inline std::list<EBObjectBase*> objectListEBObjectWatchBase;
+    static inline std::list<EBObjectBase*> objectToBeDestroyedEBObjectWatchBase;
+};
 
 /**
  * @brief Base class of EBCpp. Every class should inherit this class
@@ -79,25 +118,11 @@ public:
      * @return EBObjectPointer<C> Pointer to the created object.
      */
     template <class C, class... argList>
-    static EBObjectPointer<C> createObject(argList... args) 
+    static EBObjectPointer<C> createObject(argList... args)
     {
         C* object = new C(args...);
-        objectList.push_back(object);
+        EBObjectWatchBase::add(object);
         return EBObjectPointer<C>(object);
-    }
-
-    /**
-     * @brief Destroys all objects that are not used anymore
-     *        Attention: do not call this! It is called by the
-     *        event loop to destroy objects that are no longer used.
-     *
-     */
-    static void destroyObjects()
-    {
-        for (EBObjectBase* ptr : objectToBeDestroyed)
-            destroyObject(ptr);
-
-        objectToBeDestroyed.clear();
     }
 
     /**
@@ -131,19 +156,6 @@ public:
     }
 
 private:
-    /**
-     * @brief Destroys a specific object
-     *
-     * @param object The pointer to the object to destroy
-     */
-    static void destroyObject(EBObjectBase* object)
-    {
-        objectList.remove(object);
-        delete object;
-    }
-
-    static inline std::list<EBObjectBase*> objectList;
-    static inline std::list<EBObjectBase*> objectToBeDestroyed;
     std::string name;
 };
 
@@ -253,7 +265,6 @@ public:
     }
 
 protected:
-
     //! Pointer to the object that is observed by this pointer instance
     EBObjectBase* pointer;
 
@@ -430,11 +441,7 @@ public:
         // Check if all references to a Heap object are gone
         if (sharedPointer.size() == 0)
         {
-            if (std::find(objectList.begin(), objectList.end(), this) != objectList.end())
-            {
-                objectList.remove(this);
-                objectToBeDestroyed.push_back(this);
-            }
+            EBObjectWatchBase::remove(this);
         }
         mutex.unlock();
     }
@@ -450,9 +457,32 @@ public:
     }
 
 private:
+    std::mutex mutex;
     std::list<EBObjectPointerBase*> sharedPointer;
     std::thread::id threadId;
-    std::mutex mutex;
+};
+
+class EBObjectWatch : public EBObjectWatchBase
+{
+public:
+    static void destroyObjects()
+    {
+        if( objectToBeDestroyedEBObjectWatchBase.size() > 0 )
+        {
+
+            while (objectToBeDestroyedEBObjectWatchBase.size())
+            {
+                mutexEBObjectWatchBase.lock();
+
+                EBObjectBase* ptr = objectToBeDestroyedEBObjectWatchBase.front();
+                objectToBeDestroyedEBObjectWatchBase.pop_front();
+
+                mutexEBObjectWatchBase.unlock();
+
+                delete ptr;
+            }
+        }
+    }
 };
 
 } // namespace EBCpp

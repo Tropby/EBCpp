@@ -27,6 +27,7 @@
 #include <sstream>
 #include <string>
 
+#include "EBString.hpp"
 #include "socket/tcp/EBTcpHeader.hpp"
 
 namespace EBCpp
@@ -43,9 +44,9 @@ public:
      * @brief converts a hostname to its corrosponding ip address
      *
      * @param hostname Hostname that will be converted
-     * @return std::string ip address of the hostname
+     * @return EBString ip address of the hostname
      */
-    static std::string hostnameToIp(std::string hostname)
+    static EBString hostnameToIp(const EBString& hostname)
     {
         struct addrinfo hints, *servinfo, *p;
         struct sockaddr_in* h;
@@ -55,7 +56,7 @@ public:
         hints.ai_family = AF_INET;
         hints.ai_socktype = SOCK_STREAM;
 
-        if ((rv = getaddrinfo(hostname.c_str(), "http", &hints, &servinfo)) != 0)
+        if ((rv = getaddrinfo(hostname.dataPtr(), "http", &hints, &servinfo)) != 0)
         {
             return "";
         }
@@ -84,7 +85,7 @@ public:
 
     /**
      * @brief Get the Thread Name object
-     * 
+     *
      * @return std::string Name of the current thread
      */
     static std::string getThreadName()
@@ -94,7 +95,7 @@ public:
         return buffer;
     }
 
-    static std::string binToHex(char * data, uint32_t len)
+    static std::string binToHex(char* data, uint32_t len)
     {
         std::stringstream stream;
         while (len > 0)
@@ -128,10 +129,10 @@ public:
         return buffer;
     }
 
-    static std::string charToHex(uint8_t i)
+    static std::string charToHex(uint8_t i, bool prefix = true)
     {
         std::stringstream stream;
-        stream << "0x" << std::setfill('0') << std::setw(2) << std::hex << (uint16_t)i;
+        stream << (prefix?"0x":"") << std::setfill('0') << std::setw(2) << std::hex << (uint16_t)i;
         return stream.str();
     }
 
@@ -235,7 +236,7 @@ public:
     }
 
     static std::string currentTimeString()
-    { 
+    {
         auto now = std::chrono::system_clock::now();
 
         // get number of milliseconds for the current second
@@ -293,6 +294,20 @@ public:
             } while (bit_counter > 0);
         }
         return crc;
+    }
+
+    static void startupTCP()
+    {
+        static bool inited = false;
+        if (!inited)
+        {
+#ifdef __WIN32__
+            WORD versionWanted = MAKEWORD(1, 1);
+            WSADATA wsaData;
+            WSAStartup(versionWanted, &wsaData);
+            inited = true;
+#endif
+        }
     }
 };
 

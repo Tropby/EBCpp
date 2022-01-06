@@ -52,17 +52,8 @@ public:
      * @param f The method pointer of the receiver object that will be executed
      */
     EBSlotCall(EBObjectPointer<EBObject<EBObjectBase>>& sender, EBObjectPointer<EBObject<EBObjectBase>>& receiver,
-               std::function<void()>& f) :
-        EBObject(),
+               std::function<void()>& f) :       
         sender(sender), receiver(receiver), function(f)
-    {
-    }
-
-    /**
-     * @brief Destroy the EBSlotCall object
-     * 
-     */
-    ~EBSlotCall()
     {
     }
 

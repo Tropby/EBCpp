@@ -46,7 +46,7 @@
         EBCpp::EBLogger::getInstance()->log(type, _ss);                                                                \
     }
 
-               namespace EBCpp
+namespace EBCpp
 {
 
 /**

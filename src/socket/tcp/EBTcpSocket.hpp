@@ -50,17 +50,7 @@ public:
     EBTcpSocket() : socketId(-1), thread(nullptr), connectionState(false)
     {
         EB_PROFILE_FUNC();
-
-        static bool inited = false;
-        if (!inited)
-        {
-#ifdef __WIN32__
-            WORD versionWanted = MAKEWORD(1, 1);
-            WSADATA wsaData;
-            WSAStartup(versionWanted, &wsaData);
-#endif
-            inited = true;
-        }
+        EBUtils::startupTCP();
     }
 
     /**
@@ -73,12 +63,7 @@ public:
         EBIODevice(), thread(nullptr), connectionState(true), socketId(socketId), address(client)
     {
         EB_PROFILE_FUNC();
-
-#ifdef __WIN32__
-        WORD versionWanted = MAKEWORD(1, 1);
-        WSADATA wsaData;
-        WSAStartup(versionWanted, &wsaData);
-#endif
+        EBUtils::startupTCP();
     }
 
     /**
@@ -109,24 +94,24 @@ public:
             EB_EXCEPTION("Can not open a tcp socket read only or write only.");
 
         // Check if hostname can be used for this connection
-        std::string host = getFileName();
+        EBString host = getFileName();
 
-        if (host.substr(0, 6).compare("tcp://"))
+        if (host.mid(0, 6) == "tcp://")
             EB_EXCEPTION("EBTcpSocket needs a tcp://{hostname}:{port} filename to connect to a host.");
 
-        host = host.substr(6);
+        host = host.mid(6);
 
-        if (host.find(':') == std::string::npos)
+        if (host.indexOf(":") >= 0)
             EB_EXCEPTION("EBTcpSocket needs a tcp://{hostname}:{port} filename to connect to a host.");
 
-        int32_t port = std::stoi(host.substr(host.find(':') + 1));
-        host = host.substr(0, host.find(':'));
+        int32_t port = host.mid(host.indexOf(":") + 1).toInt();
+        host = host.mid(0, host.indexOf(":"));
 
         if (port > 0xFFFF || port < 0)
             EB_EXCEPTION("EBTcpSocket port rage (0 - 65535).");
 
         // Get ip address from host name otherwise treat host as ip address
-        std::string hostIp = EBUtils::hostnameToIp(host);
+        EBString hostIp = EBUtils::hostnameToIp(host);
         if (!hostIp.empty())
             host = hostIp;
 
@@ -135,7 +120,7 @@ public:
         memset(&address, 0, sizeof(SOCKADDR_IN));
         address.sin_family = AF_INET;
         address.sin_port = htons(port);
-        address.sin_addr.s_addr = inet_addr(host.c_str());
+        address.sin_addr.s_addr = inet_addr(host.dataPtr());
 #else
         inet_pton(AF_INET, host.c_str(), &address);
 #endif
@@ -255,7 +240,7 @@ public:
      * @return std::string Line that was read from the tcp socket
      * @throws EBException if no line ending was found
      */
-    virtual std::string readLine()
+    virtual const EBString readLine()
     {
         EB_PROFILE_FUNC();
 
@@ -272,14 +257,14 @@ public:
                 result += c;
                 this->data.pop_front();
             }
-            return result;
+            return EBString(result);
         }
         else
         {
             EB_EXCEPTION("Can not read line. No \\n found in received data!");
         }
 
-        return std::string();
+        return EBString();
     }
 
     //! Starts the receiver thread
@@ -401,6 +386,7 @@ private:
     bool connectionState;
     std::list<char> data;
     std::mutex mutex;
+    static inline bool inited = false;
 
     /**
      * This method is used for the thread.

@@ -293,28 +293,28 @@ private:
 };
 
 template <typename T>
-EBCpp::EBListIterator<T>& operator++(EBCpp::EBListIterator<T>& a, int)
+inline EBCpp::EBListIterator<T>& operator++(EBCpp::EBListIterator<T>& a, int)
 {
     a.next();
     return a;
 }
 
 template <typename T>
-EBCpp::EBListIterator<T>& operator++(EBCpp::EBListIterator<T>& a)
+inline EBCpp::EBListIterator<T>& operator++(EBCpp::EBListIterator<T>& a)
 {
     a.next();
     return a;    
 }
 
 template <typename T>
-EBCpp::EBListIterator<T> begin(const EBCpp::EBList<T>& v)
+inline EBCpp::EBListIterator<T> begin(const EBCpp::EBList<T>& v)
 {
     EBListIterator<T> it(v.getFront());
     return it;
 }
 
 template <typename T>
-EBCpp::EBListIterator<T> end(const EBCpp::EBList<T>& v)
+inline EBCpp::EBListIterator<T> end(const EBCpp::EBList<T>& v)
 {
     EBListIterator<T> it(nullptr);
     return it;

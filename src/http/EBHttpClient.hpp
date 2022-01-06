@@ -121,7 +121,7 @@ private:
         {
             while (tcpSocket.canReadLine())
             {
-                std::string line = tcpSocket.readLine();
+                std::string line = tcpSocket.readLine().toStdString();
 
                 if (EBUtils::trim(line) == "")
                 {

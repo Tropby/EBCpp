@@ -72,7 +72,7 @@ public:
             else if (protocol == "http")
                 port = 80;
             else if (protocol == "ftp")
-                port = 21;ö
+                port = 21;
 
             /// TODO: Add more standard ports. In a list? Maybe defines/static?
         }

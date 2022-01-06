@@ -122,7 +122,7 @@ public:
         address.sin_port = htons(port);
         address.sin_addr.s_addr = inet_addr(host.dataPtr());
 #else
-        inet_pton(AF_INET, host.c_str(), &address);
+        inet_pton(AF_INET, host.dataPtr(), &address);
 #endif
 
         startThread();

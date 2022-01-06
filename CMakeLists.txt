@@ -153,7 +153,16 @@ endif()
 
 # Compile EBCppExampleHttpsServer 
 add_executable(EBCppTestEBString test/EBString.cpp)
+if(WIN32)
+else()
+    target_link_libraries(EBCppTestEBString pthread)
+endif()        
+
 add_executable(EBCppTestEBList test/EBList.cpp)
+if(WIN32)
+else()
+    target_link_libraries(EBCppTestEBList pthread)
+endif()        
 
 find_package(Doxygen OPTIONAL_COMPONENTS dot)
 if( DOXYGEN_FOUND )

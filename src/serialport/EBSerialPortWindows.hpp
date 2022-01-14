@@ -25,10 +25,10 @@
 
 #ifdef __WIN32__
 
+#include "../EBOs.hpp"
 #include "../EBIODevice.hpp"
 #include "../profile/EBProfile.hpp"
 #include "EBSerialPortBase.hpp"
-#include <windows.h>
 
 namespace EBCpp
 {

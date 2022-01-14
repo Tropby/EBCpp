@@ -25,8 +25,9 @@
 
 #if defined(__WIN32__) || defined(_WIN32)
 #include <io.h>
-#include <winsock2.h>
-#include <windows.h>
+
+#include "../../EBOs.hpp"
+
 #include <ws2def.h>
 #include <ws2tcpip.h>
 #else

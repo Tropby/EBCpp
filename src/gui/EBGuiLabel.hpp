@@ -36,7 +36,13 @@ public:
     {
     }
 
-    void setText( std::string text )
+    void setText(EBString text)
+    {
+        this->text = text.toStdString();
+        invalidate();
+    }
+
+    void setText(std::string text)
     {
         this->text = text;
         invalidate();

@@ -70,6 +70,14 @@ else()
     target_link_libraries(EBCppExampleHttpServer pthread)        
 endif()
 
+# Compile EBCppExampleHttpClient
+add_executable(EBCppExampleHttpClient examples/ExampleHttpClient.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleHttpClient wsock32 ws2_32 -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleHttpClient pthread)        
+endif()
+
 if(WIN32)
     # Compile EBCppExampleSerialPort
     add_executable(EBCppExampleSerialPort examples/ExampleSerialPort.cpp)
@@ -142,6 +150,19 @@ if(OPENSSL_FOUND)
         target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL pthread)
     endif()        
 endif()
+
+# Compile EBCppExampleHttpsServer 
+add_executable(EBCppTestEBString test/EBString.cpp)
+if(WIN32)
+else()
+    target_link_libraries(EBCppTestEBString pthread)
+endif()        
+
+add_executable(EBCppTestEBList test/EBList.cpp)
+if(WIN32)
+else()
+    target_link_libraries(EBCppTestEBList pthread)
+endif()        
 
 find_package(Doxygen OPTIONAL_COMPONENTS dot)
 if( DOXYGEN_FOUND )

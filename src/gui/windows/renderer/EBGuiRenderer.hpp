@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "../../../EBOs.hpp"
 #include <gdiplus.h>
 #include "../../../EBObject.hpp"
 

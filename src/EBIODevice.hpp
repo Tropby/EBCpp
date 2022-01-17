@@ -24,6 +24,7 @@
 #pragma once
 
 #include "EBObject.hpp"
+#include "EBString.hpp"
 
 namespace EBCpp
 {
@@ -119,10 +120,10 @@ public:
     /**
      * @brief Read a line from the input device
      *
-     * @return std::string line data
+     * @return EBString line data
      * @throws May throws an error if no line is available
      */
-    virtual std::string readLine() = 0;
+    virtual const EBString readLine() = 0;
 
     /**
      * @brief Returns true if the end of stream is reached
@@ -137,7 +138,7 @@ public:
      *
      * @param fileName device to open (eg. /home/user/test.txt, tcp://127.0.0.1:8080, ...)
      */
-    void setFileName(std::string fileName)
+    void setFileName(const EBString& fileName)
     {
         this->fileName = fileName;
     }
@@ -147,13 +148,13 @@ public:
      *
      * @return std::string filename of the device
      */
-    std::string getFileName()
+    const EBString& getFileName()
     {
         return fileName;
     }
 
 private:
-    std::string fileName;
+    EBString fileName;
 };
 
 } // namespace EBCpp

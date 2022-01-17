@@ -89,7 +89,7 @@ public:
             file.setFileName("../examples/websocketTest.html");
             if( file.open(EBCpp::EBFile::DIRECTION::READ_ONLY) )
             {
-                request->sendReply(file.readAll());
+                request->sendReply(file.readAll().toStdString());
             }
             else
             {

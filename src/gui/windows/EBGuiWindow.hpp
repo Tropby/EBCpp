@@ -25,21 +25,23 @@
 
 #ifdef __WIN32__
 
+#include "../../EBEvent.hpp"
+#include "../../EBSemaphore.hpp"
+
+#include "../../EBOs.hpp"
+
 #include <gdiplus.h>
 
 #include <iostream>
 #include <memory>
 #include <thread>
-#include <windows.h>
 
-#include "../../EBEvent.hpp"
-#include "../../EBSemaphore.hpp"
 
 #ifndef WINMAIN
 #define WINMAIN
-HINSTANCE hInstance;
+static inline HINSTANCE hInstance;
 int main();
-int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
+inline int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
     hInstance = hInstance;
     return main();

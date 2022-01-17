@@ -25,6 +25,7 @@
 
 #include "EBGuiRenderTextLineWithCursor.hpp"
 #include "../../renderer/EBGuiRect.hpp"
+#include "../../../EBUtils.hpp"
 #include <codecvt>
 #include <locale>
 

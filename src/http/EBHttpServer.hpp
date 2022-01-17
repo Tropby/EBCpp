@@ -59,7 +59,7 @@ public:
      * @return true
      * @return false
      */
-    bool setTcpServer(EBObjectPointer<EBTcpServer>& server)
+    bool setTcpServer(EBObjectPointer<EBTcpServer> server)
     {
         if (server == nullptr)
             return false;

@@ -142,7 +142,7 @@ public:
      * @return std::string line data
      * @throws May throws an error if no line is available
      */
-    virtual std::string readLine()
+    virtual const EBString readLine()
     {
         EB_PROFILE_FUNC();
 

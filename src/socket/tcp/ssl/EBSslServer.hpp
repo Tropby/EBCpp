@@ -58,7 +58,7 @@ public:
         OpenSSL_add_ssl_algorithms();
 
         const SSL_METHOD* method;
-        method = TLS_server_method();
+        method = TLSv1_2_server_method();
 
         ctx = SSL_CTX_new(method);
         if (!ctx)

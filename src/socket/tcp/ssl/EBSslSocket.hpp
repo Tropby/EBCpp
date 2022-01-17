@@ -153,7 +153,7 @@ protected:
         SSL_library_init();
         SSLeay_add_ssl_algorithms();
         SSL_load_error_strings();
-        const SSL_METHOD* meth = TLS_client_method();
+        const SSL_METHOD* meth = TLSv1_2_client_method();
         SSL_CTX* ctx = SSL_CTX_new(meth);
         ssl = SSL_new(ctx);
         if (!ssl)
@@ -209,12 +209,6 @@ protected:
                 break;
             case SSL_ERROR_WANT_X509_LOOKUP:
                 EB_LOG_ERROR("SSL_ERROR_WANT_X509_LOOKUP");
-                break;
-            case SSL_ERROR_WANT_ASYNC:
-                EB_LOG_ERROR("SSL_ERROR_WANT_ASYNC");
-                break;
-            case SSL_ERROR_WANT_ASYNC_JOB:
-                EB_LOG_ERROR("SSL_ERROR_WANT_ASYNC_JOB");
                 break;
             case SSL_ERROR_SYSCALL:
                 EB_LOG_ERROR("SSL_ERROR_SYSCALL");

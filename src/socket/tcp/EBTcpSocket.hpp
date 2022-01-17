@@ -162,7 +162,7 @@ public:
      * @brief Closes the current connection
      *
      * @return true if the connection could be closed
-     * @return false NEVER
+     * @return false is not opened 
      */
     virtual bool close()
     {
@@ -177,7 +177,7 @@ public:
 #else
             shutdown(socketId, SHUT_WR);
 #endif
-
+            thread->join();
             return true;
         }
         return false;
@@ -467,11 +467,18 @@ private:
                 return;
 
             default:
-                std::vector<uint8_t> b(buffer, buffer + nbytes);
-                mutex.lock();
-                data.insert(data.end(), std::begin(b), std::end(b));
-                mutex.unlock();
-                EB_EMIT(readReady);
+                if( connectionState )
+                {
+                    std::vector<uint8_t> b(buffer, buffer + nbytes);
+                    mutex.lock();
+                    data.insert(data.end(), std::begin(b), std::end(b));
+                    mutex.unlock();
+                    EB_EMIT(readReady);
+                }
+                else
+                {
+
+                }
             }
         }
 

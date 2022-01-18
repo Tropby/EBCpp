@@ -23,8 +23,8 @@
 
 #pragma once
 
+#include "EBGuiColor.hpp"
 #include "EBGuiWidget.hpp"
-#include "renderer/EBGuiColor.hpp"
 
 namespace EBCpp
 {
@@ -48,25 +48,35 @@ public:
         invalidate();
     }
 
+    void setTextHorizontalAlignment(EBGuiHorizontalAlignment horizontalAlignment)
+    {
+        this->horizontalAlignment = horizontalAlignment;
+        invalidate();
+    }
+
+    void setTextVerticalAlignment(EBGuiVerticalAlignment verticalAlignment)
+    {
+        this->verticalAlignment = verticalAlignment;
+        invalidate();
+    }
+
     void setColor(EBObjectPointer<EBGuiColor> color)
     {
         this->color = color;
     }
 
 protected:
-    virtual void draw(std::list<EBObjectPointer<EBGuiRenderer> > & list)
+    virtual void draw(EBGuiRenderer& renderer)
     {
-        EBObjectPointer<EBGuiWidget> p = parentWidget();
-        int px = p->getX();
-        int py = p->getY();
-
-        list.push_back(
-        EBCpp::EBObjectBase::createObject<EBGuiRenderText>(x + px, y + py, w, h, text, color)->cast<EBGuiRenderer>());
+        EBGuiWidget::draw(renderer);
+        renderer.drawText(0, 0, w, h, text, color, horizontalAlignment, verticalAlignment);
     }
 
 private:
     std::string text;
-    EBObjectPointer<EBGuiColor>  color;
+    EBObjectPointer<EBGuiColor> color;
+    EBGuiHorizontalAlignment horizontalAlignment = EBGuiHorizontalAlignment::EB_HOR_ALIGN_LEFT;
+    EBGuiVerticalAlignment verticalAlignment = EBGuiVerticalAlignment::EB_VERT_ALIGN_CENTER;
 };
 
 } // namespace EBCpp

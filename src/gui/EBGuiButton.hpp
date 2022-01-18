@@ -25,7 +25,7 @@
 
 #include "../EBEvent.hpp"
 #include "EBGuiWidget.hpp"
-#include "renderer/EBGuiColor.hpp"
+#include "EBGuiColor.hpp"
 
 namespace EBCpp
 {
@@ -43,7 +43,12 @@ public:
         this->text = text;
     }
 
-    std::string getText()
+    void setText(EBString& text)
+    {
+        this->text = text;
+    }
+
+    EBString getText()
     {
         return this->text;
     }
@@ -102,27 +107,24 @@ protected:
         return true;
     }
 
-    virtual void draw(std::list<EBObjectPointer<EBGuiRenderer> >& list)
+    virtual void draw(EBGuiRenderer& renderer)
     {
         EBObjectPointer<EBGuiWidget> p = parentWidget();
         int px = p->getX();
         int py = p->getY();
 
-        list.push_back(EBCpp::EBObjectBase::createObject<EBGuiRenderText>(x + px, y + py, w, h, text, textColor,
-                                                                          EB_HOR_ALIGN_CENTER, EB_VERT_ALIGN_CENTER)
-                       ->cast<EBGuiRenderer>());
-        list.push_back(EBCpp::EBObjectBase::createObject<EBGuiRenderRect>( x + px, y + py, w, h, borderColor)->cast<EBGuiRenderer>());
+        renderer.drawFillRect(0, 0, w, h, backgroundColor);
+        renderer.drawText(0, 0, w, h, text, textColor, EB_HOR_ALIGN_CENTER, EB_VERT_ALIGN_CENTER);
+        renderer.drawRect(0, 0, w - 2, h - 2, borderColor);
+
         if( mouseIsDown )
-            list.push_back(
-            EBCpp::EBObjectBase::createObject<EBGuiRenderRect>(x + px + 1, y + py + 1, w - 1, h - 1, borderColor)
-            ->cast<EBGuiRenderer>());
+            renderer.drawRect(1, 1, w - 1, h - 1, borderColor);
         else
-            list.push_back(EBCpp::EBObjectBase::createObject<EBGuiRenderRect>(x + px, y + py, w - 1, h - 1, borderColor)
-                           ->cast<EBGuiRenderer>());
+            renderer.drawRect(0, 0, w - 1, h - 1, borderColor);
     }
 
 private:
-    std::string text;
+    EBString text;
     EBObjectPointer<EBGuiColor> textColor;
     EBObjectPointer<EBGuiColor> borderColor;
 

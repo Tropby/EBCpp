@@ -23,29 +23,57 @@
 
 #pragma once
 
-#include "EBGuiRenderer.hpp"
-#include <codecvt>
-#include <locale>
+#include "../../EBObject.hpp"
+#include "../../EBOs.hpp"
+#include "../EBGuiAlignment.hpp"
+#include "../EBGuiColor.hpp"
+#include <string>
 
 #ifdef __WIN32__
+
+#include <codecvt>
+#include <gdiplus.h>
+#include <locale>
 
 namespace EBCpp
 {
 
-class EBGuiRenderText : public EBGuiRenderTextBase
+class EBGuiRenderer : public EBGuiRendererBase
 {
 public:
-    EBGuiRenderText(int x, int y, int w, int h, std::string text,
-                    EBObjectPointer<EBGuiColor> fontColor = EB_COLOR_BLACK,
-                    EBGuiHorizontalAlignment horizontalAlignment = EBGuiHorizontalAlignment::EB_HOR_ALIGN_LEFT,
-                    EBGuiVerticalAlignment verticalAlignment = EBGuiVerticalAlignment::EB_VERT_ALIGN_TOP) :
-        EBGuiRenderTextBase(x, y, w, h, text, fontColor, horizontalAlignment, verticalAlignment)
+    EBGuiRenderer(int x, int y, int w, int h, HDC hdc) : EBGuiRendererBase(x, y, w, h)
     {
+        hdcMem = CreateCompatibleDC(hdc);
+        MemBitmap = CreateCompatibleBitmap(hdc, w, h);
+        SelectObject(hdcMem, MemBitmap);
+        SetTextColor(hdcMem, GetSysColor(COLOR_WINDOWTEXT));
+        this->graphics = new Gdiplus::Graphics(hdcMem);
     }
 
-    virtual void render(Gdiplus::Graphics& graphics)
+    ~EBGuiRenderer()
     {
-        Gdiplus::FontFamily fontFamily(L"Times New Roman");
+        delete this->graphics;
+
+        // Free Memory
+        DeleteDC(hdcMem);
+        DeleteObject(MemBitmap);
+    }
+
+    void transfer(HDC dest)
+    {
+        BitBlt(dest, getX(), getY(), getX() + getWidth(), getY() + getHeight(), hdcMem, 0, 0, SRCCOPY);
+    }
+
+    virtual HDC getHDC()
+    {
+        return hdcMem;
+    }
+
+    virtual void drawText(int x, int y, int w, int h, EBString text, const EBObjectPointer<EBGuiColor>& fontColor,
+                          EBGuiHorizontalAlignment horizontalAlignment = EBGuiHorizontalAlignment::EB_HOR_ALIGN_LEFT,
+                          EBGuiVerticalAlignment verticalAlignment = EBGuiVerticalAlignment::EB_VERT_ALIGN_TOP)
+    {
+        Gdiplus::FontFamily fontFamily(L"Arial");
         Gdiplus::Font font(&fontFamily, 24, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);
         Gdiplus::RectF rectF(x, y, w, h);
         Gdiplus::StringFormat stringFormat;
@@ -80,12 +108,31 @@ public:
         Gdiplus::Color(fontColor->getA(), fontColor->getR(), fontColor->getG(), fontColor->getB()));
 
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        std::wstring w = converter.from_bytes(text);
+        std::wstring wstr = converter.from_bytes(text.toStdString());
 
-        graphics.DrawString(w.c_str(), -1, &font, rectF, &stringFormat, &solidBrush);
+        graphics->DrawString(wstr.c_str(), -1, &font, rectF, &stringFormat, &solidBrush);
     }
 
-protected:
+    virtual void drawRect(int x, int y, int w, int h, EBObjectPointer<EBGuiColor>& borderColor)
+    {
+        Gdiplus::Pen pen(
+        Gdiplus::Color(borderColor->getA(), borderColor->getR(), borderColor->getG(), borderColor->getB()));
+        graphics->DrawRectangle(&pen, x, y, w, h);
+    }
+
+    virtual void drawFillRect(int x, int y, int w, int h, EBObjectPointer<EBGuiColor> backgroundColor)
+    {
+        Gdiplus::SolidBrush brush(Gdiplus::Color(backgroundColor->getA(), backgroundColor->getR(),
+                                                 backgroundColor->getG(), backgroundColor->getB()));
+        graphics->FillRectangle(&brush, x, y, w, h);
+    }
+
+private:
+    Gdiplus::Graphics* graphics;
+
+    HDC hdcMem;
+    HBITMAP MemBitmap;
+    HBITMAP hbmOld;   
 };
 
 } // namespace EBCpp

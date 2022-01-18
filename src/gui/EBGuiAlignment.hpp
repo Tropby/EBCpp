@@ -23,31 +23,22 @@
 
 #pragma once
 
-#include "EBGuiRenderer.hpp"
-
-#ifdef __WIN32__
-
 namespace EBCpp
 {
 
-class EBGuiRenderFillRect : public EBGuiRenderFillRectBase
+enum EBGuiHorizontalAlignment {
+    EB_HOR_ALIGN_LEFT,
+    EB_HOR_ALIGN_CENTER,
+    EB_HOR_ALIGN_RIGHT,
+    EB_HOR_ALIGN_UNCHANGED
+};
+
+enum EBGuiVerticalAlignment
 {
-public:
-    EBGuiRenderFillRect(int x, int y, int w, int h, EBObjectPointer<EBGuiColor> backgroundColor = EB_COLOR_WHITE) :
-        EBGuiRenderFillRectBase(x, y, w, h, backgroundColor)
-    {
-    }
-
-    virtual void render(Gdiplus::Graphics& graphics)
-    {
-        Gdiplus::SolidBrush brush(Gdiplus::Color(backgroundColor->getA(), backgroundColor->getR(),
-                                                    backgroundColor->getG(), backgroundColor->getB()));
-        graphics.FillRectangle(&brush, x, y, w, h);
-    }
-
-protected:
+    EB_VERT_ALIGN_TOP,
+    EB_VERT_ALIGN_CENTER,
+    EB_VERT_ALIGN_BOTTOM,
+    EB_VERT_ALIGN_UNCHANGED
 };
 
 } // namespace EBCpp
-
-#endif

@@ -127,30 +127,24 @@ private:
                 HBITMAP MemBitmap = CreateCompatibleBitmap(hdc, width, height); // Breite und Höhe musst du anpassen
                 HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem, MemBitmap);
 
-                Gdiplus::Graphics graphics(hdcMem);
-
                 // Prepare the widget bounderies
                 for (EBObjectPointer<EBGuiWidget> w : widgets)
                 {
                     w->prepare(0, 0, width, height);
                 }
 
-                // Fill the Background wird white
-                Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 255, 255));
-                graphics.FillRectangle(&brush, 0, 0, width, height);
+
+                // Fill Background
+                EBGuiRenderer renderer(0, 0, width, height, hdcMem);
 
                 // Create the Widget
-                std::list<EBObjectPointer<EBGuiRenderer>> list;
                 for (EBObjectPointer<EBGuiWidget> w : widgets)
                 {
                     // Create rendering instructions for the widget
-                    w->render(list);
-
-                    for (EBObjectPointer<EBGuiRenderer> l : list)
-                    {
-                        l->render(graphics);
-                    }
+                    w->render(renderer);
                 }
+
+                renderer.transfer(hdcMem);
 
                 BitBlt(hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right, ps.rcPaint.bottom, hdcMem,
                        ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);

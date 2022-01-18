@@ -24,13 +24,10 @@
 #pragma once
 
 #include "../EBObject.hpp"
-#include "renderer/EBGuiColor.hpp"
-#include "renderer/EBGuiRenderRect.hpp"
-#include "renderer/EBGuiRenderFillRect.hpp"
-#include "renderer/EBGuiRenderText.hpp"
+#include "EBGuiColor.hpp"
 #include "renderer/EBGuiRenderTextLine.hpp"
 #include "renderer/EBGuiRenderTextLineWithCursor.hpp"
-#include "renderer/EBGuiRenderer.hpp"
+#include "EBGuiRenderer.hpp"
 
 namespace EBCpp
 {
@@ -39,8 +36,8 @@ class EBGuiWidget : public EBObject<EBGuiWidget>
 {
 public:
     EBGuiWidget() :
-        EBObject(), visible(false), widgetParent(nullptr), w(0), h(0), x(0), y(0), minW(0), minH(0),
-        maxW(INT_MAX), maxH(INT_MAX), backgroundColor(EB_COLOR_BLACK)
+        EBObject(), visible(true), widgetParent(nullptr), w(100), h(100), x(0), y(0), minW(0), minH(0), maxW(INT_MAX),
+        maxH(INT_MAX), backgroundColor(EB_COLOR_WHITE), borderColor(EB_COLOR_BLACK)
     {
     }
 
@@ -62,35 +59,43 @@ public:
 
     virtual void invalidate()
     {
-        if( this->parentWidget().get() != nullptr )
+        if (this->parentWidget().get() != nullptr)
             this->parentWidget()->invalidate();
     }
 
-    void render(std::list<EBObjectPointer<EBGuiRenderer> >& list)
+    void render(EBGuiRenderer& renderer)
     {
+        EBGuiRenderer widgetRenderer(getX(), getY(), getWidth(), getHeight(), renderer.getHDC());
+
         // Create drawing for the current widget
-        draw(list);
+        draw(widgetRenderer);
 
         // Create drawings for all child widgets
         for (EBObjectPointer<EBGuiWidget>& w : widgets)
         {
-            w->render(list);
+            if( visible )
+                w->render(widgetRenderer);
         }
+
+        widgetRenderer.transfer(renderer.getHDC());
     }
 
     virtual void show()
     {
         visible = true;
+        invalidate();
     }
 
     virtual void hide()
     {
         visible = false;
+        invalidate();
     }
 
     virtual void setX(int x)
     {
         this->x = x;
+        invalidate();
     }
 
     virtual int getX()
@@ -101,6 +106,7 @@ public:
     virtual void setY(int y)
     {
         this->y = y;
+        invalidate();
     }
 
     virtual int getY()
@@ -111,6 +117,11 @@ public:
     virtual int getWidth()
     {
         return w;
+    }
+
+    virtual int getHeight()
+    {
+        return h;
     }
 
     virtual void setMinWidth(int width)
@@ -140,13 +151,13 @@ public:
         {
             w = width;
             invalidate();
-        }    
+        }
     }
 
     virtual void setMaxHeight(int height)
     {
         maxH = height;
-        if( h > height )
+        if (h > height)
         {
             h = height;
             invalidate();
@@ -155,12 +166,12 @@ public:
 
     virtual void setWidth(int width)
     {
-        if( width > maxW )
+        if (width > maxW)
             width = maxW;
-        if( width < minW )
+        if (width < minW)
             width = minW;
 
-        if( this->w != width )
+        if (this->w != width)
             invalidate();
         this->w = width;
     }
@@ -206,12 +217,12 @@ public:
 
     bool handleMouseDown(int x, int y)
     {
-        if( !mouseInWidget )
+        if (!mouseInWidget)
             return false;
 
         for (EBObjectPointer<EBGuiWidget>& w : widgets)
         {
-            if( w->handleMouseDown(x, y) )
+            if (w->handleMouseDown(x, y))
             {
                 // If one component have handled the click event quit the loop
                 return true;
@@ -223,7 +234,7 @@ public:
 
     void handleKeyPress(char key)
     {
-        if(this->isFocused())
+        if (this->isFocused())
         {
             keyPress(key);
             return;
@@ -257,7 +268,7 @@ public:
         int px = 0;
         int py = 0;
 
-        if( this->parentWidget() != nullptr )
+        if (this->parentWidget() != nullptr)
         {
             px = this->parentWidget()->getX();
             py = this->parentWidget()->getY();
@@ -265,12 +276,11 @@ public:
 
         // test if mouse is in widget
         mouseInWidget =
-            (this->x + px <= x) && (this->x + px + this->w >= x) &&
-            (this->y + py <= y) && (this->y + py + this->h >= y);
+        (this->x + px <= x) && (this->x + px + this->w >= x) && (this->y + py <= y) && (this->y + py + this->h >= y);
 
         if (mouseInWidget && !changed)
             mouseHover(x, y);
-        else if( !mouseInWidget && changed )
+        else if (!mouseInWidget && changed)
             mouseLeave(x, y);
 
         changed = (mouseInWidget != changed);
@@ -310,11 +320,15 @@ public:
         }
     }
 
-protected:
+    virtual void setBackgroundColor(const EBObjectPointer<EBGuiColor> backgroundColor)
+    {
+        this->backgroundColor = backgroundColor;
+        invalidate();
+    }
 
+protected:
     virtual void keyPress(char key)
     {
-
     }
 
     virtual void mouseLeave(int x, int y)
@@ -335,11 +349,20 @@ protected:
         return false;
     }
 
-    virtual void draw(std::list<EBObjectPointer<EBGuiRenderer> >& list)
+    virtual void draw(EBGuiRenderer & renderer)
     {
-        EBObjectPointer<EBGuiRenderFillRect> rect =
-        EBCpp::EBObjectBase::createObject<EBGuiRenderFillRect>(x, y, x + w, y + h);
-        list.push_back(rect->cast<EBGuiRenderer>());
+        EBObjectPointer<EBGuiWidget> p = parentWidget();
+        int px = 0;
+        int py = 0;
+
+        if (p != nullptr)
+        {
+            px = p->getX();
+            py = p->getY();
+        }
+
+        renderer.drawFillRect(0, 0, w, h, backgroundColor);
+        renderer.drawRect(0, 0, w-1, h-1, borderColor);
     }
 
     bool mouseInWidget;
@@ -357,8 +380,10 @@ protected:
     int maxH;
 
     std::list<EBObjectPointer<EBGuiWidget>> widgets;
+    EBObjectPointer<EBGuiColor> borderColor;
     EBObjectPointer<EBGuiWidget> widgetParent;
     EBObjectPointer<EBGuiColor> backgroundColor;
 };
 
 } // namespace EBCpp
+

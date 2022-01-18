@@ -30,26 +30,27 @@
 namespace EBCpp
 {
 
-class EBGuiHorizontalLayout : public EBGuiWidget
+class EBGuiVerticalLayout : public EBGuiWidget
 {
 public:
-    EBGuiHorizontalLayout() : EBGuiWidget(), padding({0,0,0,0}), cellPadding({0,0,0,0})
+    EBGuiVerticalLayout() : EBGuiWidget(), padding({0, 0, 0, 0}), cellPadding({0, 0, 0, 0})
     {
     }
 
     virtual void prepare(int x, int y, int w, int h)
     {
-        int width = this->w - ( padding.left + padding.right + ( cellPadding.left + cellPadding.right ) * elements.size() );
+        int height =
+        this->h - (padding.top + padding.bottom + (cellPadding.top + cellPadding.bottom) * elements.size());
 
         int elementSum = 0;
         for( int i : elements )
         {
             elementSum += i;
         }
-        float factor = (float)width / (float)elementSum;
+        float factor = (float)height / (float)elementSum;
 
         int i = 0;
-        int currentX = padding.left;
+        int currentY = padding.top;
         for (EBObjectPointer < EBGuiWidget> widget : widgets)
         {
             int size = 1;
@@ -59,14 +60,22 @@ public:
                 size = *it;
             }
 
-            currentX += cellPadding.left;
-            widget->setX(currentX);
-            widget->setY( padding.top + cellPadding.top );
-            widget->setWidth(size * factor);
-            widget->setHeight(this->h - ( padding.top + padding.bottom + cellPadding.top + cellPadding.bottom ) );
+            currentY += cellPadding.top;
+            widget->setX(padding.left + cellPadding.bottom);
+            widget->setY(currentY);
+            widget->setWidth(this->w - (padding.left + padding.right + cellPadding.left + cellPadding.right));
 
-            currentX += widget->getWidth();
-            currentX += cellPadding.right;
+            if( widget == widgets.back() )
+            {
+                widget->setHeight(height - currentY + cellPadding.bottom);
+            }
+            else
+            {
+                widget->setHeight(size * factor);
+            }
+
+            currentY += widget->getHeight();
+            currentY += cellPadding.bottom;
 
             i++;
         }

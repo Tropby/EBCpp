@@ -20,12 +20,12 @@
  *  Created on: 2021-01-23
  *      Author: Carsten (Tropby)
  */
-
+/*
 #pragma once
 
-#include "EBGuiAlignment.hpp"
-#include "EBGuiColor.hpp"
-#include "EBGuiRenderer.hpp"
+#include "../EBGuiAlignment.hpp"
+#include "../EBGuiColor.hpp"
+#include "../EBGuiRenderer.hpp"
 
 namespace EBCpp
 {
@@ -35,7 +35,7 @@ class EBGuiRenderTextLineBase : public EBGuiRenderer
 public:
     EBGuiRenderTextLineBase(int x, int y, int w, std::string text,
                         EBObjectPointer<EBGuiColor> fontColor = EB_COLOR_BLACK) :
-        EBGuiRenderer(),
+        EBGuiRenderer(w, y),
         x(x), y(y), w(w), text(text), fontColor(fontColor)
     {
     }
@@ -53,3 +53,4 @@ protected:
 #ifdef __WIN32__
 #include "../windows/renderer/EBGuiRenderTextLine.hpp"
 #endif
+*/

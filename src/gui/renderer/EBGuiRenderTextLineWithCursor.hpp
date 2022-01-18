@@ -20,12 +20,12 @@
  *  Created on: 2021-01-23
  *      Author: Carsten (Tropby)
  */
-
+/*
 #pragma once
 
-#include "EBGuiAlignment.hpp"
-#include "EBGuiColor.hpp"
-#include "EBGuiRenderer.hpp"
+#include "../EBGuiAlignment.hpp"
+#include "../EBGuiColor.hpp"
+#include "../EBGuiRenderer.hpp"
 
 namespace EBCpp
 {
@@ -35,7 +35,7 @@ class EBGuiRenderTextLineWithCursorBase : public EBGuiRenderer
 public:
     EBGuiRenderTextLineWithCursorBase(int x, int y, int maxWidth, std::string text, int cursorPos,
                                       EBObjectPointer<EBGuiColor> fontColor = EB_COLOR_BLACK) :
-        EBGuiRenderer(),
+        EBGuiRenderer(x,y),
         x(x), y(y), maxWidth(maxWidth), text(text), cursorPos(cursorPos), fontColor(fontColor)
     {
     }
@@ -54,3 +54,5 @@ protected:
 #ifdef __WIN32__
 #include "../windows/renderer/EBGuiRenderTextLineWithCursor.hpp"
 #endif
+
+*/

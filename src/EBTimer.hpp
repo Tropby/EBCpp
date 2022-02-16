@@ -23,10 +23,12 @@
 
 #pragma once
 
-#include <functional>
-#include <thread>
 #include <chrono>
+#include <functional>
 #include <memory>
+#include <thread>
+
+#include <unistd.h>
 
 #include "EBEvent.hpp"
 #include "EBSemaphore.hpp"
@@ -48,8 +50,7 @@ public:
      *
      * @param parent Parent of the EBTimer object
      */
-    EBTimer() :
-        EBObject(), timerRunning(true), singleShot(false), time(-1), thread(nullptr)
+    EBTimer() : EBObject(), timerRunning(true), singleShot(false), time(-1), thread(nullptr)
     {
     }
 
@@ -123,7 +124,7 @@ public:
 
     /**
      * @brief Checks if the timer is currently running.
-     * 
+     *
      * @return true if the timer is running.
      * @return false if the timer is not running.
      */
@@ -151,10 +152,16 @@ private:
         while (timerRunning)
         {
             // Wait for the timer run out or the timer is canceled
-            {                
-                //std::unique_lock<std::mutex> lock(mWait);
-                //cvWait.wait_for(lock, std::chrono::milliseconds(time), [&] { return !timerRunning; });
-                std::this_thread::sleep_for(std::chrono::milliseconds(time));
+            {
+                /// TODO: Check why the wait_for function will lock the time sometimes.
+
+                std::unique_lock<std::mutex> lock(mWait);
+
+                /// INFO: condition variable wait_for uses system clock and not steady clock for GCC < 10
+                // cvWait.wait_for(lock, std::chrono::milliseconds(time), [&] { return !timerRunning; });
+
+                cvWait.wait_until(lock, std::chrono::steady_clock::now() + std::chrono::milliseconds(time),
+                                  [&] { return !timerRunning; });
             }
 
             // Emit the timeout event if the timer is still running and the thead should not end

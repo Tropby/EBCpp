@@ -59,7 +59,14 @@
         "set": "cpp",
         "codecvt": "cpp",
         "bitset": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "bit": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "random": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp"
     },
     "C_Cpp.clang_format_style": "file",
     "formatFiles.excludePattern": "[ default: '**/build, **/.vscode, **/bin' ]",

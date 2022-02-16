@@ -14,6 +14,8 @@ if(WIN32)
     add_definitions(-D_WIN32_WINNT=${WINDOWS_VERSION})
 endif()
 
+include_directories(src)
+
 # Compile EBCppExampleFile
 add_executable(EBCppExample examples/Example.cpp)
 if(WIN32)
@@ -162,6 +164,12 @@ add_executable(EBCppTestEBList test/EBList.cpp)
 if(WIN32)
 else()
     target_link_libraries(EBCppTestEBList pthread)
+endif()        
+
+add_executable(EBCppTestEBTimer test/EBTimer.cpp)
+if(WIN32)
+else()
+    target_link_libraries(EBCppTestEBTimer pthread)
 endif()        
 
 find_package(Doxygen OPTIONAL_COMPONENTS dot)

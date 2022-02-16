@@ -24,19 +24,19 @@
 #pragma once
 
 #if defined(__WIN32__) || defined(_WIN32)
-#include <io.h>
+    #include <io.h>
 
-#include "../../EBOs.hpp"
-
-#include <ws2def.h>
-#include <ws2tcpip.h>
+    #include "../../EBOs.hpp"
+    
+    #include <ws2def.h>
+    #include <ws2tcpip.h>
 #else
-#include <arpa/inet.h>
-#include <netdb.h> //hostent
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <cstring>
-#include <unistd.h>
-#define SOCKADDR_IN sockaddr_in
-#define SOCKET int32_t
+    #include <arpa/inet.h>
+    #include <netdb.h> //hostent
+    #include <netinet/in.h>
+    #include <sys/socket.h>
+    #include <cstring>
+    #include <unistd.h>
+    #define SOCKADDR_IN sockaddr_in
+    #define SOCKET int32_t
 #endif

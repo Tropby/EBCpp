@@ -53,7 +53,7 @@ protected :
 
     virtual void resized(int w, int h)
     {
-        EBObjectPointer<EBGuiWidget> widget = this->widgets.front();
+        EBObjectPointer<EBGuiWidget> widget = this->widgets.get(0);
         widget->setX(0);
         widget->setY(0);
         widget->setWidth(w);

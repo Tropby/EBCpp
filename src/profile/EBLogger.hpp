@@ -118,6 +118,9 @@ public:
         case LOG_TYPE::LOG_CRITICAL:
             strType = "CRITICAL";
             break;
+        case LOG_TYPE::LOG_INFO:
+            strType = "INFO";
+            break;
         }
 
         std::lock_guard<std::mutex> guard(mutex);

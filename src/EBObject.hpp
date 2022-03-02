@@ -33,12 +33,7 @@
 #include <typeinfo>
 
 #include "EBException.hpp"
-
-#ifndef __WIN32__
-#ifdef _WIN32
-#define __WIN32__
-#endif
-#endif
+#include "EBOs.hpp"
 
 namespace EBCpp
 {
@@ -68,8 +63,8 @@ public:
         if (std::find(objectListEBObjectWatchBase.begin(), objectListEBObjectWatchBase.end(), ptr) !=
             objectListEBObjectWatchBase.end())
         {
-            objectListEBObjectWatchBase.remove(ptr);            
-            objectToBeDestroyedEBObjectWatchBase.push_back(ptr);         
+            objectListEBObjectWatchBase.remove(ptr);
+            objectToBeDestroyedEBObjectWatchBase.push_back(ptr);
             result = true;
         }
 
@@ -253,7 +248,7 @@ public:
      * @return true
      * @return false
      */
-    bool operator==(const EBObjectPointerBase& other)
+    virtual bool operator==(const EBObjectPointerBase& other)
     {
         return this->pointer == other.pointer;
     }
@@ -265,7 +260,7 @@ public:
      * @return true
      * @return false
      */
-    bool operator!=(const EBObjectPointerBase& other)
+    virtual bool operator!=(const EBObjectPointerBase& other)
     {
         return this->pointer != other.pointer;
     }
@@ -335,7 +330,7 @@ public:
 
     ~EBObjectPointer()
     {
-    }    
+    }
 
     /**
      * @brief Sets the pointer (this) to other.
@@ -415,7 +410,7 @@ public:
             // Invalidate the object pointer
             for (EBObjectPointerBase* w : sharedPointer)
             {
-                if( w->isValid() )
+                if (w->isValid())
                 {
                     w->objectDeleted();
                 }
@@ -473,7 +468,7 @@ public:
         // Check if all references to a Heap object are gone
         if (sharedPointer.size() == 0)
         {
-            EBObjectWatchBase::remove(this); 
+            EBObjectWatchBase::remove(this);
         }
         mutex.unlock();
     }
@@ -491,8 +486,6 @@ public:
 private:
     std::mutex mutex;
     std::thread::id threadId;
-
 };
-
 
 } // namespace EBCpp

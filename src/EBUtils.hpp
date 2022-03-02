@@ -27,6 +27,9 @@
 #include <sstream>
 #include <string>
 
+#include <unistd.h>
+#include <pthread.h>
+
 #include "EBString.hpp"
 #include "socket/tcp/EBTcpHeader.hpp"
 

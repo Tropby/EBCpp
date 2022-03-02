@@ -89,6 +89,8 @@ public:
         case EBGuiHorizontalAlignment::EB_HOR_ALIGN_CENTER:
             stringFormat.SetAlignment(Gdiplus::StringAlignment::StringAlignmentCenter);
             break;
+        case EBGuiHorizontalAlignment::EB_HOR_ALIGN_UNCHANGED:
+            break;            
         }
 
         switch (verticalAlignment)
@@ -101,6 +103,8 @@ public:
             break;
         case EBGuiVerticalAlignment::EB_VERT_ALIGN_BOTTOM:
             stringFormat.SetLineAlignment(Gdiplus::StringAlignment::StringAlignmentFar);
+            break;
+        case EBGuiVerticalAlignment::EB_VERT_ALIGN_UNCHANGED:
             break;
         }
 

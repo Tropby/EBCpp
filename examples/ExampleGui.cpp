@@ -27,6 +27,7 @@
 #include "../src/gui/EBGuiLabel.hpp"
 #include "../src/gui/EBGuiWidget.hpp"
 #include "../src/gui/EBGuiWindow.hpp"
+#include "../src/EBString.hpp"
 
 #include <iostream>
 
@@ -48,14 +49,14 @@ public:
         label.setY(20);
         label.setWidth(200);
         label.setHeight(40);
-        label.setText("Hallo :)");
+        label.setText(EBCpp::EBString("Hallo :)"));
 
         widget.addWidget(&button);
         button.setX(20);
         button.setY(50);
         button.setWidth(200);
         button.setHeight(40);
-        button.setText("Click Me!");
+        button.setText(EBCpp::EBString("Click Me!"));
         button.clicked.connect(this, &ExampleGui::buttonClicked);
     }
 

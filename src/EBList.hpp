@@ -120,7 +120,7 @@ template <typename T>
 class EBList : public EBObject<EBList<T>>
 {
 public:
-    EBList() : front(nullptr), end(nullptr), current(nullptr), size(0)
+    EBList() : _front(nullptr), _end(nullptr), current(nullptr), size(0)
     {
     }
 
@@ -132,7 +132,7 @@ public:
 
     void setCursor(int index)
     {
-        current = front;
+        current = _front;
         while (index--)
         {
             current = current->getNext();
@@ -160,10 +160,10 @@ public:
             setCursor(index);
             if (current == nullptr)
             {
-                end->setNext(lit);
-                lit->setPrevious(end);
+                _end->setNext(lit);
+                lit->setPrevious(_end);
                 current = lit;
-                end = lit;
+                _end = lit;
                 return;
             }
 
@@ -185,11 +185,11 @@ public:
             if (current != nullptr)
                 current->setPrevious(lit);
 
-            if( current == front )
-                front = lit;
+            if( current == _front )
+                _front = lit;
             
             if( current == nullptr )
-                end = lit;
+                _end = lit;
 
             current = lit;
 
@@ -197,11 +197,12 @@ public:
         }
     }
 
-    void remove(const T& item)
+    void remove(T& item)
     {
         for (auto& it : *this)
         {
-            if (it.get() == item)
+            const T& i = it.get();
+            if ( item == i)
             {
                 auto next = it.getNode()->getNext();
                 auto previous = it.getNode()->getPrevious();
@@ -214,7 +215,7 @@ public:
                 if (previous != nullptr)
                     previous->setNext(next);
                 else
-                    front = next;
+                    _front = next;
 
                 size--;
 
@@ -229,11 +230,11 @@ public:
         auto next = current->getNext();
         auto previous = current->getPrevious();
 
-        if( current == front )
-            front = next;
+        if( current == _front )
+            _front = next;
 
-        if (current == end)
-            end = previous;
+        if (current == _end)
+            _end = previous;
 
         if (next != nullptr )
             next->setPrevious(previous);
@@ -249,34 +250,33 @@ public:
         size--;
     }
 
-    EBObjectPointer<EBListNode<T>>
-    getFront() const
+    EBObjectPointer<EBListNode<T>> getFront() const
     {
-        return front;
+        return _front;
     }
 
     EBObjectPointer<EBListNode<T>> getEnd() const
     {
-        return end;
+        return _end;
     }
 
     void append(T item)
     {
         size++;
-        if (front == nullptr)
+        if (_front == nullptr)
         {
             EBObjectPointer<EBListNode<T>> lit = EBObjectBase::createObject<EBListNode<T>>(item);
-            front = lit;
-            end = lit;
+            _front = lit;
+            _end = lit;
             current = lit;
         }
         else
         {
             EBObjectPointer<EBListNode<T>> lit = EBObjectBase::createObject<EBListNode<T>>(item);
-            end->setNext(lit);
-            lit->setPrevious(end);
-            end = lit;
-            current = end;
+            _end->setNext(lit);
+            lit->setPrevious(_end);
+            _end = lit;
+            current = _end;
         }
     }
 
@@ -286,8 +286,8 @@ public:
     }
 
 private:
-    EBObjectPointer<EBListNode<T>> front;
-    EBObjectPointer<EBListNode<T>> end;
+    EBObjectPointer<EBListNode<T>> _front;
+    EBObjectPointer<EBListNode<T>> _end;
     EBObjectPointer<EBListNode<T>> current;
     int size;
 };

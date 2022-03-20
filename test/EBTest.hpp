@@ -6,6 +6,7 @@
 #define STR(s) #s
 
 #define TEST(x)                                                                                                        \
+    void x();                                                                                                          \
     std::cout << "Start Test: " << STR(x) << std::endl;                                                                \
     x();
 

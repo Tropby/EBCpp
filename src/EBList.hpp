@@ -81,8 +81,7 @@ public:
 
     const T get() const
     {
-        T test = current->get();
-        return test;
+        return current->get();
     }
 
     const EBObjectPointer<EBListNode<T>>& getNode() const
@@ -122,6 +121,14 @@ class EBList : public EBObject<EBList<T>>
 public:
     EBList() : _front(nullptr), _end(nullptr), current(nullptr), size(0)
     {
+    }
+
+    EBList(const EBList& other) : _front(nullptr), _end(nullptr), current(nullptr), size(0)
+    {
+        for( auto& i : other )
+        {
+            this->append(i.get());
+        }        
     }
 
     T get(int index)
@@ -197,11 +204,11 @@ public:
         }
     }
 
-    void remove(T& item)
+    void remove(T item)
     {
         for (auto& it : *this)
         {
-            const T& i = it.get();
+            const T i = it.get();
             if ( item == i)
             {
                 auto next = it.getNode()->getNext();
@@ -283,6 +290,14 @@ public:
     int getSize() const
     {
         return size;
+    }
+
+    void clear()
+    {
+        while( size )
+        {
+            removeAt(0);
+        }
     }
 
 private:

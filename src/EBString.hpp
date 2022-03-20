@@ -181,6 +181,38 @@ public:
         return mid(start, len - start +1);
     }
 
+    EBString toLower() const
+    {
+        EBString result(*this);
+        for( int i = 0; i < result.size; i++ )
+        {
+            result.set(i, tolower(result[i]));
+        }
+        return result;
+    }
+
+    EBString toUpper() const
+    {
+        EBString result(*this);
+        for( int i = 0; i < result.size; i++ )
+        {
+            result.set(i, toupper(result[i]));
+        }
+        return result;
+    }
+
+    void set(const int index, char chr )
+    {
+        if( index >= size )
+            throw new std::exception();
+        data[index] = chr;
+    }
+
+    char operator[](const int index) const
+    {
+        return this->data[index];
+    }   
+
     bool operator==(const EBString& other) const
     {
         return compare(other) == 0;

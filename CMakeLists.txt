@@ -172,6 +172,12 @@ else()
     target_link_libraries(EBCppTestEBTimer pthread)
 endif()        
 
+add_executable(EBCppTestEBUrl test/EBUrl.cpp)
+if(WIN32)
+else()
+    target_link_libraries(EBCppTestEBUrl pthread)
+endif()        
+
 find_package(Doxygen OPTIONAL_COMPONENTS dot)
 if( DOXYGEN_FOUND )
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "README.md")

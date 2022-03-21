@@ -33,12 +33,7 @@
 #include <typeinfo>
 
 #include "EBException.hpp"
-
-#ifndef __WIN32__
-#ifdef _WIN32
-#define __WIN32__
-#endif
-#endif
+#include "EBOs.hpp"
 
 namespace EBCpp
 {
@@ -60,8 +55,9 @@ public:
         mutexEBObjectWatchBase.unlock();
     }
 
-    static void remove(EBObjectBase* ptr)
+    static bool remove(EBObjectBase* ptr)
     {
+        bool result = false;
         mutexEBObjectWatchBase.lock();
 
         if (std::find(objectListEBObjectWatchBase.begin(), objectListEBObjectWatchBase.end(), ptr) !=
@@ -69,9 +65,11 @@ public:
         {
             objectListEBObjectWatchBase.remove(ptr);
             objectToBeDestroyedEBObjectWatchBase.push_back(ptr);
+            result = true;
         }
 
         mutexEBObjectWatchBase.unlock();
+        return result;
     }
 
 protected:
@@ -154,6 +152,9 @@ public:
     {
         return name;
     }
+
+protected:
+    std::list<EBObjectPointerBase*> sharedPointer;
 
 private:
     std::string name;
@@ -247,7 +248,7 @@ public:
      * @return true
      * @return false
      */
-    bool operator==(const EBObjectPointerBase& other)
+    virtual bool operator==(const EBObjectPointerBase& other)
     {
         return this->pointer == other.pointer;
     }
@@ -259,7 +260,7 @@ public:
      * @return true
      * @return false
      */
-    bool operator!=(const EBObjectPointerBase& other)
+    virtual bool operator!=(const EBObjectPointerBase& other)
     {
         return this->pointer != other.pointer;
     }
@@ -278,6 +279,26 @@ private:
     static inline std::mutex mutex;
 
     inline static std::list<EBObjectPointerBase*> pointers;
+};
+
+class EBObjectWatch : public EBObjectWatchBase
+{
+public:
+    static void destroyObjects()
+    {
+        if (objectToBeDestroyedEBObjectWatchBase.size() > 0)
+        {
+            while (objectToBeDestroyedEBObjectWatchBase.size())
+            {
+                mutexEBObjectWatchBase.lock();
+                EBObjectBase* ptr = objectToBeDestroyedEBObjectWatchBase.front();
+                objectToBeDestroyedEBObjectWatchBase.pop_front();
+                mutexEBObjectWatchBase.unlock();
+
+                delete ptr;
+            }
+        }
+    }
 };
 
 /**
@@ -304,6 +325,10 @@ public:
      * @param other The EBObjectPointer that should be copied
      */
     EBObjectPointer(const EBObjectPointer& other) : EBObjectPointerBase(other.pointer)
+    {
+    }
+
+    ~EBObjectPointer()
     {
     }
 
@@ -382,11 +407,13 @@ public:
     {
         if (sharedPointer.size())
         {
-            std::cout << "Object " << getName() << " killed while watched (" << std::dec << sharedPointer.size() << ")!"
-                      << std::endl;
+            // Invalidate the object pointer
             for (EBObjectPointerBase* w : sharedPointer)
             {
-                w->objectDeleted();
+                if (w->isValid())
+                {
+                    w->objectDeleted();
+                }
             }
         }
     }
@@ -458,31 +485,7 @@ public:
 
 private:
     std::mutex mutex;
-    std::list<EBObjectPointerBase*> sharedPointer;
     std::thread::id threadId;
-};
-
-class EBObjectWatch : public EBObjectWatchBase
-{
-public:
-    static void destroyObjects()
-    {
-        if( objectToBeDestroyedEBObjectWatchBase.size() > 0 )
-        {
-
-            while (objectToBeDestroyedEBObjectWatchBase.size())
-            {
-                mutexEBObjectWatchBase.lock();
-
-                EBObjectBase* ptr = objectToBeDestroyedEBObjectWatchBase.front();
-                objectToBeDestroyedEBObjectWatchBase.pop_front();
-
-                mutexEBObjectWatchBase.unlock();
-
-                delete ptr;
-            }
-        }
-    }
 };
 
 } // namespace EBCpp

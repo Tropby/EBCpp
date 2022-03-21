@@ -24,7 +24,6 @@
 #pragma once
 
 #include "../../EBObject.hpp"
-#include "EBGuiRenderer.hpp"
 #include "EBGuiImage.hpp"
 
 namespace EBCpp

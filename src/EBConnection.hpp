@@ -56,6 +56,10 @@ public:
     {
     }
 
+    ~EBConnection()
+    {
+    }
+
     /**
      * @brief Emit a signal
      *

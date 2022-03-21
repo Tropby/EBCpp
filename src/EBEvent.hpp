@@ -148,8 +148,8 @@ public:
      */
     ~EBEvent()
     {
-        // Destroy Event connections
-        connections.clear();
+        // Disconnect all event receiver if the event is deleted
+        disconnectAll();
     }
 
     /**

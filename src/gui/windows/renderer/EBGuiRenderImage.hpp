@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "EBGuiRenderer.hpp"
+#include "../../../EBOs.hpp"
 
 #ifdef __WIN32__
 

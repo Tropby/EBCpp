@@ -23,12 +23,12 @@
 
 #pragma once
 
+#include "../../EBOs.hpp"
+
 #ifdef __WIN32__
 
 #include "../../EBEvent.hpp"
 #include "../../EBSemaphore.hpp"
-
-#include "../../EBOs.hpp"
 
 #include <gdiplus.h>
 
@@ -90,12 +90,12 @@ private:
 
     static LRESULT CALLBACK WindowProcBase(_In_ HWND hwnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam)
     {
-        EBGuiWindow* wnd = (EBGuiWindow*)GetWindowLong(hwnd, GWL_USERDATA);
+        EBGuiWindow* wnd = reinterpret_cast<EBGuiWindow*>(GetWindowLong(hwnd, GWLP_USERDATA));
         switch (uMsg)
         {
         case WM_CREATE:
             wnd = (EBGuiWindow*)((CREATESTRUCT*)lParam)->lpCreateParams;
-            SetWindowLong(hwnd, GWL_USERDATA, long(wnd));
+            SetWindowLong(hwnd, GWLP_USERDATA, int64_t(wnd));
         }
         return wnd->WindowProc(hwnd, uMsg, wParam, lParam);
     }
@@ -128,9 +128,9 @@ private:
                 HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem, MemBitmap);
 
                 // Prepare the widget bounderies
-                for (EBObjectPointer<EBGuiWidget> w : widgets)
+                for (const auto& w : widgets)
                 {
-                    w->prepare(0, 0, width, height);
+                    w.get()->prepare(0, 0, width, height);
                 }
 
 
@@ -138,10 +138,10 @@ private:
                 EBGuiRenderer renderer(0, 0, width, height, hdcMem);
 
                 // Create the Widget
-                for (EBObjectPointer<EBGuiWidget> w : widgets)
+                for (const auto& w : widgets)
                 {
                     // Create rendering instructions for the widget
-                    w->render(renderer);
+                    w.get()->render(renderer);
                 }
 
                 renderer.transfer(hdcMem);
@@ -262,5 +262,9 @@ private:
 };
 
 } // namespace EBCpp
+
+#else
+
+#error Can not use GUI without WIN32 libs.
 
 #endif

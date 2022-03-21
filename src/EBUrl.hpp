@@ -26,6 +26,7 @@
 #include "EBEvent.hpp"
 #include "EBObject.hpp"
 #include "EBString.hpp"
+#include "EBList.hpp"
 
 namespace EBCpp
 {
@@ -33,6 +34,11 @@ namespace EBCpp
 class EBUrl : public EBObject<EBUrl>
 {
 public:
+    EBUrl() : port(0)
+    {
+
+    }
+
     EBUrl(const char* url) : valid(false), port(0)
     {
         setUrl(url);
@@ -54,88 +60,140 @@ public:
 
     bool setUrl(const EBString& url)
     {
-        protocol = url.mid(0, url.indexOf("://"));
+        EBString rest = url;
 
-        EBString rest = url.mid(url.indexOf("://") + 3);
-
-        int32_t p1 = rest.indexOf(":");
-        int32_t p2 = rest.indexOf("/");
-
-        if (p1 > p2 || p1 == -1)
+        int32_t schemaEnd = url.indexOf(":");
+        if( schemaEnd > 0 )
         {
-            host = rest.mid(0, p2);
-            rest = rest.mid(p2 + 1);
-            port = -1;
-
-            if (protocol == "https")
-                port = 433;
-            else if (protocol == "http")
-                port = 80;
-            else if (protocol == "ftp")
-                port = 21;
-
-            /// TODO: Add more standard ports. In a list? Maybe defines/static?
+            protocol = url.mid( 0, schemaEnd ).toUpper();
+            rest = url.mid( schemaEnd + 1 );            
+            
+            if( protocol == "HTTP")
+                this->port = 80;
+            else if( protocol == "HTTPS" )
+                this->port = 443;
+            else if( protocol == "FTP" )
+                this->port = 21;
+            else if( protocol == "SSH" )
+                this->port = 22;
+            else
+                this->port = 0;
         }
         else
         {
-            host = rest.mid(0, p1);
-            rest = rest.mid(p1 + 1);
-
-            p2 = rest.indexOf("/");
-            port = rest.mid(0, p2).toInt();
-
-            rest = rest.mid(p2 + 1);
+            this->port = 0;
+            this->protocol = "UNKNOWN";
         }
 
-        p1 = rest.indexOf("?");
-        if (p1 >= 0)
+        // check if authority is available
+        if( rest.startsWith("//") )
         {
-            path = rest.mid(0, p1);
-            rest = rest.mid(p1 + 1);
-
-            do
+            rest = rest.mid(2);
+            EBString authority = rest;
+            if( authority.indexOf("/") >= 0 )
             {
-                int index = rest.indexOf("&");
+                authority = authority.mid( 0, authority.indexOf("/") );
+                rest = rest.mid(rest.indexOf("/"));
+            }
+            else
+            {
+                rest = "";
+            }
 
-                EBString str;
-                if (index >= 0)
+            // userinfo    = *( unreserved / pct-encoded / sub-delims / ":" )
+            if( authority.indexOf("@") > 0 )
+            {
+                EBString userinfo = authority.mid(0, authority.indexOf("@"));
+                authority = authority.mid(authority.indexOf("@") + 1);
+                if( userinfo.indexOf(":") )
                 {
-                    str = rest.mid(0, index);
-                    rest = rest.mid(index + 1);
+                    this->username = userinfo.mid(0, userinfo.indexOf(":"));
+                    this->password = userinfo.mid(userinfo.indexOf(":")+1);
+                }
+            }
+
+            host = authority;
+
+            // Check for port
+            if( host.indexOf(":") > 0 )
+            {
+                EBString port = rest.mid(host.indexOf(":")+1);
+                this->port = port.toInt();
+            }
+        }
+
+        this->path = rest;
+        if(this->path.contains("?"))
+        {
+            EBString query = this->path.mid(this->path.indexOf("?")+1);
+            this->path = this->path.mid(0, this->path.indexOf("?"));
+
+            if( query.contains("#") )
+            {
+                this->fragment = query.mid( query.indexOf("#")+1 );
+                query = query.mid( 0, query.indexOf("#") );
+            }
+            else
+            {
+                this->fragment = "";
+            }
+
+            while( !query.empty() )
+            {
+                EBString q;
+                if( query.contains("&" ) ) 
+                {
+                    q = query.mid( 0, query.indexOf("&") );
+                    query= query.mid( query.indexOf("&")+1 );
                 }
                 else
                 {
-                    str = rest;
-                    rest = "";
+                    q = query;
+                    query = "";
                 }
 
-                index = str.indexOf("=");
-
-                EBString key, value;
-                key = str.mid(0, index);
-                value = str.mid(index + 1);
-
-                args[key] = value;
-
-            } while (rest.length() > 0);
+                ARGUMENT a;
+                if(q.contains("="))
+                {
+                    a.key = q.mid(0,q.indexOf("="));
+                    a.value = q.mid(q.indexOf("=") + 1);
+                }
+                else
+                {
+                    a.key = "";
+                    a.value = q;
+                }
+                arguments.append(a);
+            }
         }
-        else
-        {
-            path = rest;
-        }
+
+        EB_LOG_DEBUG(
+            "Protocol: " << this->protocol << " | " <<
+            "Username: " << this->username << " | " <<
+            "Password: " << this->password << " | " <<
+            "Host: " << this->host << " | " <<
+            "Port: " << this->port << " | " << 
+            "Path: " << this->path << " | "
+        );
 
         return true;
     }
 
     EBString toString() const
     {
-        EBString argList;
-        for (auto arg : args)
-        {
-            argList += arg.first + "=" + arg.second + "&";
-        }
+        EBString auth;
 
-        return protocol + "://" + host + ":" + std::to_string(port) + getQuery();
+        if( !username.empty() )
+            auth = username;
+        if( !password.empty() )
+        {
+            auth += ":";
+            auth += password;
+        }
+        if( !auth.empty() )
+            auth += "@";
+
+        return protocol.toLower() + "://" + auth + host + (port ? ":" + std::to_string(port) : "" ) + getQuery() + fragment;
     }
 
     bool isValid() const
@@ -145,7 +203,7 @@ public:
 
     void setProtocol(const EBString& protocol)
     {
-        this->protocol = protocol;
+        this->protocol = protocol.toUpper();
     }
 
     void setHost(const EBString& host)
@@ -163,27 +221,65 @@ public:
         this->path = path;
     }
 
+    void setUsername(const EBString& username)
+    {
+        this->username = username;
+    }
+
+    void setPassword(const EBString& password)
+    {
+        this->password = password;
+    }        
+
+    void setFragment(const EBString& fragment)
+    {
+        this->fragment = fragment;
+    }
+
     void setArg(const EBString& key, const EBString& value)
     {
-        this->args[key] = value;
+        bool found = false;
+        for( int i = 0; i < arguments.getSize(); i++ )
+        {
+            ARGUMENT a = arguments.get(i);
+            if( a.key == key )
+            {
+                a.value = value;
+                arguments.removeAt(i);
+                arguments.append(a);
+                return;
+            }
+        }
+        
+        ARGUMENT a;
+        a.key = key;
+        a.value = value;
+        arguments.append(a);
     }
 
     void unsetArg(const EBString& key)
     {
-        this->args.erase(key);
+        for( int i = 0; i < arguments.getSize(); i++ )
+        {
+            if( arguments.get(i).key == key )
+            {
+                this->arguments.removeAt(i);
+                return;
+            }
+        }
     }
 
     void clearArgs()
     {
-        this->args.clear();
+        this->arguments.clear();
     }
 
-    const EBString& getProtocol() const
+    const EBString getProtocol() const
     {
-        return protocol;
+        return protocol.toUpper();
     }
 
-    const EBString& getHost() const
+    const EBString getHost() const
     {
         return host;
     }
@@ -198,25 +294,65 @@ public:
         return path;
     }
 
-    const EBString& getArg(const EBString& key) 
+    const EBString& getUsername() const
     {
-        return args[key];
+        return username;
     }
 
-    const std::map<EBString, EBString>& getArgList() const
+    const EBString& getPassword() const
     {
-        return args;
+        return password;
+    }    
+
+    const EBString& getFragment() const
+    {
+        return fragment;
+    }
+
+    const EBString getArg(const EBString& key) 
+    {
+        for( auto & a : arguments )
+        {
+            if( a.get().key == key )
+            {
+                return a.get().value;
+            }
+        }
+        return "";
+    }
+
+    const int getArgCount() const
+    {
+        return arguments.getSize();
+    }
+
+    const EBList<EBString> getArgKeyList() const
+    {
+        EBList<EBString> result;
+        for( auto & a : arguments )
+        {
+            result.append(a.get().key);
+        }
+        return result;
     }
 
     const EBString getQuery() const
     {
         EBString argList;
-        for (auto arg : args)
+        for (auto& arg : arguments)
         {
-            argList += arg.first + "=" + arg.second + "&";
+            if( !arg.get().key.empty() )
+                argList += arg.get().key + "=" + arg.get().value + "&";
+            else
+                argList += arg.get().value + "&";
         }
 
-        return EBString("/") + path + "?" + argList;
+        EBString path;
+        path = this->path;
+        if( !host.empty() && !path.startsWith("/") )
+            path = EBString("/") + path;
+
+        return path + (!argList.empty() ? EBString("?") + argList.mid(0, argList.length() - 1) : "");
     }
 
 private:
@@ -224,9 +360,17 @@ private:
 
     EBString protocol;
     EBString host;
+    EBString username;
+    EBString password;
     int32_t port;
     EBString path;
-    std::map<EBString, EBString> args;
+    EBString fragment;
+
+    typedef struct {
+        EBString key;
+        EBString value;
+    } ARGUMENT;
+    EBList<ARGUMENT> arguments;
 };
 
 } // namespace EBCpp

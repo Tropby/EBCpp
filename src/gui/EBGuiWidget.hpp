@@ -24,6 +24,7 @@
 #pragma once
 
 #include "../EBObject.hpp"
+#include "../EBList.hpp"
 #include "EBGuiColor.hpp"
 #include "renderer/EBGuiRenderTextLine.hpp"
 #include "renderer/EBGuiRenderTextLineWithCursor.hpp"
@@ -51,9 +52,9 @@ public:
      */
     virtual void prepare(int x, int y, int w, int h)
     {
-        for (EBObjectPointer<EBGuiWidget>& widget : widgets)
+        for (const auto& widget : widgets)
         {
-            widget->prepare(x, y, w, h);
+            widget.get()->prepare(x, y, w, h);
         }
     }
 
@@ -71,10 +72,10 @@ public:
         draw(widgetRenderer);
 
         // Create drawings for all child widgets
-        for (EBObjectPointer<EBGuiWidget>& w : widgets)
+        for (const auto& w : widgets)
         {
             if( visible )
-                w->render(widgetRenderer);
+                w.get()->render(widgetRenderer);
         }
 
         widgetRenderer.transfer(renderer.getHDC());
@@ -193,7 +194,7 @@ public:
         if (widget->widgetParent != nullptr)
             widget->widgetParent->removeWidget(widget);
         widget->widgetParent = &(*this);
-        widgets.push_back(widget);
+        widgets.append(widget);
     }
 
     virtual void addWidget(EBGuiWidget& widget)
@@ -202,7 +203,7 @@ public:
         if (widgetPointer->widgetParent != nullptr)
             widgetPointer->widgetParent->removeWidget(widgetPointer);
         widgetPointer->widgetParent = &(*this);
-        widgets.push_back(widgetPointer);
+        widgets.append(widgetPointer);
     }
 
     virtual void removeWidget(EBObjectPointer<EBGuiWidget> widget)
@@ -220,9 +221,9 @@ public:
         if (!mouseInWidget)
             return false;
 
-        for (EBObjectPointer<EBGuiWidget>& w : widgets)
+        for (const auto& w : widgets)
         {
-            if (w->handleMouseDown(x, y))
+            if (w.get()->handleMouseDown(x, y))
             {
                 // If one component have handled the click event quit the loop
                 return true;
@@ -240,9 +241,9 @@ public:
             return;
         }
 
-        for (EBObjectPointer<EBGuiWidget>& w : widgets)
+        for (const auto & w : widgets)
         {
-            w->handleKeyPress(key);
+            w.get()->handleKeyPress(key);
         }
     }
 
@@ -251,9 +252,9 @@ public:
         if (!mouseInWidget)
             return false;
 
-        for (EBObjectPointer<EBGuiWidget>& w : widgets)
+        for (const auto& w : widgets)
         {
-            if (w->handleMouseUp(x, y))
+            if (w.get()->handleMouseUp(x, y))
             {
                 // If one component have handled the click event quit the loop
                 return true;
@@ -285,9 +286,9 @@ public:
 
         changed = (mouseInWidget != changed);
 
-        for (EBObjectPointer<EBGuiWidget>& w : widgets)
+        for (const auto& w : widgets)
         {
-            changed |= w->setMousePos(x, y);
+            changed |= w.get()->setMousePos(x, y);
         }
 
         return changed;
@@ -314,9 +315,9 @@ public:
     void clearFocus()
     {
         this->focused = false;
-        for (EBObjectPointer<EBGuiWidget>& widget : widgets)
+        for (const auto& widget : widgets)
         {
-            widget->clearFocus();
+            widget.get()->clearFocus();
         }
     }
 
@@ -379,7 +380,7 @@ protected:
     int maxW;
     int maxH;
 
-    std::list<EBObjectPointer<EBGuiWidget>> widgets;
+    EBList<EBObjectPointer<EBGuiWidget>> widgets;
     EBObjectPointer<EBGuiColor> borderColor;
     EBObjectPointer<EBGuiWidget> widgetParent;
     EBObjectPointer<EBGuiColor> backgroundColor;

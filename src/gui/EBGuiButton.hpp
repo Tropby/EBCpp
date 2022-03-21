@@ -43,7 +43,7 @@ public:
         this->text = text;
     }
 
-    void setText(EBString& text)
+    void setText(EBString text)
     {
         this->text = text;
     }

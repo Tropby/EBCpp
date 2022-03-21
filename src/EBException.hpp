@@ -67,7 +67,13 @@ public:
      *
      * @return const char* Exeption message
      */
-    virtual const char* what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_USE_NOEXCEPT
+    virtual const char* what() const 
+    #ifdef _GLIBCXX_TXN_SAFE_DYN
+        _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_USE_NOEXCEPT
+    #endif
+    #ifdef _NOEXCEPT
+        _NOEXCEPT
+    #endif
     {
         return message.c_str();
     }

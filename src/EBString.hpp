@@ -24,6 +24,7 @@
 #pragma once
 
 #include "EBObject.hpp"
+#include "EBList.hpp"
 
 #include <string.h>
 #include <string>
@@ -103,6 +104,26 @@ public:
     bool contains(const EBString& other) const
     {
         return strstr(this->data, other.data) != NULL;
+    }
+
+    EBList<EBString> split(const EBString& delimiter) const
+    {
+        EBList<EBString> result;
+        EBString data = *this;
+        while( !data.empty() )
+        {
+            if( data.contains(delimiter))
+            {
+                result.append(data.mid(0, data.indexOf(delimiter)));
+                data = data.mid(data.indexOf(delimiter) + delimiter.length());
+            }
+            else
+            {
+                result.append(data);
+                break;                
+            }
+        }
+        return result;
     }
 
     bool startsWith(const EBString& other) const

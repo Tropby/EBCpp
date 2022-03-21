@@ -83,7 +83,9 @@ public:
      */
     static void setThreadName(std::string threadName)
     {
+        #ifdef PTHREAD_SETNAME
         pthread_setname_np(pthread_self(), threadName.c_str());
+        #endif
     }
 
     /**
@@ -93,9 +95,13 @@ public:
      */
     static std::string getThreadName()
     {
+        #ifdef PTHREAD_SETNAME
         char buffer[128];
         pthread_getname_np(pthread_self(), buffer, sizeof buffer);
         return buffer;
+        #else
+        return "";
+        #endif
     }
 
     static std::string binToHex(char* data, uint32_t len)
@@ -236,6 +242,22 @@ public:
         oss << std::put_time(&bt, "%Y-%m-%d"); // YYYY-MM-DD
 
         return oss.str();
+    }
+
+    static EBString doubleToSizeWithUnit(double input)
+    {
+        EBString unit[] = {"B", "kB", "MB", "GB", "TB"};
+        int index = 0;
+
+        while( input > 1024 )
+        {
+            input /= 1024;
+            index++;
+        }
+        
+        char c[64];
+        sprintf(c, "%.1f %s", input, unit[index].dataPtr());
+        return EBString(c, strlen(c));
     }
 
     static std::string currentTimeString()

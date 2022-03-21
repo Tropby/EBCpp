@@ -111,6 +111,12 @@ public:
         return substr == other;
     }
 
+    bool endsWith(const EBString& other) const
+    {
+        EBString substr(this->mid(this->length() - other.length()));
+        return substr == other;
+    }
+
     EBString mid(int64_t start, int64_t length = -1) const
     {
         if (start >= size)
@@ -133,9 +139,14 @@ public:
         return EBString(newString, length);
     }
 
-    int toInt(uint8_t base = 10)
+    int32_t toInt(uint8_t base = 10)
     {
         return std::strtol(data, NULL, base);
+    }
+
+    int64_t toInt64(uint8_t base = 10)
+    {
+        return std::strtoll(data, NULL, base);
     }
 
     std::string toStdString() const

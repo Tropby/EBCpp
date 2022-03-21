@@ -36,6 +36,8 @@ public:
         tcpSocket->disconnected.connect(this, &EBWebSocket::tcpDisconnected);
 
         std::string key = request->getRequestHeader().getValue("Sec-WebSocket-Key");
+
+        /// TODO: Key austauschbar machen
         key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
         unsigned char c[20];
         SHA1(reinterpret_cast<const unsigned char*>(key.c_str()), key.size(), c);

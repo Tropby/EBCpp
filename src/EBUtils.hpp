@@ -124,12 +124,19 @@ public:
      * @return std::string hex string of the parameter i
      */
     template <typename T>
-    static std::string intToHex(T i)
+    static std::string intToHex(T i, bool prefix = false)
     {
         std::stringstream stream;
-        stream << "0x" << std::setfill('0') << std::setw(sizeof(T) * 2) << std::hex << i;
+        stream << ( prefix ? "0x" : "" ) << std::setfill('0') << std::setw(sizeof(T) * 2) << std::hex << i;
         return stream.str();
     }
+
+    static std::string intToHex(int i, int size, bool prefix = false)
+    {
+        std::stringstream stream;
+        stream << ( prefix ? "0x" : "" ) << std::setfill('0') << std::setw(size) << std::hex << i;
+        return stream.str();
+    }    
 
     static std::string currentWorkingDirectory()
     {

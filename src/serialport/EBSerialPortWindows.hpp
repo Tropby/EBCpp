@@ -155,10 +155,26 @@ public:
      */
     virtual bool close()
     {
-        CloseHandle(osWrite.hEvent);
-        bool result = CloseHandle(handle);
-        handle = INVALID_HANDLE_VALUE;
-        return result;
+        if( handle == INVALID_HANDLE_VALUE )
+            return false;
+
+        try
+        {
+            HANDLE t = handle;
+            handle = INVALID_HANDLE_VALUE;
+
+            CloseHandle(osReader.hEvent);
+            CloseHandle(osWrite.hEvent);
+            bool result = CloseHandle(t);
+
+            joinThread();
+
+            return result;
+        }
+        catch(...)
+        {
+            return false;
+        }
     }
 
     /**
@@ -212,6 +228,11 @@ public:
         return write(data.c_str(), data.size());
     }
 
+    virtual int write(const EBString& data)
+    {
+        return write(data.dataPtr(), data.length());
+    }
+
 private:
     HANDLE handle;
     OVERLAPPED osWrite;
@@ -228,8 +249,6 @@ private:
      */
     void joinThread()
     {
-        EB_PROFILE_FUNC();
-
         if (thread)
         {
             if (thread->joinable())
@@ -240,6 +259,7 @@ private:
         }
     }
 
+    OVERLAPPED osReader = {0};
     void run()
     {
         EB_PROFILE_FUNC();
@@ -249,13 +269,13 @@ private:
         DWORD dwRead;
 
         waitingOnRead = false;
+
+        osReader.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+        if (osReader.hEvent == NULL)
+            EB_EXCEPTION("Can not create osReader.hEvent!");
+
         while (isOpened())
         {
-            OVERLAPPED osReader = {0};
-            osReader.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-            if (osReader.hEvent == NULL)
-                EB_EXCEPTION("Can not create osReader.hEvent!");
-
             if (!waitingOnRead)
             {
                 // Read more than 1 byte
@@ -281,9 +301,13 @@ private:
                 }
             }
 
-            while (waitingOnRead)
+            while (waitingOnRead && isOpened())
             {
                 DWORD dwRes = WaitForSingleObject(osReader.hEvent, 500);
+
+                if(!isOpened())
+                    break;
+
                 switch (dwRes)
                 {
                 // Read completed.
@@ -307,8 +331,7 @@ private:
                 case WAIT_TIMEOUT:
                     break;
                 }
-            }
-            CloseHandle(osReader.hEvent);
+            }            
         }
     }
 };

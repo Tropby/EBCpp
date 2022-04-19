@@ -89,6 +89,7 @@ public:
             events.pop_front();
             mutex.unlock();
         }
+        EBObjectWatch::destroyObjects();
     }
 
     /**
@@ -101,8 +102,7 @@ public:
         while (!closed)
         {
             semaphore->acquire();
-            processEvents();
-            EBObjectWatch::destroyObjects();
+            processEvents();            
         }
     }
 

@@ -321,6 +321,12 @@ public:
         }
     }
 
+    virtual void setBorderColor(const EBObjectPointer<EBGuiColor> borderColor)
+    {
+        this->borderColor = borderColor;
+        invalidate();
+    }
+
     virtual void setBackgroundColor(const EBObjectPointer<EBGuiColor> backgroundColor)
     {
         this->backgroundColor = backgroundColor;

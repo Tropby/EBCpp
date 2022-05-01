@@ -75,8 +75,11 @@ public:
         handle =
         CreateFileA(port.c_str(), access, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING, NULL);
         if (handle == INVALID_HANDLE_VALUE)
-            EB_EXCEPTION("Can not open serial port!");
-
+        {
+            EB_LOG_ERROR("Can not open serial port!");
+            return false;
+        }
+            
         DCB serialInfo = {0};
 
         GetCommState(handle, &serialInfo);

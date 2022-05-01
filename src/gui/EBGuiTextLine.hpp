@@ -26,7 +26,7 @@
 #include "../EBEvent.hpp"
 #include "../EBTimer.hpp"
 #include "EBGuiWidget.hpp"
-#include "renderer/EBGuiColor.hpp"
+#include "EBGuiColor.hpp"
 
 namespace EBCpp
 {

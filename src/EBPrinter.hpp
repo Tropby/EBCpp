@@ -113,6 +113,13 @@ public:
         std::wstring wstr = converter.from_bytes(filename.toStdString());
         Gdiplus::Image image(wstr.c_str());
 
+        int errorCode = image.GetLastStatus();
+        if( errorCode != Gdiplus::GpStatus::Ok )
+        {
+            EB_LOG_ERROR("Can not open file " << filename << " Errorcode: " << errorCode);
+            return false;
+        }
+
         dimCount = image.GetFrameDimensionsCount();
         pDimIDs = new GUID[dimCount];
 
@@ -135,7 +142,7 @@ public:
             graphics.SetPageUnit(Gdiplus::UnitMillimeter);
 
             width = maxWidth;
-            height =  maxWidth * ( image.GetWidth() / image.GetHeight() );
+            height =  image.GetHeight() * ( maxWidth / image.GetWidth() );
 
             EB_LOG_DEBUG("Draw image for page " << i << " on " << printerName);
             graphics.DrawImage(&image, 10.f, 10.f, ( width - 20 ), ( height - 20 ) );

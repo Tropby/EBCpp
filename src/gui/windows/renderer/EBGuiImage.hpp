@@ -44,17 +44,18 @@ public:
     {
     }
 
-    virtual void load(std::string filename)
+    virtual void load(EBString filename)
     {
         /// TODO: if pointer != nullptr release memory
 
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        std::wstring w = converter.from_bytes(filename);
+        std::wstring w = converter.from_bytes(filename.toStdString());
 
         Gdiplus::Bitmap bmp(w.c_str());
         Gdiplus::GpStatus s = bmp.GetLastStatus();
         if( s != Gdiplus::GpStatus::Ok )
         {
+            MessageBoxA(0, (EBString("Can not open file State: ") + std::to_string(s) ).dataPtr(),  "", 0);
             EB_LOG_CRITICAL("Can not open file State: " << s << "!");
         }
 
@@ -101,7 +102,7 @@ public:
         }
         else
         {
-            EB_LOG_DEBUG("Can not load file " << filename);
+            EB_LOG_DEBUG("Can not load file " << filename);            
         }
     }
 };

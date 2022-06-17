@@ -40,7 +40,7 @@ public:
     {
     }
 
-    virtual void load(std::string filename) = 0;
+    virtual void load(EBString filename) = 0;
 
     enum PIXEL_FORMAT
     {

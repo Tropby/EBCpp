@@ -24,6 +24,7 @@
 #pragma once
 
 #include <codecvt>
+#include <gdiplus.h>
 #include <locale>
 
 #include "../../../profile/EBLogger.hpp"
@@ -43,42 +44,50 @@ public:
     {
     }
 
-    virtual void load( std::string filename )
+    virtual void load(std::string filename)
     {
         /// TODO: if pointer != nullptr release memory
 
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         std::wstring w = converter.from_bytes(filename);
+
         Gdiplus::Bitmap bmp(w.c_str());
+        Gdiplus::GpStatus s = bmp.GetLastStatus();
+        if( s != Gdiplus::GpStatus::Ok )
+        {
+            EB_LOG_CRITICAL("Can not open file State: " << s << "!");
+        }
+
         Gdiplus::BitmapData bitmapData;
         Gdiplus::Rect rect(0, 0, bmp.GetWidth(), bmp.GetHeight());
 
         width = bmp.GetWidth();
         height = bmp.GetHeight();
 
-        if (Gdiplus::Ok ==
-            bmp.LockBits(
+        Gdiplus::GpStatus d = bmp.LockBits(
             &rect, // A rectangle structure that specifies the portion of the Bitmap to lock.
             Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeWrite, // ImageLockMode values that specifies the access
-                                                                      // level (read/write) for the Bitmap.
+                                                                    // level (read/write) for the Bitmap.
             bmp.GetPixelFormat(), // PixelFormat values that specifies the data format of the Bitmap.
             &bitmapData           // BitmapData that will contain the information about the lock operation.
-            ))
+        );
+
+        if (Gdiplus::Ok == d)
         {
-            switch (bmp.GetPixelFormat() )
+            switch (bmp.GetPixelFormat())
             {
-                case PixelFormat24bppRGB:
-                    pixelFormat = PixelFormat24Bpp;
-                    break;
-                case PixelFormat16bppRGB555:
-                    pixelFormat = PixelFormat16Bpp;
-                    break;
-                case PixelFormat32bppARGB:
-                    pixelFormat = PixelFormat32Bpp;
-                    break;
-                default:
-                    pixelFormat = PixelFormatUnknown;
-                    break;
+            case PixelFormat24bppRGB:
+                pixelFormat = PixelFormat24Bpp;
+                break;
+            case PixelFormat16bppRGB555:
+                pixelFormat = PixelFormat16Bpp;
+                break;
+            case PixelFormat32bppARGB:
+                pixelFormat = PixelFormat32Bpp;
+                break;
+            default:
+                pixelFormat = PixelFormatUnknown;
+                break;
             }
 
             bpp = bitmapData.Stride / width;

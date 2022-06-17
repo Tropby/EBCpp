@@ -211,6 +211,11 @@ public:
         return (stat(filename.dataPtr(), &buffer) == 0);
     }
 
+    static bool remove(EBString filename)
+    {
+        return std::remove(filename.dataPtr()) == 0;
+    }
+
 private:
     std::fstream file;
 };

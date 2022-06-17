@@ -35,7 +35,7 @@ class EBGuiTextLine : public EBGuiWidget
 {
 public:
     EBGuiTextLine() :
-        EBGuiWidget(), textColor(EB_COLOR_BLACK), borderColor(EB_COLOR_BLACK), timer(EBCpp::EBObjectBase::createObject<EBTimer>()), cursorPos(0)
+        EBGuiWidget(), textColor(EB_COLOR_BLACK), timer(EBCpp::EBObjectBase::createObject<EBTimer>()), cursorPos(0)
     {
         timer->timeout.connect(this, &EBGuiTextLine::timeout);
         timer->startSingleShot(50);
@@ -64,6 +64,9 @@ public:
 protected:
     virtual void mouseLeave(int x, int y)
     {
+        HCURSOR hc = LoadCursor(hInstance, IDC_ARROW);
+        SetCursor(hc);
+
         bool mid = mouseIsDown;
         mouseIsDown = false;
         if (mid)
@@ -71,8 +74,9 @@ protected:
     }
 
     virtual void mouseHover(int x, int y)
-    {
-        bool mid = mouseIsDown;
+    {        
+        HCURSOR hc = LoadCursor(hInstance, IDC_IBEAM);
+        SetCursor(hc);
     }
 
     virtual bool mouseDown(int x, int y)
@@ -100,10 +104,9 @@ protected:
 
         return true;
     }
-
-    virtual void keyPress(char key)
+Y
+    virtual void specialKeyPress(int key)
     {
-        printf("Text update %X\n", key);
         std::string preText = text.substr(0, cursorPos);
         std::string sufText = text.substr(cursorPos);
 
@@ -115,35 +118,52 @@ protected:
                 cursorPos--;
             }
         }
-        else
+        else if( key == 37)
+        {
+            if( cursorPos > 0 )
+                cursorPos--;
+        }
+        else if( key == 39)
+        {
+            if( cursorPos < text.length() )            
+                cursorPos++;
+        }
+        else if( key == 46)
+        {
+            if (cursorPos < text.length() )
+            {
+                text = preText + sufText.substr(1);
+            }
+        }
+        invalidate();
+    } 
+
+    virtual void keyPress(char key)
+    {
+        std::string preText = text.substr(0, cursorPos);
+        std::string sufText = text.substr(cursorPos);
+
+        if( key != 0x08)
         {
             text = preText + key + sufText;
             cursorPos++;
+            invalidate();
         }
-
-        invalidate();
     }
 
-    virtual void draw(std::list< EBObjectPointer<EBGuiRenderer> >& list)
+    virtual void draw(EBGuiRenderer& renderer)
     {
+        EBGuiWidget::draw(renderer);
+
         EBObjectPointer<EBGuiWidget> p = parentWidget();
-        int px = p->getX();
-        int py = p->getY();        
-        list.push_back( EBCpp::EBObjectBase::createObject< EBGuiRenderRect>( x + px, y + py, w, h, borderColor)->cast<EBGuiRenderer>());
-        list.push_back(
-        EBCpp::EBObjectBase::createObject<EBGuiRenderRect>(x + px + 1, y + py + 1, w - 1, h - 1, borderColor)
-        ->cast<EBGuiRenderer>());
 
         if (isFocused())
         {
-            list.push_back(
-            EBCpp::EBObjectBase::createObject<EBGuiRenderTextLineWithCursor>(x + px, y + py, w, text, cursorPos)
-            ->cast<EBGuiRenderer>());
+            renderer.drawTextWithCursor(0, 0, w, h, text, cursorPos, textColor);
         }
         else
         {
-            list.push_back(
-            EBCpp::EBObjectBase::createObject<EBGuiRenderTextLine>(x + px, y + py, w, text)->cast<EBGuiRenderer>());
+            renderer.drawText(1, 1, w, h, text, textColor);
         }
     }
 
@@ -162,7 +182,6 @@ private:
     std::string text;
     int cursorPos;
     EBObjectPointer < EBGuiColor > textColor;
-    EBObjectPointer < EBGuiColor > borderColor;
 };
 
 } // namespace EBCpp

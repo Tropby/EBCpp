@@ -38,7 +38,7 @@ class EBGuiWidget : public EBObject<EBGuiWidget>
 public:
     EBGuiWidget() :
         EBObject(), visible(true), widgetParent(nullptr), w(100), h(100), x(0), y(0), minW(0), minH(0), maxW(INT_MAX),
-        maxH(INT_MAX), backgroundColor(EB_COLOR_WHITE), borderColor(EB_COLOR_BLACK)
+        maxH(INT_MAX), backgroundColor(EB_COLOR_WHITE), borderColor(EB_COLOR_BLACK), focused(false)
     {
     }
 
@@ -233,6 +233,20 @@ public:
         return mouseDown(x, y);
     }
 
+    void handleSpecialKeyPress(int key)
+    {
+        if (this->isFocused())
+        {
+            specialKeyPress(key);
+            return;
+        }
+
+        for (const auto & w : widgets)
+        {
+            w.get()->handleSpecialKeyPress(key);
+        }
+    }
+
     void handleKeyPress(char key)
     {
         if (this->isFocused())
@@ -337,6 +351,10 @@ protected:
     virtual void keyPress(char key)
     {
     }
+
+    virtual void specialKeyPress(int key)
+    {
+    }    
 
     virtual void mouseLeave(int x, int y)
     {

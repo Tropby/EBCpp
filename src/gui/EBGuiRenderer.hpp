@@ -24,8 +24,8 @@
 #pragma once
 
 #include "../EBString.hpp"
-#include "EBGuiColor.hpp"
 #include "EBGuiAlignment.hpp"
+#include "EBGuiColor.hpp"
 
 namespace EBCpp
 {
@@ -35,7 +35,6 @@ class EBGuiRendererBase : public EBObject<EBGuiRendererBase>
 public:
     EBGuiRendererBase(int x, int y, int width, int height) : EBObject(), x(x), y(y), width(width), height(height)
     {
-        
     }
 
     int getWidth()
@@ -65,6 +64,9 @@ public:
                           EBGuiHorizontalAlignment horizontalAlignment = EBGuiHorizontalAlignment::EB_HOR_ALIGN_LEFT,
                           EBGuiVerticalAlignment verticalAlignment = EBGuiVerticalAlignment::EB_VERT_ALIGN_TOP) = 0;
 
+    virtual void drawTextWithCursor(int x, int y, int w, int h, EBString text, int cursorPosition,
+                                    const EBObjectPointer<EBGuiColor>& fontColor) = 0;
+
 private:
     int x;
     int y;
@@ -75,7 +77,7 @@ private:
 } // namespace EBCpp
 
 #ifdef __WIN32__
-    #include "windows/EBGuiRenderer.hpp"
+#include "windows/EBGuiRenderer.hpp"
 #else
-    #warning "Can not use EBGuiRenderer on this platform!"    
+#warning "Can not use EBGuiRenderer on this platform!"
 #endif

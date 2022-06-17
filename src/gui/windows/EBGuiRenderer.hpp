@@ -90,7 +90,7 @@ public:
             stringFormat.SetAlignment(Gdiplus::StringAlignment::StringAlignmentCenter);
             break;
         case EBGuiHorizontalAlignment::EB_HOR_ALIGN_UNCHANGED:
-            break;            
+            break;
         }
 
         switch (verticalAlignment)
@@ -117,6 +117,63 @@ public:
         graphics->DrawString(wstr.c_str(), -1, &font, rectF, &stringFormat, &solidBrush);
     }
 
+    virtual void drawTextWithCursor(int x, int y, int w, int h, EBString text, int cursorPosition,
+                                    const EBObjectPointer<EBGuiColor>& fontColor)
+    {
+        Gdiplus::FontFamily fontFamily(L"Arial");
+        Gdiplus::Font font(&fontFamily, 24, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);
+        Gdiplus::PointF pointF(x, y);
+        Gdiplus::StringFormat stringFormat;
+
+        Gdiplus::SolidBrush solidBrush(
+        Gdiplus::Color(fontColor->getA(), fontColor->getR(), fontColor->getG(), fontColor->getB()));
+
+        std::string preText = text.mid(0, cursorPosition).toStdString();
+        std::string sufText = text.mid(cursorPosition).toStdString();
+
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        std::wstring preTextw = converter.from_bytes(preText);
+        std::wstring sufTextw = converter.from_bytes(sufText);
+
+        // Measure Text size
+        Gdiplus::RectF outRect;
+        Gdiplus::Region regionsList[1];
+        Gdiplus::CharacterRange ranges[1];
+        Gdiplus::RectF layoutRect(0, 0, 1000, 100);
+        ranges[0].First = 0;
+        ranges[0].Length = preText.length();
+        stringFormat.SetMeasurableCharacterRanges(1, ranges);
+        std::replace(preText.begin(), preText.end(), ' ', '.');
+        if (graphics->MeasureCharacterRanges(converter.from_bytes(preText).c_str(), -1, &font, layoutRect, &stringFormat,
+                                            1, regionsList) != Gdiplus::Ok)
+        {
+            outRect.Width = 0;
+            outRect.Height = 24;
+        }
+        else
+        {
+            if (regionsList[0].GetBounds(&outRect, graphics) != Gdiplus::Ok)
+            {
+                outRect.Width = 0;
+                outRect.Height = 24;
+            }
+        }
+
+        // Draw String bevor Cursor!
+        graphics->DrawString(preTextw.c_str(), -1, &font, pointF, &stringFormat, &solidBrush);
+
+        Gdiplus::Pen pen(Gdiplus::Color(fontColor->getA(), fontColor->getR(), fontColor->getG(), fontColor->getB()));
+        pointF.X = pointF.X + outRect.Width;
+
+        Gdiplus::PointF pointCursor1(pointF.X + 4, y + 2);
+        Gdiplus::PointF pointCursor2(pointF.X + 4, y + outRect.Height - 2);
+
+        if (EBUtils::uptime() % 1000 > 500)
+            graphics->DrawLine(&pen, pointCursor1, pointCursor2);
+
+        graphics->DrawString(sufTextw.c_str(), -1, &font, pointF, &stringFormat, &solidBrush);
+    }
+
     virtual void drawRect(int x, int y, int w, int h, EBObjectPointer<EBGuiColor>& borderColor)
     {
         Gdiplus::Pen pen(
@@ -136,7 +193,7 @@ private:
 
     HDC hdcMem;
     HBITMAP MemBitmap;
-    HBITMAP hbmOld;   
+    HBITMAP hbmOld;
 };
 
 } // namespace EBCpp

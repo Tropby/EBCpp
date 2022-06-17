@@ -194,6 +194,11 @@ private:
             return 0;
         }
 
+        case WM_KEYDOWN: {
+            handleSpecialKeyPress(wParam);
+            return 0;
+        }
+
         case WM_CHAR: {
             handleKeyPress(wParam);
             return 0;

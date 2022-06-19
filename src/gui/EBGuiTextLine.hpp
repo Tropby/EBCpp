@@ -104,7 +104,7 @@ protected:
 
         return true;
     }
-Y
+
     virtual void specialKeyPress(int key)
     {
         std::string preText = text.substr(0, cursorPos);

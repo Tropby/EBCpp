@@ -40,7 +40,7 @@ public:
     {
     }
 
-    virtual void load(EBString filename) = 0;
+    virtual bool load(EBString filename) = 0;
 
     enum PIXEL_FORMAT
     {

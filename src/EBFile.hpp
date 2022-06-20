@@ -205,6 +205,13 @@ public:
         return exists(getFileName());
     }
 
+    static int64_t getFileSize(EBString file)
+    {
+        FILE * fp = fopen(file.dataPtr(), "r");
+        fseek(fp, 0, SEEK_END); // seek to end of file
+        return ftell(fp); // get current file pointer
+    }
+
     static inline bool exists( const EBString& filename )
     {
         struct stat buffer;

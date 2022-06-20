@@ -38,29 +38,41 @@ public:
     {
         for( int i = 0; i < argc; i++ )
         {
-
+            arguments.append(argv[i]);
         }
+    }
+
+    static EBString getArgument( int index )
+    {
+        return arguments.get(index);
+    }
+
+    static int getArgumentCount()
+    {
+        return arguments.getSize();
     }
 
 private:
     EBApplication(){}
-    EBList<EBString> arguments;
+    static inline EBList<EBString> arguments = EBList<EBString>();
 
 };
 
 
 } // namespace EBCpp
 
-void EBInit();
+bool EBInit();
 void EBShutdown();
 
 int main(int argc, char ** argv )
 {
     EBCpp::EBApplication::setArguments(argc, argv);
 
-    EBInit();
-    EBCpp::EBEventLoop::getInstance()->exec();
-    EBShutdown();
+    if( EBInit() )
+    {
+        EBCpp::EBEventLoop::getInstance()->exec();
+        EBShutdown();
+    }
 
     return 0;
 }

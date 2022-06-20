@@ -17,44 +17,57 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- *  Created on: 2021-01-23
+ *  Created on: 2022-06-19
  *      Author: Carsten (Tropby)
  */
 
 #pragma once
 
+#include "EBEventLoop.hpp"
 #include "EBList.hpp"
 #include "EBObject.hpp"
 #include "EBString.hpp"
-#include <dirent.h>
 
 namespace EBCpp
 {
-class EBDirectory : public EBObject<EBDirectory>
+
+class EBTerminal : public EBObject<EBTerminal>
 {
 public:
-    static bool exists(EBString directory)
+    typedef enum
     {
-        DWORD dwAttrib = GetFileAttributes(directory.dataPtr());
-        return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
-    }
+        black   = 0x0,
+        navy    = 0x1,
+        green   = 0x2,
+        teal    = 0x3,
+        maroon  = 0x4,
+        purple  = 0x5,
+        olive   = 0x6,
+        silver  = 0x7,
+        gray    = 0x8,
+        blue    = 0x9,
+        lime    = 0xA,
+        aqua    = 0xB,
+        red     = 0xC,
+        fuchsia = 0xD,
+        yellow  = 0xE,
+        white   = 0xF
+    } TERMINAL_COLOR;
 
-    static EBList<EBString> getDirectoryList(EBString directory)
+    static void setColor(TERMINAL_COLOR backgroundColor, TERMINAL_COLOR textColor)
     {
-        EBList<EBString> result;
-        DIR* dir;
-        struct dirent* entry;
-        if ((dir = opendir(directory.dataPtr())) != NULL)
-        {
-            while ((entry = readdir(dir)) != NULL)
-            {
-                result.append(entry->d_name);
-            }
-            closedir(dir);
-        }
-        return result;
+        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+        WORD saved_attributes;
+
+        /* Save current attributes */
+        GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+        saved_attributes = consoleInfo.wAttributes;
+
+        SetConsoleTextAttribute(hConsole, ( textColor & 0x0F ) | ( backgroundColor & 0x0F ) << 4 );
     }
 
 private:
 };
+
 } // namespace EBCpp

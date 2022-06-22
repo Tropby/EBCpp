@@ -138,6 +138,45 @@ public:
         return len;
     }
 
+    /**
+     * @brief Send string
+     *
+     * @param data string to send
+     * @return int bytes written to the tcp socket
+     */
+    virtual int write(const EBString& data)
+    {
+        int len = -1;
+        try
+        {
+            if (isOpened())
+            {
+                len = SSL_write(ssl, data.dataPtr(), data.length());
+                if (len < 0)
+                {
+                    int err = SSL_get_error(ssl, len);
+                    switch (err)
+                    {
+                    case SSL_ERROR_WANT_WRITE:
+                    case SSL_ERROR_WANT_READ:
+                    case SSL_ERROR_ZERO_RETURN:
+                    case SSL_ERROR_SYSCALL:
+                    case SSL_ERROR_SSL:
+                    default:
+                        EB_EMIT_WITH_ARGS(error, "SSL Error!");
+                        break;
+                    }
+                }
+            }
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+
+        return len;
+    }
+
 protected:
     /**
      * @brief Creates a socket and connects to the host

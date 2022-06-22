@@ -95,7 +95,7 @@ public:
         tcpSocket->write("HTTP/1.0 " + std::to_string(responseCode) + " Okay\r\n");
         tcpSocket->write(replyHeader.getHeader());
         tcpSocket->write("Content-Length: " + std::to_string(data.size()) + "\r\n");
-        tcpSocket->write("\r\n");
+        tcpSocket->write(EBString("\r\n"));
         tcpSocket->write(data);
         tcpSocket->close();
         tcpSocket->readReady.disconnect(this, &EBHttpRequest::readReady);
@@ -200,7 +200,7 @@ private:
 
     void protocolError()
     {
-        tcpSocket->write("Protocol Error!");
+        tcpSocket->write(EBString("Protocol Error!"));
         tcpSocket->close();
         EB_EXCEPTION("Protocol Error!");
     }

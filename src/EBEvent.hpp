@@ -36,7 +36,8 @@
 #define EB_SLOT(slotName) void slotName(EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> sender)
 #define EB_EMIT(signalName)                                                                                            \
     {                                                                                                                  \
-        EBCpp::EBObjectPointer<EBCpp::EBObject<EBObjectBase>> _cast = cast<EBCpp::EBObject<EBObjectBase>>();           \
+        EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> _cast =                                           \
+        cast<EBCpp::EBObject<EBCpp::EBObjectBase>>();                                                                  \
         signalName.emit(_cast);                                                                                        \
     }
 
@@ -44,7 +45,8 @@
     void slotName(EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> sender, args)
 #define EB_EMIT_WITH_ARGS(signalName, args...)                                                                         \
     {                                                                                                                  \
-        EBCpp::EBObjectPointer<EBCpp::EBObject<EBObjectBase>> _cast = cast<EBCpp::EBObject<EBObjectBase>>();           \
+        EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> _cast =                                           \
+        cast<EBCpp::EBObject<EBCpp::EBObjectBase>>();                                                                  \
         signalName.emit(_cast, args);                                                                                  \
     }
 
@@ -256,7 +258,7 @@ public:
      * @param sender
      * @param p
      */
-    void emit(EBObjectPointer<EBObject<EBObjectBase>>& sender, args... p)
+    void emit(EBObjectPointer<EBObject<EBObjectBase>> sender, args... p)
     {
         for (EBObjectPointer<EBConnection<args...>>& c : connections)
         {

@@ -96,12 +96,12 @@ public:
         // Check if hostname can be used for this connection
         EBString host = getFileName();
 
-        if (host.mid(0, 6) == "tcp://")
+        if (host.mid(0, 6) != "tcp://")
             EB_EXCEPTION("EBTcpSocket needs a tcp://{hostname}:{port} filename to connect to a host.");
 
         host = host.mid(6);
 
-        if (host.indexOf(":") >= 0)
+        if (host.indexOf(":") < 0)
             EB_EXCEPTION("EBTcpSocket needs a tcp://{hostname}:{port} filename to connect to a host.");
 
         int32_t port = host.mid(host.indexOf(":") + 1).toInt();
@@ -193,6 +193,19 @@ public:
         EB_PROFILE_FUNC();
 
         return send(socketId, data.c_str(), data.length(), 0);
+    }
+
+    /**
+     * @brief Send string
+     *
+     * @param data string to send
+     * @return int bytes written to the tcp socket
+     */
+    virtual int write(const EBString& data)
+    {
+        EB_PROFILE_FUNC();
+
+        return send(socketId, data.dataPtr(), data.length(), 0);
     }
 
     /**

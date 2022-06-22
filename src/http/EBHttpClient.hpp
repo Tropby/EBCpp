@@ -25,14 +25,18 @@
 
 #include "../EBEvent.hpp"
 #include "../EBObject.hpp"
-#include "../socket/tcp/EBTcpSocket.hpp"
-#include "EBHttpRequest.hpp"
 #include "../EBUrl.hpp"
+#include "../EBString.hpp"
+#include "../EBMap.hpp"
+#include "../socket/tcp/EBTcpSocket.hpp"
+#include "../socket/tcp/ssl/EBSslSocket.hpp"
+#include "EBHttpRequest.hpp"
 
 namespace EBCpp
 {
 
-class EBHttpClient : public EBObject<EBHttpClient>
+template <class socket = EBTcpSocket>
+class EBHttpClient : public EBObject< EBHttpClient<> >
 {
 public:
     EBHttpClient() : protocol("HTTP/1.0")
@@ -50,6 +54,25 @@ public:
     {
         this->path = path.toStdString();
         sendHeader["host"] = host.toStdString();
+        method = "GET";
+
+        tcpSocket.setFileName("tcp://" + host.toStdString() + ":" + std::to_string(port));
+
+        if (!tcpSocket.open(EBTcpSocket::READ_WRITE))
+            return false;
+        return true;
+    }
+
+    bool post(const EBString& host, uint16_t port, const EBString& path, EBMap<EBString, EBString>& arguments)
+    {
+        this->path = path.toStdString();
+        sendHeader["host"] = host.toStdString();
+        method = "POST";
+
+        for( auto e : arguments )
+        {
+            sendPayload += e.first + "=" + e.second + "&";
+        }
 
         tcpSocket.setFileName("tcp://" + host.toStdString() + ":" + std::to_string(port));
 
@@ -61,6 +84,11 @@ public:
     bool get(EBUrl url)
     {
         return get(url.getHost(), url.getPort(), url.getQuery());
+    }
+
+    bool post(EBUrl url, EBMap<EBString, EBString>& arguments)
+    {
+        return get(url.getHost(), url.getPort(), url.getQuery(), arguments);
     }
 
     virtual ~EBHttpClient()
@@ -76,13 +104,13 @@ public:
     EB_SIGNAL(finished);
 
 private:
-    EBTcpSocket tcpSocket;
+    socket tcpSocket;
     std::string method;
     std::string path;
     std::string protocol;
 
     std::map<std::string, std::string> sendHeader;
-    std::vector<char> sendPayload;
+    EBString sendPayload;
 
     std::map<std::string, std::string> receiveHeader;
     std::vector<char> receivePayload;
@@ -93,14 +121,14 @@ private:
     {
         headerReceived = false;
         receiveSize = -1;
-        sendHeader["content-length"] = std::to_string(sendPayload.size());
+        sendHeader["content-length"] = std::to_string(sendPayload.length());
         tcpSocket.write(method + " " + path + " " + protocol + "\r\n");
         for (std::pair<std::string, std::string> it : sendHeader)
         {
             tcpSocket.write(it.first + ": " + it.second + "\r\n");
         }
-        tcpSocket.write("\r\n");
-        tcpSocket.write(sendPayload.data(), sendPayload.size());
+        tcpSocket.write(EBString("\r\n"));
+        tcpSocket.write(sendPayload);
     }
 
     EB_SLOT(tcpDisconnected)

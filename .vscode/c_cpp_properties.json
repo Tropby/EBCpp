@@ -3,7 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "dep\\openssl\\include\\"
+                "dep/openssl/include/"
             ],
             "defines": [
                 "_DEBUG",

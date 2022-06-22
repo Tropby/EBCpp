@@ -150,7 +150,16 @@ if(OPENSSL_FOUND)
         target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     else()
         target_link_libraries(EBCppExampleHttpsServer OpenSSL::Crypto OpenSSL::SSL pthread)
-    endif()        
+    endif()    
+    
+    # Compile EBCppExampleHttpClient
+    add_executable(EBCppExampleHttpsClient examples/ExampleHttpsClient.cpp)
+    if(WIN32)
+        target_link_libraries(EBCppExampleHttpsClient OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleHttpsClient OpenSSL::Crypto OpenSSL::SSL pthread)        
+    endif()
+        
 endif()
 
 # Compile EBCppExampleHttpsServer 

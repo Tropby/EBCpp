@@ -12,6 +12,7 @@ if(WIN32)
     set(WINDOWS_VERSION 0x0A00) 
     add_definitions(-DWINVER=${WINDOWS_VERSION})
     add_definitions(-D_WIN32_WINNT=${WINDOWS_VERSION})
+    add_definitions(-DNTDDI_VERSION=0x06010000)
 endif()
 
 include_directories(src)
@@ -78,6 +79,14 @@ if(WIN32)
     target_link_libraries(EBCppExampleHttpClient wsock32 ws2_32 -Wl,-subsystem,console)
 else()
     target_link_libraries(EBCppExampleHttpClient pthread)        
+endif()
+
+# Compile EBCppExampleHttpClient
+add_executable(EBCppExampleICMP examples/ExampleICMP.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleICMP iphlpapi wsock32 ws2_32 -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleICMP pthread)        
 endif()
 
 if(WIN32)

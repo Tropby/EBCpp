@@ -40,7 +40,7 @@ public:
     }
 
 private:
-    EBCpp::EBHttpClient client;
+    EBCpp::EBHttpClient<> client;
 
     EB_SLOT(httpRequestFinished)
     {

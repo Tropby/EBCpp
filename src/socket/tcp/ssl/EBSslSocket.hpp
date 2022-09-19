@@ -23,6 +23,8 @@
 
 #pragma once
 
+#ifdef SSL
+
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 
@@ -267,3 +269,6 @@ private:
 };
 
 } // namespace EBCpp
+#else
+#warning SSL is disabled!
+#endif

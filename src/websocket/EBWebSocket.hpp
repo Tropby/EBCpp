@@ -46,12 +46,12 @@ public:
 
         key = output;
 
-        tcpSocket->write("HTTP/1.1 101 Switching Protocols\r\n");
-        tcpSocket->write("Upgrade: websocket\r\n");
-        tcpSocket->write("Connection: Upgrade\r\n");
-        tcpSocket->write("Sec-WebSocket-Accept: " + key + "\r\n");
-        tcpSocket->write("Sec-WebSocket-Protocol: chat\r\n");
-        tcpSocket->write("\r\n");
+        tcpSocket->write(EBString("HTTP/1.1 101 Switching Protocols\r\n"));
+        tcpSocket->write(EBString("Upgrade: websocket\r\n"));
+        tcpSocket->write(EBString("Connection: Upgrade\r\n"));
+        tcpSocket->write(EBString("Sec-WebSocket-Accept: " + key + "\r\n"));
+        tcpSocket->write(EBString("Sec-WebSocket-Protocol: chat\r\n"));
+        tcpSocket->write(EBString("\r\n"));
     }
 
     /**

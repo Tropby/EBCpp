@@ -35,6 +35,9 @@
 #include "EBException.hpp"
 #include "EBOs.hpp"
 
+#define EBCreate EBCpp::EBObjectBase::createObject
+#define EBPtr EBCpp::EBObjectPointer
+
 namespace EBCpp
 {
 

@@ -25,9 +25,12 @@
 #include <iostream>
 #include <string>
 
+#include "../src/EBApplication.hpp"
+
 #include "../src/EBEvent.hpp"
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"
+#include "../src/EBString.hpp"
 #include "../src/socket/tcp/EBTcpServer.hpp"
 #include "../src/socket/tcp/EBTcpSocket.hpp"
 
@@ -47,11 +50,11 @@ public:
         server.newConnection.connect(this, &ExampleTcpServer::newConnection);
         if (server.bind(8958))
         {
-            std::cout << "Tcp server now bound on 8958" << std::endl;
+            EB_LOG_INFO("Tcp server now bound on 8958");
         }
         else
         {
-            std::cout << "Can not bind to port 8958" << std::endl;
+            EB_LOG_ERROR("Can not bind to port 8958");
         }
     }
 
@@ -65,13 +68,13 @@ public:
      */
     EB_SLOT_WITH_ARGS(newConnection, EBCpp::EBObjectPointer< EBCpp::EBTcpSocket > socket)
     {
-        std::cout << "new connection!" << std::endl;
+        EB_LOG_INFO("new connection!");
 
         socket->disconnected.connect(this, &ExampleTcpServer::disconnected);
         socket->readReady.connect(this, &ExampleTcpServer::readReady);
         socket->error.connect(this, &ExampleTcpServer::error);
 
-        socket->write("Hallo :)");
+        socket->write(EBCpp::EBString("Hallo :)"));
     }
 
     /**
@@ -84,7 +87,7 @@ public:
     EB_SLOT(disconnected)
     {
         EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
-        std::cout << "disconnected" << std::endl;
+        EB_LOG_INFO("disconnected");
     }
 
     /**
@@ -102,7 +105,7 @@ public:
         int nbytes = socket->read(buffer, 1024);
         std::string s(buffer, nbytes);
 
-        std::cout << "read Ready: " << s << std::endl;
+        EB_LOG_INFO("Received: " << s);
 
         socket->write(s);
 
@@ -120,15 +123,24 @@ public:
      */
     EB_SLOT_WITH_ARGS(error, std::string message)
     {
-        std::cout << "ERROR: " << message << std::endl;
+        EB_LOG_ERROR("ERROR: " << message);
     }
 
 private:
     EBCpp::EBTcpServer server;
 };
 
-int main()
+EBPtr<ExampleTcpServer> exampleTcpServer = nullptr;
+
+bool EBInit()
 {
-    ExampleTcpServer exampleTcpServer;
-    EBCpp::EBEventLoop::getInstance()->exec();
+    // Create example instance
+    exampleTcpServer = EBCreate<ExampleTcpServer>();    
+    return true;
+}
+
+void EBShutdown()
+{
+    // Delete example instace
+    exampleTcpServer = nullptr;
 }

@@ -64,7 +64,7 @@ public:
             return "";
         }
 
-        // loop through all the results and connect to the first we can
+        // loop through all the results and ste the ip to the last result
         char ip[64];
         for (p = servinfo; p != NULL; p = p->ai_next)
         {
@@ -74,6 +74,31 @@ public:
 
         freeaddrinfo(servinfo); // all done with this structure
         return ip;
+    }
+
+    static uint32_t ipToInt(EBString& ip)
+    {
+        EBList<EBString> list = ip.split(".");
+
+        if( list.getSize() != 4)
+        {
+            throw new EBException("Can not convert wrong formated ipv4 addresses!");
+        }
+
+        uint32_t result = 0;
+
+        result += ((uint8_t)list.get(0).toInt64()) << 24;
+        result += ((uint8_t)list.get(1).toInt64()) << 16;
+        result += ((uint8_t)list.get(2).toInt64()) << 8;
+        result += ((uint8_t)list.get(3).toInt64()) << 0;
+
+        return result;
+    }
+
+    static EBString intToIp(uint32_t ip)
+    {
+        return intToStr((uint32_t)((uint8_t)(ip >> 24))) + "." + intToStr((uint32_t)((uint8_t)(ip >> 16))) + "." +
+               intToStr((uint32_t)((uint8_t)(ip >> 8))) + "." + intToStr((uint32_t)((uint8_t)(ip >> 0)));
     }
 
     /**
@@ -113,6 +138,14 @@ public:
             data++;
             len--;
         }
+        return stream.str();
+    }
+
+    template <typename T>
+    static EBString intToStr(T i)
+    {
+        std::stringstream stream;
+        stream << std::dec << i;
         return stream.str();
     }
 
@@ -340,6 +373,16 @@ public:
             inited = true;
 #endif
         }
+    }
+
+    static EBString getHostname()
+    {
+        char src_name[256];
+        if( gethostname(src_name, sizeof(src_name)) >= 0 )
+        {
+            return src_name;
+        }
+        return EBString();
     }
 };
 

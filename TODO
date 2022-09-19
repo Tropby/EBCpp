@@ -9,6 +9,17 @@ EBCore:
         ☐ Create a port for linux
         ☐ Check if mass data transfer will kill the event loop (too much emits)
 
+EBMessage:
+    ☐ Messages between processes
+
+EBSharedMemory:
+    ☐ Aquire Memory system wide
+    ☐ Lock Shared Memory Area
+    ☐ FAT32 in Shared Memory
+        ☐ FAT16 ?
+        ☐ EXT4
+        ☐ EXT3
+
 EBNetwork:
 
     EBWebSocket:
@@ -24,6 +35,7 @@ EBNetwork:
 
     EBSNMPSender:
         ☐ Send SNMP messages using the EBUdpSocket.
+        ☐ SET/GET/TRAP/INFORM
 
 EBGui:
     Currently EBGui is only defined for windows applications.

@@ -24,9 +24,9 @@
 #pragma once
 
 #include "EBEvent.hpp"
+#include "EBList.hpp"
 #include "EBObject.hpp"
 #include "EBString.hpp"
-#include "EBList.hpp"
 
 namespace EBCpp
 {
@@ -36,7 +36,6 @@ class EBUrl : public EBObject<EBUrl>
 public:
     EBUrl() : port(0)
     {
-
     }
 
     EBUrl(const char* url) : valid(false), port(0)
@@ -54,6 +53,16 @@ public:
         setUrl(url);
     }
 
+    EBUrl(const EBCpp::EBUrl& other)
+    {
+        setUrl(other.toString());
+    }
+
+    void operator=(const EBCpp::EBUrl& other)
+    {
+        this->setUrl(other.toString());
+    }
+
     ~EBUrl()
     {
     }
@@ -63,18 +72,18 @@ public:
         EBString rest = url;
 
         int32_t schemaEnd = url.indexOf(":");
-        if( schemaEnd > 0 )
+        if (schemaEnd > 0)
         {
-            protocol = url.mid( 0, schemaEnd ).toUpper();
-            rest = url.mid( schemaEnd + 1 );            
-            
-            if( protocol == "HTTP")
+            protocol = url.mid(0, schemaEnd).toUpper();
+            rest = url.mid(schemaEnd + 1);
+
+            if (protocol == "HTTP")
                 this->port = 80;
-            else if( protocol == "HTTPS" )
+            else if (protocol == "HTTPS")
                 this->port = 443;
-            else if( protocol == "FTP" )
+            else if (protocol == "FTP")
                 this->port = 21;
-            else if( protocol == "SSH" )
+            else if (protocol == "SSH")
                 this->port = 22;
             else
                 this->port = 0;
@@ -86,13 +95,13 @@ public:
         }
 
         // check if authority is available
-        if( rest.startsWith("//") )
+        if (rest.startsWith("//"))
         {
             rest = rest.mid(2);
             EBString authority = rest;
-            if( authority.indexOf("/") >= 0 )
+            if (authority.indexOf("/") >= 0)
             {
-                authority = authority.mid( 0, authority.indexOf("/") );
+                authority = authority.mid(0, authority.indexOf("/"));
                 rest = rest.mid(rest.indexOf("/"));
             }
             else
@@ -101,50 +110,50 @@ public:
             }
 
             // userinfo    = *( unreserved / pct-encoded / sub-delims / ":" )
-            if( authority.indexOf("@") > 0 )
+            if (authority.indexOf("@") > 0)
             {
                 EBString userinfo = authority.mid(0, authority.indexOf("@"));
                 authority = authority.mid(authority.indexOf("@") + 1);
-                if( userinfo.indexOf(":") )
+                if (userinfo.indexOf(":"))
                 {
                     this->username = userinfo.mid(0, userinfo.indexOf(":"));
-                    this->password = userinfo.mid(userinfo.indexOf(":")+1);
+                    this->password = userinfo.mid(userinfo.indexOf(":") + 1);
                 }
             }
 
             host = authority;
 
             // Check for port
-            if( host.indexOf(":") > 0 )
+            if (host.indexOf(":") > 0)
             {
-                EBString port = rest.mid(host.indexOf(":")+1);
+                EBString port = rest.mid(host.indexOf(":") + 1);
                 this->port = port.toInt();
             }
         }
 
         this->path = rest;
-        if(this->path.contains("?"))
+        if (this->path.contains("?"))
         {
-            EBString query = this->path.mid(this->path.indexOf("?")+1);
+            EBString query = this->path.mid(this->path.indexOf("?") + 1);
             this->path = this->path.mid(0, this->path.indexOf("?"));
 
-            if( query.contains("#") )
+            if (query.contains("#"))
             {
-                this->fragment = query.mid( query.indexOf("#")+1 );
-                query = query.mid( 0, query.indexOf("#") );
+                this->fragment = query.mid(query.indexOf("#") + 1);
+                query = query.mid(0, query.indexOf("#"));
             }
             else
             {
                 this->fragment = "";
             }
 
-            while( !query.empty() )
+            while (!query.empty())
             {
                 EBString q;
-                if( query.contains("&" ) ) 
+                if (query.contains("&"))
                 {
-                    q = query.mid( 0, query.indexOf("&") );
-                    query= query.mid( query.indexOf("&")+1 );
+                    q = query.mid(0, query.indexOf("&"));
+                    query = query.mid(query.indexOf("&") + 1);
                 }
                 else
                 {
@@ -153,9 +162,9 @@ public:
                 }
 
                 ARGUMENT a;
-                if(q.contains("="))
+                if (q.contains("="))
                 {
-                    a.key = q.mid(0,q.indexOf("="));
+                    a.key = q.mid(0, q.indexOf("="));
                     a.value = q.mid(q.indexOf("=") + 1);
                 }
                 else
@@ -167,15 +176,6 @@ public:
             }
         }
 
-        EB_LOG_DEBUG(
-            "Protocol: " << this->protocol << " | " <<
-            "Username: " << this->username << " | " <<
-            "Password: " << this->password << " | " <<
-            "Host: " << this->host << " | " <<
-            "Port: " << this->port << " | " << 
-            "Path: " << this->path << " | "
-        );
-
         return true;
     }
 
@@ -183,17 +183,18 @@ public:
     {
         EBString auth;
 
-        if( !username.empty() )
+        if (!username.empty())
             auth = username;
-        if( !password.empty() )
+        if (!password.empty())
         {
             auth += ":";
             auth += password;
         }
-        if( !auth.empty() )
+        if (!auth.empty())
             auth += "@";
 
-        return protocol.toLower() + "://" + auth + host + (port ? ":" + std::to_string(port) : "" ) + getQuery() + fragment;
+        return protocol.toLower() + "://" + auth + host + (port ? ":" + std::to_string(port) : "") + getQuery() +
+               fragment;
     }
 
     bool isValid() const
@@ -229,7 +230,7 @@ public:
     void setPassword(const EBString& password)
     {
         this->password = password;
-    }        
+    }
 
     void setFragment(const EBString& fragment)
     {
@@ -239,10 +240,10 @@ public:
     void setArg(const EBString& key, const EBString& value)
     {
         bool found = false;
-        for( int i = 0; i < arguments.getSize(); i++ )
+        for (int i = 0; i < arguments.getSize(); i++)
         {
             ARGUMENT a = arguments.get(i);
-            if( a.key == key )
+            if (a.key == key)
             {
                 a.value = value;
                 arguments.removeAt(i);
@@ -250,7 +251,7 @@ public:
                 return;
             }
         }
-        
+
         ARGUMENT a;
         a.key = key;
         a.value = value;
@@ -259,9 +260,9 @@ public:
 
     void unsetArg(const EBString& key)
     {
-        for( int i = 0; i < arguments.getSize(); i++ )
+        for (int i = 0; i < arguments.getSize(); i++)
         {
-            if( arguments.get(i).key == key )
+            if (arguments.get(i).key == key)
             {
                 this->arguments.removeAt(i);
                 return;
@@ -302,18 +303,18 @@ public:
     const EBString& getPassword() const
     {
         return password;
-    }    
+    }
 
     const EBString& getFragment() const
     {
         return fragment;
     }
 
-    const EBString getArg(const EBString& key) 
+    const EBString getArg(const EBString& key)
     {
-        for( auto & a : arguments )
+        for (auto& a : arguments)
         {
-            if( a.get().key == key )
+            if (a.get().key == key)
             {
                 return a.get().value;
             }
@@ -329,7 +330,7 @@ public:
     const EBList<EBString> getArgKeyList() const
     {
         EBList<EBString> result;
-        for( auto & a : arguments )
+        for (auto& a : arguments)
         {
             result.append(a.get().key);
         }
@@ -341,7 +342,7 @@ public:
         EBString argList;
         for (auto& arg : arguments)
         {
-            if( !arg.get().key.empty() )
+            if (!arg.get().key.empty())
                 argList += arg.get().key + "=" + arg.get().value + "&";
             else
                 argList += arg.get().value + "&";
@@ -349,7 +350,7 @@ public:
 
         EBString path;
         path = this->path;
-        if( !host.empty() && !path.startsWith("/") )
+        if (!host.empty() && !path.startsWith("/"))
             path = EBString("/") + path;
 
         return path + (!argList.empty() ? EBString("?") + argList.mid(0, argList.length() - 1) : "");
@@ -366,7 +367,8 @@ private:
     EBString path;
     EBString fragment;
 
-    typedef struct {
+    typedef struct
+    {
         EBString key;
         EBString value;
     } ARGUMENT;

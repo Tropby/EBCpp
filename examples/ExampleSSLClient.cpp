@@ -27,6 +27,7 @@
 
 #define EB_OPEN_SSL
 
+#include "../src/EBString.hpp"
 #include "../src/EBEvent.hpp"
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBIODevice.hpp"
@@ -68,7 +69,7 @@ public:
         std::cout << "connected" << std::endl;
         EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
 
-        socket->write(EBString("GET / HTTP/1.0\r\nhost: www.google.com\r\n\r\n"));
+        socket->write(EBCpp::EBString("GET / HTTP/1.0\r\nhost: www.google.com\r\n\r\n"));
     }
 
     /**

@@ -81,15 +81,15 @@ else()
     target_link_libraries(EBCppExampleHttpClient pthread)        
 endif()
 
-# Compile EBCppExampleHttpClient
-add_executable(EBCppExampleICMP examples/ExampleICMP.cpp)
 if(WIN32)
-    target_link_libraries(EBCppExampleICMP iphlpapi wsock32 ws2_32 -Wl,-subsystem,console)
-else()
-    target_link_libraries(EBCppExampleICMP pthread)        
-endif()
+    # Compile EBCppExampleHttpClient
+    add_executable(EBCppExampleICMP examples/ExampleICMP.cpp)
+    if(WIN32)
+        target_link_libraries(EBCppExampleICMP iphlpapi wsock32 ws2_32 -Wl,-subsystem,console)
+    else()
+        target_link_libraries(EBCppExampleICMP pthread)        
+    endif()
 
-if(WIN32)
     # Compile EBCppExampleSerialPort
     add_executable(EBCppExampleSerialPort examples/ExampleSerialPort.cpp)
     if(WIN32)

@@ -29,7 +29,6 @@
 #include "../EBString.hpp"
 #include "../EBMap.hpp"
 #include "../socket/tcp/EBTcpSocket.hpp"
-#include "../socket/tcp/ssl/EBSslSocket.hpp"
 #include "EBHttpRequest.hpp"
 
 namespace EBCpp

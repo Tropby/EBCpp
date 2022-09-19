@@ -116,8 +116,6 @@ endif()
 
 find_package(OpenSSL)
 if(OPENSSL_FOUND)    
-    add_definitions("-DSSL")
-
     # Compile EBCppExampleHttpServer 
     add_executable(EBCppExampleWebSocketServer examples/ExampleWebSocketServer.cpp)
     target_include_directories(EBCppExampleWebSocketServer PRIVATE ${OPENSSL_INCLUDE_DIR})

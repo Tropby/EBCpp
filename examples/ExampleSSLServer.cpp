@@ -73,7 +73,7 @@ public:
         socket->readReady.connect(this, &ExampleSslServer::readReady);
         socket->error.connect(this, &ExampleSslServer::error);
 
-        socket->write("Hallo :)");
+        socket->write(EBString("Hallo :)"));
     }
 
     /**

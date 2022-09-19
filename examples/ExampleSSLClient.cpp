@@ -68,7 +68,7 @@ public:
         std::cout << "connected" << std::endl;
         EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
 
-        socket->write("GET / HTTP/1.0\r\nhost: www.google.com\r\n\r\n");
+        socket->write(EBString("GET / HTTP/1.0\r\nhost: www.google.com\r\n\r\n"));
     }
 
     /**

@@ -100,6 +100,12 @@ public:
         return receivePayload;
     }
 
+    EBString getResultString()
+    {
+        std::string s(receivePayload.begin(), receivePayload.end());
+        return s;
+    }
+
     EB_SIGNAL(finished);
 
 private:

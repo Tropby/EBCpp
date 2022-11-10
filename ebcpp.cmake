@@ -18,7 +18,7 @@ if(WIN32)
 endif()
 
 if(EBCPP_STATIC)
-    set(EBCPP_LIBS ${EBCPP_LIBS} -static-libstdc++ -static-libgcc)    
+    set(EBCPP_LIBS ${EBCPP_LIBS} -static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic)    
 endif()
 
 if(EBCPP_USE_SSL)

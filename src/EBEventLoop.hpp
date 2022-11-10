@@ -97,8 +97,7 @@ public:
      *
      */
     void exec()
-    {
-        closed = false;
+    {        
         EBUtils::setThreadName("EBEventLoop 0x" + EBUtils::intToHex(reinterpret_cast<long long>(this)));
         while (!closed)
         {

@@ -28,6 +28,15 @@
 #include "EBString.hpp"
 #include "EBEventLoop.hpp"
 
+#define EB_APPLICATION(MAIN_CLASS) \
+EBPtr<MAIN_CLASS> mainClass = nullptr; \
+bool EBInit() \
+{ \
+    mainClass = EBCreate<MAIN_CLASS>(); \
+    return true; \
+} \
+void EBShutdown(){}
+
 namespace EBCpp
 {
 

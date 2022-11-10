@@ -377,7 +377,7 @@ private:
 
 } // namespace EBCpp
 
-std::ostream& operator<<(std::ostream& os, const EBCpp::EBUrl& url)
+inline std::ostream& operator<<(std::ostream& os, const EBCpp::EBUrl& url)
 {
     return os << url.toString();
 }

@@ -17,8 +17,20 @@ if(WIN32)
     endif()
 endif()
 
+if(EBCPP_STATIC)
+    set(EBCPP_LIBS ${EBCPP_LIBS} -static-libstdc++ -static-libgcc)    
+endif()
+
 if(EBCPP_USE_SSL)
     message("EBCPP_USE_SSL => Try to find openssl!")
+
+
+    if(EBCPP_USE_SSL_STATIC)
+        message("EBCPP_USE_SSL_STATIC => ON")
+        set(OPENSSL_USE_STATIC_LIBS TRUE)
+    else()
+        message("EBCPP_USE_SSL_STATIC => OFF")
+    endif()
 
     find_package(OpenSSL REQUIRED)
 

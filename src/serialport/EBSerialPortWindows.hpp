@@ -226,11 +226,6 @@ public:
      * @param data String to wirte to the output device
      * @return int Bytes written to the output device
      */
-    virtual int write(const std::string& data)
-    {
-        return write(data.c_str(), data.size());
-    }
-
     virtual int write(const EBString& data)
     {
         return write(data.dataPtr(), data.length());

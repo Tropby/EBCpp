@@ -1,21 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(EBCpp VERSION 0.1 LANGUAGES CXX)
+project(EBCppExamples VERSION 0.1 LANGUAGES CXX)
 
 # Require C++17 Standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
-# Add defines for windows
-if(WIN32)
-    set(WINDOWS_VERSION 0x0A00) 
-    add_definitions(-DWINVER=${WINDOWS_VERSION})
-    add_definitions(-D_WIN32_WINNT=${WINDOWS_VERSION})
-    add_definitions(-DNTDDI_VERSION=0x06010000)
-endif()
+# Configure and Include EBCpp
+set(EBCPP_USE_GUI On)           # On/Off - Using the windows gui functions (only for testing)
+set(EBCPP_USE_SSL On)           # On/Off - Using openssl for ssl sockets and https
+set(EBCPP_USE_SSL_STATIC On)    # On/Off - Activate static linking of openssl into your application (see openssl license)
+set(EBCPP_USE_SQLITE On)        # On/Off - Using sqlite in your application (static linked)
+set(EBCPP_STATIC On)            # On/Off - Static linking of libc, libc++ and winpthread
 
-include_directories(src)
+include(ebcpp.cmake)
 
 # Compile EBCppExampleFile
 add_executable(EBCppExample examples/Example.cpp)

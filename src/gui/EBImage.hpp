@@ -26,16 +26,16 @@
 namespace EBCpp
 {
 
-#include "../../EBObject.hpp"
+#include "../EBObject.hpp"
 
-class EBGuiImageBase : public EBObject<EBGuiImageBase>
+class EBImageBase : public EBObject<EBImageBase>
 {
 public:
-    EBGuiImageBase() : imagePointer(nullptr), width(0), height(0), bpp(0), pixelFormat(PixelFormatUnknown)
+    EBImageBase() : imagePointer(nullptr), width(0), height(0), bpp(0), pixelFormat(PixelFormatUnknown)
     {
     }
 
-    EBGuiImageBase(std::string filename) :
+    EBImageBase(std::string filename) :
         imagePointer(nullptr), width(0), height(0), bpp(0), pixelFormat(PixelFormatUnknown)
     {
     }
@@ -88,5 +88,5 @@ protected:
 } // namespace EBCpp
 
 #ifdef __WIN32__
-#include "../windows/renderer/EBGuiImage.hpp"
+#include "windows/EBImage.hpp"
 #endif

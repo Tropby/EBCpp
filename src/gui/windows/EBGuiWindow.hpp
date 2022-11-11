@@ -68,7 +68,7 @@ public:
         // WAITING FOR WINDOW CREATED
         /// TODO: Wait condition
         while (!hwnd)
-            ;
+            usleep(1000);
         SetWindowText(hwnd, title.c_str());
     }
 
@@ -90,14 +90,11 @@ private:
 
     static LRESULT CALLBACK WindowProcBase(_In_ HWND hwnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam)
     {
-        EBGuiWindow* wnd = reinterpret_cast<EBGuiWindow*>(GetWindowLong(hwnd, GWLP_USERDATA));
-        switch (uMsg)
-        {
-        case WM_CREATE:
-            wnd = (EBGuiWindow*)((CREATESTRUCT*)lParam)->lpCreateParams;
-            SetWindowLong(hwnd, GWLP_USERDATA, int64_t(wnd));
-        }
-        return wnd->WindowProc(hwnd, uMsg, wParam, lParam);
+        EBGuiWindow* wnd = reinterpret_cast<EBGuiWindow*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));        
+        if( wnd != nullptr)
+            return wnd->WindowProc(hwnd, uMsg, wParam, lParam);
+        else
+            return DefWindowProc(hwnd, uMsg, wParam, lParam);;
     }
 
     LRESULT CALLBACK WindowProc(_In_ HWND hwnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam)
@@ -235,6 +232,8 @@ private:
         wc.hCursor = LoadCursor(hInstance, IDC_ARROW);
         RegisterClass(&wc);
 
+        EB_LOG_DEBUG("WINDOW THIS: " << std::hex << (long long)this);
+
         hwnd = CreateWindowEx(0,                                              // Optional window styles.
                               CLASS_NAME,                                     // Window class
                               TEXT("No Title Set"),                           // Window text
@@ -254,6 +253,7 @@ private:
             EB_EXCEPTION("Can not create window!");
         }
 
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)(this));            
         ShowWindow(hwnd, SW_SHOW);
 
         MSG msg = {};

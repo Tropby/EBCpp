@@ -46,7 +46,7 @@ public:
         this->text = text;
     }
 
-    std::string getText()
+    EBString getText() const
     {
         return this->text;
     }

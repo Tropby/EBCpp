@@ -24,8 +24,7 @@
 #pragma once
 
 #include "EBGuiWidget.hpp"
-#include "renderer/EBGuiImage.hpp"
-#include "renderer/EBGuiRenderImage.hpp"
+#include "EBImage.hpp"
 
 namespace EBCpp
 {
@@ -44,23 +43,15 @@ public:
     }
 
 protected:
-    virtual void draw(std::list<EBObjectPointer<EBGuiRenderer>>& list)
+    virtual void draw(EBGuiRenderer& renderer)
     {
-        EBObjectPointer<EBGuiWidget> p = parentWidget();
-        int px = p->getX();
-        int py = p->getY();
-
-        EBObjectPointer<EBGuiImage> imgp = image.cast<EBGuiImage>();
-
-        list.push_back(
-        EBCpp::EBObjectBase::createObject<EBGuiRenderRect>(x + px, y + py, w, h, EB_COLOR_BLACK)->cast<EBGuiRenderer>());
-
-        list.push_back(
-        EBCpp::EBObjectBase::createObject<EBGuiRenderImage>(x + px, y + py, w, h, imgp)->cast<EBGuiRenderer>());
+        EBGuiWidget::draw(renderer);
+        EBPtr<EBImageBase> ptr = &image;
+        renderer.drawImage(0, 0, w, h, ptr);
     }
 
 private:
-    EBGuiImage image;
+    EBImage image;
 };
 
 } // namespace EBCpp

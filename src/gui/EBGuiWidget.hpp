@@ -26,8 +26,6 @@
 #include "../EBObject.hpp"
 #include "../EBList.hpp"
 #include "EBGuiColor.hpp"
-#include "renderer/EBGuiRenderTextLine.hpp"
-#include "renderer/EBGuiRenderTextLineWithCursor.hpp"
 #include "EBGuiRenderer.hpp"
 
 namespace EBCpp
@@ -195,6 +193,7 @@ public:
             widget->widgetParent->removeWidget(widget);
         widget->widgetParent = &(*this);
         widgets.append(widget);
+        invalidate();
     }
 
     virtual void addWidget(EBGuiWidget& widget)
@@ -204,6 +203,7 @@ public:
             widgetPointer->widgetParent->removeWidget(widgetPointer);
         widgetPointer->widgetParent = &(*this);
         widgets.append(widgetPointer);
+        invalidate();
     }
 
     virtual void removeWidget(EBObjectPointer<EBGuiWidget> widget)

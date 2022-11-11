@@ -36,12 +36,7 @@ public:
     EBGuiButton() :
         EBGuiWidget(), textColor(EB_COLOR_BLACK), borderColor(EB_COLOR_BLACK), mouseIsDown(false)
     {
-    }
-
-    void setText(std::string text)
-    {
-        this->text = text;
-    }
+    }   
 
     void setText(EBString text)
     {

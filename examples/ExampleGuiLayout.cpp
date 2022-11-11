@@ -96,7 +96,7 @@ private:
     EB_SLOT(buttonClicked)
     {
         EBCpp::EBObjectPointer<EBCpp::EBGuiButton> button = sender->cast<EBCpp::EBGuiButton>();
-        std::string str = "Button Clicked: " + button->getText();
+        EBCpp::EBString str = EBCpp::EBString("Button Clicked: ") + button->getText();
 
         label.setText(str);
     }

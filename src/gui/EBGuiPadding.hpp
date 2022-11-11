@@ -28,6 +28,10 @@ namespace EBCpp
 
 struct EBGuiPadding
 {
+    EBGuiPadding() : top(0), left(0), bottom(0), right(0)
+    {
+    }
+
     EBGuiPadding(int top, int left, int bottom, int right) : top(top), left(left), bottom(bottom), right(right)
     {
     }

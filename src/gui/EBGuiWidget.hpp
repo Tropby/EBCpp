@@ -193,6 +193,7 @@ public:
             widget->widgetParent->removeWidget(widget);
         widget->widgetParent = &(*this);
         widgets.append(widget);
+        widget->invalidate();
         invalidate();
     }
 

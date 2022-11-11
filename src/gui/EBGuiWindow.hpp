@@ -35,6 +35,15 @@ public:
     {
     }
 
+    virtual void addWidget(EBObjectPointer<EBGuiWidget> widget)
+    {
+        EBGuiWidget::addWidget(widget);
+        widget->setWidth(w);
+        widget->setHeight(h);
+        widget->setX(0);
+        widget->setY(0);
+    }
+
 protected : 
 
     struct {
@@ -64,6 +73,8 @@ protected :
 
         invalidate();
     }
+
+    
 };
 
 } // namespace EBCpp

@@ -38,7 +38,8 @@ public:
         window.setTitle("GUI Image Test");
 
         window.addWidget(&widget);
-        
+        widget.setX(1);
+
         widget.addWidget(&imageBMP);
         imageBMP.setX(20);
         imageBMP.setY(20);

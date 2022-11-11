@@ -77,6 +77,18 @@ public:
         InvalidateRect(hwnd, NULL, FALSE);
     }
 
+    virtual void setWidth(int width)
+    {
+        EBGuiWidget::setWidth(width);
+        SetWindowPos(hwnd, 0, 0, 0, w, h, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+    }
+
+    virtual void setHeight(int height) 
+    {
+        EBGuiWidget::setHeight(height);
+        SetWindowPos(hwnd, 0, 0, 0, w, h, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+    }
+
     virtual void resized(int w, int h)
     {
         EBGuiWindowBase::resized(w, h);

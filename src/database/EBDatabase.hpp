@@ -5,6 +5,8 @@
 #include "../EBMap.hpp"
 #include "../EBUrl.hpp"
 
+#include "EBStatement.hpp"
+
 namespace EBCpp {
 
 class EBDatabase : public EBObject<EBDatabase>
@@ -36,6 +38,11 @@ public:
 
     virtual bool connect( EBString host, int port, EBString database, EBString username, EBString password, EBMap<EBString, EBString> arguments) = 0;
 
+    virtual void close() = 0;
+
+    virtual EBPtr<EBStatement> prepare( EBString query ) = 0;
+    virtual bool exec( EBString query ) = 0;
+    
 private:
 
 };

@@ -381,6 +381,12 @@ public:
 
         return static_cast<T*>(pointer);
     }
+
+    template<class NT>
+    EBPtr<NT> cast()
+    {
+        return EBPtr<NT>(pointer);
+    }
 };
 
 /**

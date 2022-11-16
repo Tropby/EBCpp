@@ -46,7 +46,7 @@ public:
 
     virtual const EBString dump(int level = 0) const
     {
-        return EBString("\"") + value + "\"";
+        return EBString("\"") + value.replace("\"", "\\\"") + "\"";
     }
 
     virtual const int parse( EBString data)

@@ -300,6 +300,13 @@ public:
         return EBString(c, strlen(c));
     }
 
+    static EBString doubleToStr(double input)
+    {
+        char c[64];
+        sprintf(c, "%g", input);
+        return EBString(c, strlen(c));
+    }
+    
     static std::string currentTimeString()
     {
         auto now = std::chrono::system_clock::now();

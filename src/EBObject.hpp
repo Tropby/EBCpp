@@ -313,6 +313,10 @@ template <class T>
 class EBObjectPointer : public EBObjectPointerBase
 {
 public:
+    EBObjectPointer() : EBObjectPointerBase(nullptr)
+    {
+    }
+
     /**
      * @brief Construct a new EBObjectPointer object
      *

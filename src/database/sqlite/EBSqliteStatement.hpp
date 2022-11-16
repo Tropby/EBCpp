@@ -44,7 +44,7 @@ public:
 
     bool next()
     {
-        return (sqlite3_step(stmt) != SQLITE_DONE);
+        return (sqlite3_step(stmt) == SQLITE_ROW);
     }
 
     int getInt(int column)

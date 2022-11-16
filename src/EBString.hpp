@@ -50,6 +50,13 @@ public:
         this->data[size] = 0x00;
     }
 
+    EBString(const char data)
+    {
+        this->size = 1;
+        this->data = new char[1];
+        this->data[0] = data;        
+    }
+
     EBString(const char* data)
     {
         this->size = strlen(data);
@@ -126,6 +133,20 @@ public:
         return result;
     }
 
+    const EBString replace(const EBString& find, const EBString& newString) const
+    {
+        EBList<EBString> sl = this->split(find);
+        EBString result = "";
+        bool first = true;
+        for( auto s : sl )
+        {
+            if( !first )
+                result += newString;
+            result += s.get();
+        }
+        return result;
+    }
+
     bool startsWith(const EBString& other) const
     {
         EBString substr(this->mid(0, other.length()));
@@ -158,6 +179,11 @@ public:
         newString[length] = 0x00;
 
         return EBString(newString, length);
+    }
+
+    double toDouble()
+    {
+        return std::strtod(data, NULL);
     }
 
     int32_t toInt(uint8_t base = 10)

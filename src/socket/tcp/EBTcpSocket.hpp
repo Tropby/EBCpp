@@ -90,6 +90,9 @@ public:
     {
         EB_PROFILE_FUNC();
 
+        socketId = -1;
+        connectionState = false;
+
         if (direction != READ_WRITE)
             EB_EXCEPTION("Can not open a tcp socket read only or write only.");
 
@@ -284,6 +287,7 @@ public:
     void startThread()
     {
         EB_PROFILE_FUNC();
+        joinThread();
         thread = std::unique_ptr<std::thread>(new std::thread(std::bind(&EBTcpSocket::run, this)));
     }
 

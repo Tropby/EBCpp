@@ -8,20 +8,20 @@
 namespace EBCpp {
 
 template<bool isArray = false>
-class EBJsonObject : public EBJsonValue
+class EBJsonObjectBase : public EBJsonValue
 {
 public:
-    EBJsonObject()
+    EBJsonObjectBase()
     {
 
     }
 
-    EBJsonObject(const EBJsonObject& other) : values(other.values)
+    EBJsonObjectBase(const EBJsonObjectBase& other) : values(other.values)
     {
 
     }
 
-    virtual void append(const EBJsonObject& value)
+    virtual void append(const EBJsonObjectBase& value)
     {
         if( !isArray )
             EB_EXCEPTION("Can not append to object!");
@@ -69,14 +69,14 @@ public:
         set( EBUtils::intToStr(values.size()), value );
     }
 
-    virtual void set(const EBString& key, const EBJsonObject<>& value)
+    virtual void set(const EBString& key, const EBJsonObjectBase<false>& value)
     {        
-        values[key] = EBCreate<EBJsonObject<>>(value).cast<EBJsonValue>();
+        values[key] = EBCreate<EBJsonObjectBase<false>>(value).cast<EBJsonValue>();
     }
 
-    virtual void set(const EBString& key, const EBJsonObject<true>& value)
+    virtual void set(const EBString& key, const EBJsonObjectBase<true>& value)
     {        
-        values[key] = EBCreate<EBJsonObject<true>>(value).cast<EBJsonValue>();
+        values[key] = EBCreate<EBJsonObjectBase<true>>(value).cast<EBJsonValue>();
     }
 
     virtual void set(const EBString& key, const EBJsonString& value)
@@ -175,7 +175,7 @@ public:
                     // OBJECT FOUND
                     else if( data.mid(i,1) == "{" )
                     {
-                        EBPtr<EBJsonObject<>> o = EBCreate<EBJsonObject<>>();
+                        EBPtr<EBJsonObjectBase<false>> o = EBCreate<EBJsonObjectBase<false>>();
                         i += o->parse(data.mid(i));
                         values[EBUtils::intToStr(key++)] = o.cast<EBJsonValue>();
                         state = VALUE_END;
@@ -184,7 +184,7 @@ public:
                     // ARRAY FOUND
                     else if( data.mid(i,1) == "[" )
                     {
-                        EBPtr<EBJsonObject<true>> o = EBCreate<EBJsonObject<true>>();
+                        EBPtr<EBJsonObjectBase<true>> o = EBCreate<EBJsonObjectBase<true>>();
                         i += o->parse(data.mid(i));
                         values[EBUtils::intToStr(key++)] = o.cast<EBJsonValue>();
                         state = VALUE_END;
@@ -285,7 +285,7 @@ public:
                     // OBJECT FOUND
                     else if( data.mid(i,1) == "{" )
                     {
-                        EBPtr<EBJsonObject<>> o = EBCreate<EBJsonObject<>>();
+                        EBPtr<EBJsonObjectBase<false>> o = EBCreate<EBJsonObjectBase<false>>();
                         i += o->parse(data.mid(i));
                         values[key] = o.cast<EBJsonValue>();
                         state = VALUE_END;
@@ -294,7 +294,7 @@ public:
                     // ARRAY FOUND
                     else if( data.mid(i,1) == "[" )
                     {
-                        EBPtr<EBJsonObject<true> > o = EBCreate<EBJsonObject<true> >();
+                        EBPtr<EBJsonObjectBase<true> > o = EBCreate<EBJsonObjectBase<true> >();
                         i += o->parse(data.mid(i));
                         values[key] = o.cast<EBJsonValue>();
                         state = VALUE_END;
@@ -340,6 +340,7 @@ private:
     EBMap<EBString, EBPtr<EBJsonValue> > values;
 };
 
-typedef EBJsonObject<true> EBJsonArray;
+typedef EBJsonObjectBase<true> EBJsonArray;
+typedef EBJsonObjectBase<false> EBJsonObject;
 
 }

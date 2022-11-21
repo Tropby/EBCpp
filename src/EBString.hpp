@@ -143,6 +143,7 @@ public:
             if( !first )
                 result += newString;
             result += s.get();
+            first = false;
         }
         return result;
     }

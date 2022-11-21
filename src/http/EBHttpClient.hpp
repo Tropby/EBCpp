@@ -68,7 +68,7 @@ public:
         return true;
     }
 
-    bool post(const EBString& host, uint16_t port, const EBString& path, EBMap<EBString, EBString>& arguments)
+    bool post(const EBString& host, uint16_t port, const EBString& path, EBMultiMap<EBString, EBString>& arguments)
     {
         tcpSocket.readReady.connect(this, &EBHttpClient::tcpReadReady);
         tcpSocket.connected.connect(this, &EBHttpClient::tcpConnected);
@@ -104,9 +104,9 @@ public:
         return get(url.getHost(), url.getPort(), url.getQuery());
     }
 
-    bool post(EBUrl url, EBMap<EBString, EBString>& arguments)
+    bool post(EBUrl url, EBMultiMap<EBString, EBString>& arguments)
     {
-        return get(url.getHost(), url.getPort(), url.getQuery(), arguments);
+        return post(url.getHost(), url.getPort(), url.getQuery(), arguments);
     }
 
     virtual ~EBHttpClient()

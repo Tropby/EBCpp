@@ -3,6 +3,8 @@
 #include "EBJsonValue.hpp"
 #include "EBJsonString.hpp"
 #include "EBJsonNumber.hpp"
+#include "EBJsonNull.hpp"
+#include "EBJsonBoolean.hpp"
 #include "../EBMap.hpp"
 
 namespace EBCpp {
@@ -69,6 +71,22 @@ public:
         set( EBUtils::intToStr(values.size()), value );
     }
 
+    virtual void append(const EBJsonNull& value)
+    {
+        if( !isArray )
+            EB_EXCEPTION("Can not append to object!");
+
+        set( EBUtils::intToStr(values.size()), value );
+    }
+
+    virtual void append(const EBJsonBoolean& value)
+    {
+        if( !isArray )
+            EB_EXCEPTION("Can not append to object!");
+
+        set( EBUtils::intToStr(values.size()), value );
+    }
+
     virtual void set(const EBString& key, const EBJsonObjectBase<false>& value)
     {        
         values[key] = EBCreate<EBJsonObjectBase<false>>(value).cast<EBJsonValue>();
@@ -94,6 +112,16 @@ public:
         values[key] = EBCreate<EBJsonNumber>(value).cast<EBJsonValue>();
     }
 
+    virtual void set(const EBString& key, const EBJsonBoolean& value)
+    {
+        values[key] = EBCreate<EBJsonBoolean>(value).cast<EBJsonValue>();
+    }
+
+    virtual void set(const EBString& key, const EBJsonNull& value)
+    {
+        values[key] = EBCreate<EBJsonNull>(value).cast<EBJsonValue>();
+    }
+
     virtual void set(const EBString& key, const double& value)
     {
         values[key] = EBCreate<EBJsonNumber>(value).cast<EBJsonValue>();
@@ -104,9 +132,24 @@ public:
         values[key] = EBCreate<EBJsonNumber>(value).cast<EBJsonValue>();
     }
 
+    virtual void set(const EBString& key, const bool& value)
+    {
+        values[key] = EBCreate<EBJsonBoolean>(value).cast<EBJsonValue>();
+    }
+
     EBPtr<EBJsonValue> get(EBString key)
     {
         return values[key];
+    }
+
+    const int size() const
+    {
+        return values.size();
+    }
+
+    EBPtr<EBJsonValue> at(int index)
+    {
+        return values[EBUtils::intToStr(index)];
     }
 
     virtual const EBString dump(int level = -1) const
@@ -185,6 +228,24 @@ public:
                     else if( data.mid(i,1) == "[" )
                     {
                         EBPtr<EBJsonObjectBase<true>> o = EBCreate<EBJsonObjectBase<true>>();
+                        i += o->parse(data.mid(i));
+                        values[EBUtils::intToStr(key++)] = o.cast<EBJsonValue>();
+                        state = VALUE_END;
+                    }
+
+                    // TRUE FOUND
+                    else if( data.mid(i,1) == "t" || data.mid(i,1) == "f" )
+                    {
+                        EBPtr<EBJsonBoolean> o = EBCreate<EBJsonBoolean>();
+                        i += o->parse(data.mid(i));
+                        values[EBUtils::intToStr(key++)] = o.cast<EBJsonValue>();
+                        state = VALUE_END;
+                    }
+
+                    // NULL FOUND
+                    else if( data.mid(i,1) == "n" )
+                    {
+                        EBPtr<EBJsonNull> o = EBCreate<EBJsonNull>();
                         i += o->parse(data.mid(i));
                         values[EBUtils::intToStr(key++)] = o.cast<EBJsonValue>();
                         state = VALUE_END;
@@ -299,6 +360,26 @@ public:
                         values[key] = o.cast<EBJsonValue>();
                         state = VALUE_END;
                     }
+
+
+                    // TRUE/FALSE FOUND
+                    else if( data.mid(i,1) == "t" || data.mid(i,1) == "f" )
+                    {
+                        EBPtr<EBJsonBoolean> o = EBCreate<EBJsonBoolean>();
+                        i += o->parse(data.mid(i));
+                        values[key] = o.cast<EBJsonValue>();
+                        state = VALUE_END;
+                    }
+
+                    // NULL FOUND
+                    else if( data.mid(i,1) == "n" )
+                    {
+                        EBPtr<EBJsonNull> o = EBCreate<EBJsonNull>();
+                        i += o->parse(data.mid(i));
+                        values[key] = o.cast<EBJsonValue>();
+                        state = VALUE_END;
+                    }
+
 
                     break;
 

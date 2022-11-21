@@ -232,7 +232,7 @@ protected:
                 EB_LOG_ERROR("SSL_ERROR_NONE");
                 break;
             case SSL_ERROR_ZERO_RETURN:
-                EB_LOG_ERROR("SSL_ERROR_ZERO_RETURN");
+                /* EB_LOG_ERROR("SSL_ERROR_ZERO_RETURN"); */ 
                 break;
             case SSL_ERROR_WANT_READ:
                 EB_LOG_ERROR("SSL_ERROR_WANT_READ");

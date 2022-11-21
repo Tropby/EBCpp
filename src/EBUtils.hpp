@@ -306,6 +306,13 @@ public:
         sprintf(c, "%g", input);
         return EBString(c, strlen(c));
     }
+
+    static int64_t unixtime()
+    {
+        const auto p1 = std::chrono::system_clock::now();
+        return std::chrono::duration_cast<std::chrono::seconds>(
+                   p1.time_since_epoch()).count();
+    }
     
     static std::string currentTimeString()
     {

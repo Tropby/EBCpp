@@ -167,6 +167,7 @@ public:
     template <class X, class T, class... Types>
     void connect(EBObjectPointer<EBEventLoop> eventLoop, X receiver, void (T::*function)(Types...))
     {
+        const std::lock_guard<std::mutex> lock(mutex);
         auto t = EBCpp::bind(function, receiver);
         connections.push_back(this->template createObject<EBConnection<args...>>(eventLoop, receiver, t));
     }
@@ -192,6 +193,7 @@ public:
      */
     void disconnectAll()
     {
+        const std::lock_guard<std::mutex> lock(mutex);
         connections.clear();
     }
 
@@ -208,6 +210,7 @@ public:
     template <class X, class T, class... Types>
     void disconnect(EBObjectPointer<EBEventLoop> eventLoop, X receiver, void (T::*function)(Types...))
     {
+        const std::lock_guard<std::mutex> lock(mutex);
         for (EBObjectPointer<EBConnection<args...>>& con : connections)
         {
             /// TODO: Check if the functions are equal.
@@ -239,7 +242,7 @@ public:
      */
     template <class X, class T, class... Types>
     void disconnect(X receiver, void (T::*function)(Types...))
-    {
+    {        
         disconnect(EBEventLoop::getInstance(), receiver, function);
     }
 
@@ -260,6 +263,7 @@ public:
      */
     void emit(EBObjectPointer<EBObject<EBObjectBase>> sender, args... p)
     {
+        const std::lock_guard<std::mutex> lock(mutex);
         for (EBObjectPointer<EBConnection<args...>>& c : connections)
         {
             c->emit(sender, p...);
@@ -267,6 +271,7 @@ public:
     }
 
 private:
+    std::mutex mutex;
     std::list<EBObjectPointer<EBConnection<args...>>> connections;
 };
 

@@ -17,10 +17,10 @@ if(WIN32)
 
     if(EBCPP_USE_GUI)
         message("Using Windows GUI")
-        set(EBCPP_LIBS -Wl,-subsystem,window)
+        set(EBCPP_LIBS iphlpapi wsock32 ws2_32 -Wl,-subsystem,window)
     else()
         message("Using Windows Console")
-        set(EBCPP_LIBS -Wl,-subsystem,console)
+        set(EBCPP_LIBS iphlpapi wsock32 ws2_32 -Wl,-subsystem,console)
     endif()
 endif()
 

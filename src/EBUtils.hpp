@@ -106,10 +106,10 @@ public:
      *
      * @param threadName Name of the current thread
      */
-    static void setThreadName(std::string threadName)
+    static void setThreadName(EBString threadName)
     {
         #ifdef PTHREAD_SETNAME
-        pthread_setname_np(pthread_self(), threadName.c_str());
+        pthread_setname_np(pthread_self(), threadName.dataPtr());
         #endif
     }
 
@@ -157,21 +157,36 @@ public:
      * @return std::string hex string of the parameter i
      */
     template <typename T>
-    static std::string intToHex(T i, bool prefix = false)
+    static EBString intToHex(T i, bool prefix = false)
     {
         std::stringstream stream;
         stream << ( prefix ? "0x" : "" ) << std::setfill('0') << std::setw(sizeof(T) * 2) << std::hex << i;
         return stream.str();
     }
 
-    static std::string intToHex(int i, int size, bool prefix = false)
+    static unsigned int hexToInt(EBString hex)
+    {
+        if( hex.startsWith("0x") )
+        {
+            hex = hex.mid(2);
+        }
+
+        unsigned int x;
+        std::stringstream ss;
+        ss << std::hex << hex;
+        ss >> x;
+
+        return x;
+    }
+
+    static EBString intToHex(int i, int size, bool prefix = false)
     {
         std::stringstream stream;
         stream << ( prefix ? "0x" : "" ) << std::setfill('0') << std::setw(size) << std::hex << i;
         return stream.str();
-    }    
+    }
 
-    static std::string currentWorkingDirectory()
+    static EBString currentWorkingDirectory()
     {
         char buffer[1024];
         getcwd(buffer, 1024);

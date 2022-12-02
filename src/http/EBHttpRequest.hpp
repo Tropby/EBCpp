@@ -127,7 +127,7 @@ public:
      *
      * @return std::string
      */
-    std::string getRequestMethod()
+    EBString getRequestMethod()
     {
         return requestMethod;
     }
@@ -137,7 +137,7 @@ public:
      *
      * @return std::string
      */
-    std::string getPath()
+    EBString getPath()
     {
         return requestPath;
     }

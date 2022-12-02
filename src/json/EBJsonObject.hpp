@@ -23,7 +23,7 @@ public:
 
     }
 
-    virtual void append(const EBJsonObjectBase& value)
+    virtual void append(const EBJsonObjectBase<>& value)
     {
         if( !isArray )
             EB_EXCEPTION("Can not append to object!");

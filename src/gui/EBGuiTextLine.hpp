@@ -64,6 +64,7 @@ public:
 protected:
     virtual void mouseLeave(int x, int y)
     {
+        // Todo: This is only working on windows
         HCURSOR hc = LoadCursor(hInstance, IDC_ARROW);
         SetCursor(hc);
 
@@ -75,6 +76,7 @@ protected:
 
     virtual void mouseHover(int x, int y)
     {        
+        // Todo: This is only working on windows
         HCURSOR hc = LoadCursor(hInstance, IDC_IBEAM);
         SetCursor(hc);
     }

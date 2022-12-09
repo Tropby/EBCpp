@@ -28,12 +28,18 @@
 #include "EBObject.hpp"
 #include "EBString.hpp"
 
+#ifdef WIN32
+
 namespace EBCpp
 {
 
 class EBTerminal : public EBObject<EBTerminal>
 {
 public:
+    /**
+     * @brief Colors defined for the terminal
+     * 
+     */
     typedef enum
     {
         black   = 0x0,
@@ -54,6 +60,12 @@ public:
         white   = 0xF
     } TERMINAL_COLOR;
 
+    /**
+     * @brief Set the Color of the terminal
+     * 
+     * @param backgroundColor The background color of the terminal
+     * @param textColor The foreground color of the terminal
+     */
     static void setColor(TERMINAL_COLOR backgroundColor, TERMINAL_COLOR textColor)
     {
         HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -71,3 +83,5 @@ private:
 };
 
 } // namespace EBCpp
+
+#endif

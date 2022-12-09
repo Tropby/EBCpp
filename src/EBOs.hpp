@@ -9,10 +9,10 @@
 #ifndef __WIN32__
 #ifdef _WIN32
 #define __WIN32__
-#endif
-#endif
+#endif // _WIN32
+#endif // !__WIN32__
 
-#endif
+#endif //__GNUC__
 
 #ifdef __WIN32__
 

@@ -98,7 +98,7 @@ public:
      */
     void exec()
     {        
-        EBUtils::setThreadName("EBEventLoop 0x" + EBUtils::intToHex(reinterpret_cast<long long>(this)));
+        EBUtils::setThreadName(EBString("EBEventLoop 0x") + EBUtils::intToHex(reinterpret_cast<long long>(this)));
         while (!closed)
         {
             semaphore->acquire();

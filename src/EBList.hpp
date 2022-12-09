@@ -25,6 +25,8 @@
 
 #include "EBObject.hpp"
 
+#define EBStringList EBCpp::EBList<EBCpp::EBString>
+
 namespace EBCpp
 {
 
@@ -158,6 +160,20 @@ public:
         return false;
     }
 
+    int indexOf( const T & item ) const 
+    {
+        int i = 0; 
+        for (auto& it : *this)
+        {
+            if (it.get() == item)
+            {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+
     void insertAt(int index, T item)
     {
         if( index <= size )
@@ -245,13 +261,9 @@ public:
 
         if (next != nullptr )
             next->setPrevious(previous);
-        else
-            next->setPrevious(nullptr);
 
         if( previous != nullptr )
             previous->setNext(next);
-        else
-            previous->setNext(nullptr);
 
         current = next;
         size--;

@@ -175,7 +175,7 @@ public:
      *
      * @param pointer The pointer to the EBObjectBase
      */
-    EBObjectPointerBase(EBObjectBase* pointer) : pointer(pointer)
+    EBObjectPointerBase(EBObjectBase* pointer = nullptr) : pointer(pointer)
     {
         const std::lock_guard<std::mutex> guard(EBObjectPointerBase::mutex);
 
@@ -251,7 +251,7 @@ public:
      * @return true
      * @return false
      */
-    virtual bool operator==(const EBObjectPointerBase& other)
+    virtual bool operator==(const EBObjectPointerBase& other) const
     {
         return this->pointer == other.pointer;
     }
@@ -263,7 +263,7 @@ public:
      * @return true
      * @return false
      */
-    virtual bool operator!=(const EBObjectPointerBase& other)
+    virtual bool operator!=(const EBObjectPointerBase& other) const
     {
         return this->pointer != other.pointer;
     }

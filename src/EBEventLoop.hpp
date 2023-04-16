@@ -114,6 +114,10 @@ public:
     void exit()
     {
         closed = true;
+
+        // Add a nullptr slot call to release the semaphore and exit the application
+        EBCpp::EBObjectPointer<EBCpp::EBSlotCall> slot;
+        emit(slot);
     }
 
     int getCount()

@@ -14,18 +14,10 @@ if(WIN32)
     add_definitions(-DWINVER=${WINDOWS_VERSION})
     add_definitions(-D_WIN32_WINNT=${WINDOWS_VERSION})
     add_definitions(-DNTDDI_VERSION=0x06010000)
-
-    if(EBCPP_USE_GUI)
-        message("Using Windows GUI")
-        set(EBCPP_LIBS iphlpapi wsock32 ws2_32 -Wl,-subsystem,window)
-    else()
-        message("Using Windows Console")
-        set(EBCPP_LIBS iphlpapi wsock32 ws2_32 -Wl,-subsystem,console)
-    endif()
 endif()
 
 if(EBCPP_STATIC)
-    set(EBCPP_LIBS ${EBCPP_LIBS} -static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic)    
+    set(EBCPP_LIBS ${EBCPP_LIBS} -static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic)
 endif()
 
 ##########################

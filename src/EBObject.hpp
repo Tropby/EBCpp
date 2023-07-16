@@ -49,6 +49,16 @@ class EBObjectBase;
 class EBObjectWatchBase
 {
 public:
+    static int getCount()
+    {
+        return objectListEBObjectWatchBase.size();
+    }
+
+    static int getCountToDelete()
+    {
+        return objectToBeDestroyedEBObjectWatchBase.size();
+    }
+
     static void add(EBObjectBase* ptr)
     {
         mutexEBObjectWatchBase.lock();
@@ -79,6 +89,9 @@ protected:
     static inline std::mutex mutexEBObjectWatchBase;
     static inline std::list<EBObjectBase*> objectListEBObjectWatchBase;
     static inline std::list<EBObjectBase*> objectToBeDestroyedEBObjectWatchBase;
+
+private:
+    EBObjectWatchBase(){}
 };
 
 /**
@@ -210,11 +223,6 @@ public:
 
         _counter--;
 
-        bool found = std::find(pointers.begin(), pointers.end(), this) != pointers.end();
-        if (!found)
-        {
-            std::cout << "POINTER NOT IN POINTER LIST?!" << std::endl;
-        }
         pointers.remove(this);
     }
 

@@ -37,7 +37,7 @@
 #define EB_EMIT(signalName)                                                                                            \
     {                                                                                                                  \
         EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> _cast =                                           \
-        cast<EBCpp::EBObject<EBCpp::EBObjectBase>>();                                                                  \
+        EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>>((EBObjectBase*)this);                             \
         signalName.emit(_cast);                                                                                        \
     }
 
@@ -46,7 +46,7 @@
 #define EB_EMIT_WITH_ARGS(signalName, args...)                                                                         \
     {                                                                                                                  \
         EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> _cast =                                           \
-        cast<EBCpp::EBObject<EBCpp::EBObjectBase>>();                                                                  \
+        EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>>((EBObjectBase*)this);                             \
         signalName.emit(_cast, args);                                                                                  \
     }
 
@@ -172,7 +172,7 @@ public:
         connections.push_back(this->template createObject<EBConnection<args...>>(eventLoop, receiver, t));
     }
 
-     /**
+    /**
      * @brief Connects an event to a callback method of the receiving object using the default event loop
      *
      * @tparam X Type of the receiving object (automatic set)
@@ -189,7 +189,7 @@ public:
 
     /**
      * @brief Disconnects alll slots from this event
-     * 
+     *
      */
     void disconnectAll()
     {
@@ -242,7 +242,7 @@ public:
      */
     template <class X, class T, class... Types>
     void disconnect(X receiver, void (T::*function)(Types...))
-    {        
+    {
         disconnect(EBEventLoop::getInstance(), receiver, function);
     }
 

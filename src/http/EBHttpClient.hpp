@@ -40,6 +40,10 @@ class EBHttpClient : public EBObject< EBHttpClient<> >
 public:
     EBHttpClient() : protocol("HTTP/1.0")
     {
+    }
+
+    bool get(const EBString& host, uint16_t port, const EBString& path)
+    {
         tcpSocket.readReady.connect(this, &EBHttpClient::tcpReadReady);
         tcpSocket.connected.connect(this, &EBHttpClient::tcpConnected);
         tcpSocket.disconnected.connect(this, &EBHttpClient::tcpDisconnected);
@@ -47,13 +51,15 @@ public:
         sendHeader["user-agent"] = "EBCppHttpClient";
         sendHeader["accept"] = "*/*";
         sendHeader["connection"] = "close";
-    }
 
-    bool get(const EBString& host, uint16_t port, const EBString& path)
-    {
         this->path = path.toStdString();
         sendHeader["host"] = host.toStdString();
         method = "GET";
+        headerReceived = false;
+
+        receiveHeader.clear();
+        receivePayload.clear();
+        receiveSize = -1;
 
         tcpSocket.setFileName("tcp://" + host.toStdString() + ":" + std::to_string(port));
 
@@ -62,11 +68,24 @@ public:
         return true;
     }
 
-    bool post(const EBString& host, uint16_t port, const EBString& path, EBMap<EBString, EBString>& arguments)
+    bool post(const EBString& host, uint16_t port, const EBString& path, EBMultiMap<EBString, EBString>& arguments)
     {
+        tcpSocket.readReady.connect(this, &EBHttpClient::tcpReadReady);
+        tcpSocket.connected.connect(this, &EBHttpClient::tcpConnected);
+        tcpSocket.disconnected.connect(this, &EBHttpClient::tcpDisconnected);
+
+        sendHeader["user-agent"] = "EBCppHttpClient";
+        sendHeader["accept"] = "*/*";
+        sendHeader["connection"] = "close";
+
         this->path = path.toStdString();
         sendHeader["host"] = host.toStdString();
         method = "POST";
+        headerReceived = false;
+
+        receiveHeader.clear();
+        receivePayload.clear();
+        receiveSize = -1;
 
         for( auto e : arguments )
         {
@@ -85,9 +104,9 @@ public:
         return get(url.getHost(), url.getPort(), url.getQuery());
     }
 
-    bool post(EBUrl url, EBMap<EBString, EBString>& arguments)
+    bool post(EBUrl url, EBMultiMap<EBString, EBString>& arguments)
     {
-        return get(url.getHost(), url.getPort(), url.getQuery(), arguments);
+        return post(url.getHost(), url.getPort(), url.getQuery(), arguments);
     }
 
     virtual ~EBHttpClient()
@@ -98,6 +117,12 @@ public:
     std::vector<char> getResult()
     {
         return receivePayload;
+    }
+
+    EBString getResultString()
+    {
+        std::string s(receivePayload.begin(), receivePayload.end());
+        return s;
     }
 
     EB_SIGNAL(finished);
@@ -111,7 +136,7 @@ private:
     std::map<std::string, std::string> sendHeader;
     EBString sendPayload;
 
-    std::map<std::string, std::string> receiveHeader;
+    EBMap<EBString, EBString> receiveHeader;
     std::vector<char> receivePayload;
     int64_t receiveSize;
     bool headerReceived;
@@ -148,15 +173,25 @@ private:
         {
             while (tcpSocket.canReadLine())
             {
-                std::string line = tcpSocket.readLine().toStdString();
+                EBString line = tcpSocket.readLine();
 
-                if (EBUtils::trim(line) == "")
+                if (line.trim() == "")
                 {
-                    std::string contentLength = receiveHeader["content-length"];
+                    EBString contentLength = receiveHeader["content-length"];
                     if (contentLength != "")
-                        receiveSize = std::atoi(contentLength.c_str());
+                        receiveSize = contentLength.toInt();
                     headerReceived = true;
                     break;
+                }
+                else
+                {
+                    if(line.contains(":"))
+                    {
+                        EBString key = line.mid(0, line.indexOf(":")).trim().toLower();
+                        EBString value = line.mid(line.indexOf(":")+1).trim();
+
+                        receiveHeader[key] = value;
+                    }
                 }
             }
         }

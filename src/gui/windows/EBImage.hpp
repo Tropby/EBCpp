@@ -27,20 +27,20 @@
 #include <gdiplus.h>
 #include <locale>
 
-#include "../../../profile/EBLogger.hpp"
+#include "../../profile/EBLogger.hpp"
 
 namespace EBCpp
 {
 
-class EBGuiImage : public EBGuiImageBase
+class EBImage : public EBImageBase
 {
 public:
-    EBGuiImage(std::string filename) : EBGuiImageBase(filename)
+    EBImage(std::string filename) : EBImageBase(filename)
     {
         load(filename);
     }
 
-    EBGuiImage() : EBGuiImageBase()
+    EBImage() : EBImageBase()
     {
     }
 

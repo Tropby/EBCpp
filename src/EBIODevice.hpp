@@ -98,7 +98,7 @@ public:
      * @param data String to wirte to the output device
      * @return int Bytes written to the output device
      */
-    virtual int write(const std::string& data) = 0;
+    virtual int write(const EBString& data) = 0;
 
     /**
      * @brief Read data from the socket

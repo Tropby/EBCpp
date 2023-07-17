@@ -26,6 +26,7 @@
 #include "../EBString.hpp"
 #include "EBGuiAlignment.hpp"
 #include "EBGuiColor.hpp"
+#include "EBImage.hpp"
 
 namespace EBCpp
 {
@@ -67,6 +68,7 @@ public:
     virtual void drawTextWithCursor(int x, int y, int w, int h, EBString text, int cursorPosition,
                                     const EBObjectPointer<EBGuiColor>& fontColor) = 0;
 
+    virtual void drawImage(int x, int y, int w, int h, EBObjectPointer<EBImageBase>& image) = 0;
 private:
     int x;
     int y;

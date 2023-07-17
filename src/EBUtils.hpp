@@ -76,6 +76,12 @@ public:
         return ip;
     }
 
+    /**
+     * @brief Converts an IPv4 address in its string representation to an unsinged int 32 bit
+     * 
+     * @param ip The string representation
+     * @return uint32_t The ip as unsinged int 32 bit 
+     */
     static uint32_t ipToInt(EBString& ip)
     {
         EBList<EBString> list = ip.split(".");
@@ -95,6 +101,12 @@ public:
         return result;
     }
 
+    /**
+     * @brief Converts an integer to its string representation
+     * 
+     * @param ip IP as an unsinged int 32 bit
+     * @return EBString The string represenatation of an IPv4 address
+     */
     static EBString intToIp(uint32_t ip)
     {
         return intToStr((uint32_t)((uint8_t)(ip >> 24))) + "." + intToStr((uint32_t)((uint8_t)(ip >> 16))) + "." +
@@ -106,10 +118,10 @@ public:
      *
      * @param threadName Name of the current thread
      */
-    static void setThreadName(std::string threadName)
+    static void setThreadName(EBString threadName)
     {
         #ifdef PTHREAD_SETNAME
-        pthread_setname_np(pthread_self(), threadName.c_str());
+            pthread_setname_np(pthread_self(), threadName.c_str());
         #endif
     }
 
@@ -121,11 +133,11 @@ public:
     static std::string getThreadName()
     {
         #ifdef PTHREAD_SETNAME
-        char buffer[128];
-        pthread_getname_np(pthread_self(), buffer, sizeof buffer);
-        return buffer;
+            char buffer[128];
+            pthread_getname_np(pthread_self(), buffer, sizeof buffer);
+            return buffer;
         #else
-        return "";
+            return "";
         #endif
     }
 
@@ -157,21 +169,36 @@ public:
      * @return std::string hex string of the parameter i
      */
     template <typename T>
-    static std::string intToHex(T i, bool prefix = false)
+    static EBString intToHex(T i, bool prefix = false)
     {
         std::stringstream stream;
         stream << ( prefix ? "0x" : "" ) << std::setfill('0') << std::setw(sizeof(T) * 2) << std::hex << i;
         return stream.str();
     }
 
-    static std::string intToHex(int i, int size, bool prefix = false)
+    static unsigned int hexToInt(EBString hex)
+    {
+        if( hex.startsWith("0x") )
+        {
+            hex = hex.mid(2);
+        }
+
+        unsigned int x;
+        std::stringstream ss;
+        ss << std::hex << hex;
+        ss >> x;
+
+        return x;
+    }
+
+    static EBString intToHex(int i, int size, bool prefix = false)
     {
         std::stringstream stream;
         stream << ( prefix ? "0x" : "" ) << std::setfill('0') << std::setw(size) << std::hex << i;
         return stream.str();
-    }    
+    }
 
-    static std::string currentWorkingDirectory()
+    static EBString currentWorkingDirectory()
     {
         char buffer[1024];
         getcwd(buffer, 1024);
@@ -188,6 +215,7 @@ public:
     /**
      * @brief returns the lower case of an string
      *
+     * @deprecated std::string should not be used within EBCpp anymore. Use EBString
      * @param s Input string
      * @return std::string The input string in lower case
      */
@@ -245,6 +273,7 @@ public:
     /**
      * @brief Trims a string and returns the trimmed string
      *
+     * @deprecated std::string should not be used within EBCpp anymore. Use EBString
      * @param s String that should be trimmed
      * @return std::string trimmed string
      */
@@ -263,12 +292,12 @@ public:
         return s.substr(left, 1 + right - left);
     }
 
-    static std::string currentDateTimeString()
+    static EBString currentDateTimeString()
     {
         return currentDateString() + "T" + currentTimeString();
     }
 
-    static std::string currentDateString()
+    static EBString currentDateString()
     {
         auto now = std::chrono::system_clock::now();
         // convert to std::time_t in order to convert to std::tm (broken time)
@@ -300,7 +329,37 @@ public:
         return EBString(c, strlen(c));
     }
 
-    static std::string currentTimeString()
+    /**
+     * @brief Converts a double to the corresponding string representation
+     * 
+     * @param input The double to convert
+     * @return EBString The converted string
+     */
+    static EBString doubleToStr(double input)
+    {
+        char c[64];
+        sprintf(c, "%g", input);
+        return EBString(c, strlen(c));
+    }
+
+    /**
+     * @brief Returns the current unixtime 
+     * 
+     * @return int64_t The current unixtime
+     */
+    static int64_t unixtime()
+    {
+        const auto p1 = std::chrono::system_clock::now();
+        return std::chrono::duration_cast<std::chrono::seconds>(
+                   p1.time_since_epoch()).count();
+    }
+    
+    /**
+     * @brief Returns the current time as a string in the format HH:MM:SS
+     * 
+     * @return EBString The formated string of the current time
+     */
+    static EBString currentTimeString()
     {
         auto now = std::chrono::system_clock::now();
 
@@ -322,6 +381,15 @@ public:
         return oss.str();
     }
 
+    /**
+     * @brief Replaces a string in a string
+     * 
+     * @deprecated std::string should not be used within EBCpp
+     * @param subject 
+     * @param search 
+     * @param replace 
+     * @return std::string 
+     */
     static std::string replaceString(std::string subject, std::string search, std::string replace)
     {
         size_t pos = 0;
@@ -333,34 +401,10 @@ public:
         return subject;
     }
 
-    static unsigned char calCRC8(unsigned char* data, unsigned char length)
-    {
-        unsigned char bit_counter;
-        unsigned char feedback_bit;
-        unsigned char i;
-        unsigned char crc = 0xFF;
-        unsigned char inByte;
-
-        for (i = 0; i < length; i++)
-        {
-            bit_counter = 8;
-            inByte = *data;
-            data++;
-            do
-            {
-                feedback_bit = (crc ^ inByte) & 0x01;
-                if (feedback_bit)
-                    crc = crc ^ 0x18;
-                crc = (crc >> 1) & 0x7F;
-                if (feedback_bit)
-                    crc = crc | 0x80;
-                inByte >>= 1;
-                bit_counter--;
-            } while (bit_counter > 0);
-        }
-        return crc;
-    }
-
+    /**
+     * @brief This will startup the TCP functionality of the system (used for WSA on windows)
+     * 
+     */
     static void startupTCP()
     {
         static bool inited = false;
@@ -375,6 +419,11 @@ public:
         }
     }
 
+    /**
+     * @brief Get the Hostname of the system
+     * 
+     * @return EBString Hostname of the system
+     */
     static EBString getHostname()
     {
         char src_name[256];

@@ -28,6 +28,27 @@
 #include "EBString.hpp"
 #include "EBEventLoop.hpp"
 
+#define EB_APPLICATION(MAIN_CLASS)                                                                                     \
+    EBPtr<MAIN_CLASS> mainClass = nullptr;                                                                             \
+    bool EBInit()                                                                                                      \
+    {                                                                                                                  \
+        mainClass = EBCreate<MAIN_CLASS>();                                                                            \
+        return true;                                                                                                   \
+    }                                                                                                                  \
+    void EBShutdown()                                                                                                  \
+    {                                                                                                                  \
+    }                                                                                                                  \
+    int main(int argc, char** argv)                                                                                    \
+    {                                                                                                                  \
+        EBCpp::EBApplication::setArguments(argc, argv);                                                                \
+        if (EBInit())                                                                                                  \
+        {                                                                                                              \
+            EBCpp::EBEventLoop::getInstance()->exec();                                                                 \
+            EBShutdown();                                                                                              \
+        }                                                                                                              \
+        return 0;                                                                                                      \
+    }
+
 namespace EBCpp
 {
 
@@ -64,15 +85,3 @@ private:
 bool EBInit();
 void EBShutdown();
 
-int main(int argc, char ** argv )
-{
-    EBCpp::EBApplication::setArguments(argc, argv);
-
-    if( EBInit() )
-    {
-        EBCpp::EBEventLoop::getInstance()->exec();
-        EBShutdown();
-    }
-
-    return 0;
-}

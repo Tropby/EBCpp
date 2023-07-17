@@ -36,12 +36,9 @@ public:
     {
         window.closed.connect(this, &ExampleGuiImage::windowClosed);
         window.setTitle("GUI Image Test");
-        window.addWidget(&widget);
 
-        widget.setX(20);
-        widget.setY(20);
-        widget.setWidth(300);
-        widget.setHeight(300);
+        window.addWidget(&widget);
+        widget.setX(1);
 
         widget.addWidget(&imageBMP);
         imageBMP.setX(20);
@@ -71,10 +68,11 @@ public:
 
 private:
     EBCpp::EBGuiWindow window;
-    EBCpp::EBGuiWidget widget;
+    EBCpp::EBGuiWidget widget;    
     EBCpp::EBGuiPicture imageBMP;
     EBCpp::EBGuiPicture imageJPG;
     EBCpp::EBGuiPicture imagePNG;
+    
 
     EB_SLOT(windowClosed)
     {

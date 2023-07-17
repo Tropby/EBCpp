@@ -11,13 +11,108 @@ The events are synchronised to one thread. Therefore the events are thread-safe.
 * [Installation](#installation)
 * [Example](#example)
 
-## Installation
+## Usage with CMake
 
-EBCpp is a header only framework. You include the "*.hpp" files and the system is working. Its that easy.
+Add EBCpp as submodule to your git project
+```bash
+mkdir dep
+git submodule https://github.com/Tropby/EBCpp.git dep/ebcpp
+```
 
-## Pointer
+Include EBCpp in your `CMakeLists.txt` file:
+```cmake
+# Configure and Include EBCpp
+set(EBCPP_USE_GUI Off)          # On/Off - Using the windows gui functions (only for testing)
+set(EBCPP_USE_SSL On)           # On/Off - Using openssl for ssl sockets and https
+set(EBCPP_USE_SSL_STATIC On)    # On/Off - Activate static linking of openssl into your application (see openssl license)
+set(EBCPP_USE_SQLITE On)        # On/Off - Using sqlite in your application (static linked)
+set(EBCPP_STATIC On)            # On/Off - Static linking of libc, libc++ and winpthread
 
-With EBCpp you should not use raw C pointer.  You should use `EBCpp::EBObjectBase::createObject<T>()`. The following example shows how to use the pointers.
+include(dep/ebcpp/ebcpp.cmake)
+``` 
+
+Now you can use EBCpp within your project. 
+
+### Using EBCpp the easy way
+
+Create a `main.cpp` that includes `EBApplication.hpp`. The EBApplication provides a makro that creates the EBCpp init and shutdown functions and handels your main class. The follwoing code blocks are showing the usage of this makro.  
+
+`CMakeLists.txt`
+```cmake
+cmake_minimum_required(VERSION 3.10)
+
+project(Example)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
+
+# Configure and Include EBCpp
+set(EBCPP_USE_GUI Off)
+set(EBCPP_USE_SSL Off)
+set(EBCPP_USE_SSL_STATIC Off)
+set(EBCPP_USE_SQLITE Off)
+set(EBCPP_STATIC On)
+include(dep/ebcpp/ebcpp.cmake)
+
+# setup your application
+add_executable(Example 
+    main.cpp
+    Example.cpp
+)
+
+# set ebcpp linking options to the target
+target_link_libraries(Example ${EBCPP_LIBS})
+```
+
+`main.cpp`
+```c++
+// Include EBApplication and the main class header file
+#include <EBApplication.hpp>
+#include "Example.hpp"
+
+// Setup main class (Example)
+EB_APPLICATION(Example);
+```
+
+`Example.hpp`
+```c++
+#pragma once
+
+#include <EBObject.hpp>
+
+class Example : public EBCpp::EBObject<Example>
+{
+public:
+    Example();
+};
+```
+
+`Example.cpp`
+```c++
+#include "Example.hpp"
+
+// Used for the logging output
+#include <profile/EBLogger.hpp>
+
+// Used to exit the event loop and shutdown the programm
+#include <EBEventLoop.hpp>
+
+TestBoe::TestBoe()
+{
+    // Output "Hellorld!"
+    EB_LOG_INFO("Hellorld!");
+
+    // Shutdown the programm
+    EBCpp::EBEventLoop::getInstance()->exit();
+}
+
+```
+
+## Examples
+See examples direcory for more examples!
+
+### Example Pointer
+
+With EBCpp you should not use raw C pointer.  You should use `EBCpp::EBObjectBase::createObject<T>()`. The following example shows how to use the pointers. There is an `EBPtr` makro. 
 
 ```C++
 #include "../src/EBObject.hpp"
@@ -51,7 +146,7 @@ int main()
 
 ```
 
-## Example
+### Example with EBTimer
 
 The following example shows the usage of an `EBTimer` that prints 5 messages and exists.
 

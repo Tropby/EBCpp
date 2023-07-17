@@ -97,9 +97,8 @@ public:
      *
      */
     void exec()
-    {
-        closed = false;
-        EBUtils::setThreadName("EBEventLoop 0x" + EBUtils::intToHex(reinterpret_cast<long long>(this)));
+    {        
+        EBUtils::setThreadName(EBString("EBEventLoop 0x") + EBUtils::intToHex(reinterpret_cast<long long>(this)));
         while (!closed)
         {
             semaphore->acquire();
@@ -115,6 +114,10 @@ public:
     void exit()
     {
         closed = true;
+
+        // Add a nullptr slot call to release the semaphore and exit the application
+        EBCpp::EBObjectPointer<EBCpp::EBSlotCall> slot;
+        emit(slot);
     }
 
     int getCount()

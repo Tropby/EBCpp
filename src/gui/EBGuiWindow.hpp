@@ -35,6 +35,15 @@ public:
     {
     }
 
+    virtual void addWidget(EBObjectPointer<EBGuiWidget> widget)
+    {
+        EBGuiWidget::addWidget(widget);
+        widget->setWidth(w);
+        widget->setHeight(h);
+        widget->setX(0);
+        widget->setY(0);
+    }
+
 protected : 
 
     struct {
@@ -53,14 +62,19 @@ protected :
 
     virtual void resized(int w, int h)
     {
-        EBObjectPointer<EBGuiWidget> widget = this->widgets.get(0);
-        widget->setX(0);
-        widget->setY(0);
-        widget->setWidth(w);
-        widget->setHeight(h);
+        if(this->widgets.getSize() > 0 )
+        {
+            EBObjectPointer<EBGuiWidget> widget = this->widgets.get(0);
+            widget->setX(0);
+            widget->setY(0);
+            widget->setWidth(w);
+            widget->setHeight(h);
+        }
 
         invalidate();
     }
+
+    
 };
 
 } // namespace EBCpp

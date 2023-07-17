@@ -27,6 +27,7 @@
 #include "../../EBOs.hpp"
 #include "../EBGuiAlignment.hpp"
 #include "../EBGuiColor.hpp"
+#include "../EBImage.hpp"
 #include <string>
 
 #ifdef __WIN32__
@@ -186,6 +187,29 @@ public:
         Gdiplus::SolidBrush brush(Gdiplus::Color(backgroundColor->getA(), backgroundColor->getR(),
                                                  backgroundColor->getG(), backgroundColor->getB()));
         graphics->FillRectangle(&brush, x, y, w, h);
+    }
+
+    virtual void drawImage(int x, int y, int w, int h, EBObjectPointer<EBImageBase>& image)
+    {
+        /// TODO: Handle other pixel formats
+        Gdiplus::PixelFormat format = PixelFormat32bppARGB;
+        switch( image->getPixelFormat() )
+        {
+            case EBImage::PixelFormat24Bpp:
+                format = PixelFormat24bppRGB;
+                break;
+        }
+
+        Gdiplus::Bitmap bmp(image->getWidth(), image->getHeight(), image->getWidth() * image->getBytePerPixel(), format,
+                            image->getRawData());
+
+        float sx, sy;
+        sx = (float)w / image->getWidth();
+        sy = (float)h / image->getHeight();
+
+        graphics->ScaleTransform(sx, sy);
+        graphics->DrawImage(&bmp, x / sx, y / sy);
+        graphics->ScaleTransform(1 / sx, 1 / sy);
     }
 
 private:

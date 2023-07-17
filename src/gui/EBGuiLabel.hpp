@@ -42,12 +42,6 @@ public:
         invalidate();
     }
 
-    void setText(std::string text)
-    {
-        this->text = text;
-        invalidate();
-    }
-
     void setTextHorizontalAlignment(EBGuiHorizontalAlignment horizontalAlignment)
     {
         this->horizontalAlignment = horizontalAlignment;

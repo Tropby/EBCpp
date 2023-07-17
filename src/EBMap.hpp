@@ -23,11 +23,18 @@
 
 #pragma once
 
+#include <map>
+
 namespace EBCpp
 {
 
 template <typename key, typename value>
 class EBMap : public std::map<key, value>
+{
+};
+
+template <typename key, typename value>
+class EBMultiMap : public std::multimap<key, value>
 {
 };
 

@@ -37,7 +37,7 @@
 #define EB_EMIT(signalName)                                                                                            \
     {                                                                                                                  \
         EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> _cast =                                           \
-        cast<EBCpp::EBObject<EBCpp::EBObjectBase>>();                                                                  \
+        EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>>((EBObjectBase*)this);                             \
         signalName.emit(_cast);                                                                                        \
     }
 
@@ -46,7 +46,7 @@
 #define EB_EMIT_WITH_ARGS(signalName, args...)                                                                         \
     {                                                                                                                  \
         EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>> _cast =                                           \
-        cast<EBCpp::EBObject<EBCpp::EBObjectBase>>();                                                                  \
+        EBCpp::EBObjectPointer<EBCpp::EBObject<EBCpp::EBObjectBase>>((EBObjectBase*)this);                             \
         signalName.emit(_cast, args);                                                                                  \
     }
 
@@ -167,11 +167,12 @@ public:
     template <class X, class T, class... Types>
     void connect(EBObjectPointer<EBEventLoop> eventLoop, X receiver, void (T::*function)(Types...))
     {
+        const std::lock_guard<std::mutex> lock(mutex);
         auto t = EBCpp::bind(function, receiver);
         connections.push_back(this->template createObject<EBConnection<args...>>(eventLoop, receiver, t));
     }
 
-     /**
+    /**
      * @brief Connects an event to a callback method of the receiving object using the default event loop
      *
      * @tparam X Type of the receiving object (automatic set)
@@ -188,10 +189,11 @@ public:
 
     /**
      * @brief Disconnects alll slots from this event
-     * 
+     *
      */
     void disconnectAll()
     {
+        const std::lock_guard<std::mutex> lock(mutex);
         connections.clear();
     }
 
@@ -208,6 +210,7 @@ public:
     template <class X, class T, class... Types>
     void disconnect(EBObjectPointer<EBEventLoop> eventLoop, X receiver, void (T::*function)(Types...))
     {
+        const std::lock_guard<std::mutex> lock(mutex);
         for (EBObjectPointer<EBConnection<args...>>& con : connections)
         {
             /// TODO: Check if the functions are equal.
@@ -260,6 +263,7 @@ public:
      */
     void emit(EBObjectPointer<EBObject<EBObjectBase>> sender, args... p)
     {
+        const std::lock_guard<std::mutex> lock(mutex);
         for (EBObjectPointer<EBConnection<args...>>& c : connections)
         {
             c->emit(sender, p...);
@@ -267,6 +271,7 @@ public:
     }
 
 private:
+    std::mutex mutex;
     std::list<EBObjectPointer<EBConnection<args...>>> connections;
 };
 

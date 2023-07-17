@@ -50,7 +50,7 @@ public:
 
         int i = 0;
         int currentX = padding.left;
-        for (EBObjectPointer < EBGuiWidget> widget : widgets)
+        for (auto widget : widgets)
         {
             int size = 1;
             if (elements.size() > i)
@@ -60,12 +60,12 @@ public:
             }
 
             currentX += cellPadding.left;
-            widget->setX(currentX);
-            widget->setY( padding.top + cellPadding.top );
-            widget->setWidth(size * factor);
-            widget->setHeight(this->h - ( padding.top + padding.bottom + cellPadding.top + cellPadding.bottom ) );
+            widget.get()->setX(currentX);
+            widget.get()->setY( padding.top + cellPadding.top );
+            widget.get()->setWidth(size * factor);
+            widget.get()->setHeight(this->h - ( padding.top + padding.bottom + cellPadding.top + cellPadding.bottom ) );
 
-            currentX += widget->getWidth();
+            currentX += widget.get()->getWidth();
             currentX += cellPadding.right;
 
             i++;

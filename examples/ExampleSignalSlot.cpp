@@ -70,13 +70,13 @@ int main()
     ExampleSlot slot;
 
     // Connect to the hello world signal to the hello world slot
-    signal.helloWorldCalled.connect(&slot, &ExampleSlot::helloWorld);
+    signal.helloWorldCalled.connect((&slot).get(), &ExampleSlot::helloWorld);
 
     // Call the slot (this will add the call to the event loop)
     signal.helloWorld();
 
     // You can now disconnect the slot from the signal. This will not remove the call from the event loop.
-    signal.helloWorldCalled.disconnect(&slot, &ExampleSlot::helloWorld);
+    signal.helloWorldCalled.disconnect((&slot).get(), &ExampleSlot::helloWorld);
 
     // Start the event loop (ExampleSlot::helloWorld will be called)
     EBEventLoop::getInstance()->exec();

@@ -46,7 +46,7 @@ private:
     EB_SLOT(httpRequestFinished)
     {
         std::vector<char> data = client.getResult();
-        std::string strData(data.begin(), data.end());
+        EBCpp::EBString strData(data);
         EB_LOG_DEBUG("Result: " << strData);
         
         client.finished.disconnect(this, &ExampleHttpClient::httpRequestFinished);

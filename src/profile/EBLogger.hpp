@@ -127,7 +127,7 @@ public:
 
         std::stringstream msg;
         msg << EBUtils::currentDateTimeString() << " " << strType << " [tid: " << std::this_thread::get_id()
-            << ", tname: '" + EBUtils::getThreadName() + "', uptime: " << EBUtils::uptime() << "] " << message.str();
+            << ", tname: '" << EBUtils::getThreadName() << "', uptime: " << EBUtils::uptime() << "] " << message.str();
 
         // Add Logger if no logger is available!
         if (logger.empty())

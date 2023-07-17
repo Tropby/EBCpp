@@ -28,6 +28,7 @@
 
 #include <string.h>
 #include <string>
+#include <vector>
 
 namespace EBCpp
 {
@@ -71,11 +72,19 @@ public:
         memcpy(this->data, other.data, this->size + 1);
     }
 
-    EBString(const std::string data)
+    EBString(const std::string& data)
     {
         this->size = data.size();
         this->data = new char[this->size + 1];
         memcpy(this->data, data.c_str(), this->size + 1);
+    }
+
+    EBString(const std::vector<char>& data)
+    {
+        this->size = data.size();
+        this->data = new char[this->size + 1];
+        memcpy(this->data, data.data(), this->size);
+        this->data[this->size] = 0x00;
     }
 
     ~EBString()

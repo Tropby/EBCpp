@@ -146,7 +146,7 @@ public:
     /**
      * @brief Get the filename
      *
-     * @return std::string filename of the device
+     * @return EBString filename of the device
      */
     const EBString& getFileName()
     {

@@ -129,7 +129,7 @@ namespace EBCpp
 /**
  * @brief This objects handles an event
  *
- * @tparam args Parameter list of the event (eg. int, std::string, ...)
+ * @tparam args Parameter list of the event (eg. int, EBString, ...)
  */
 template <typename... args>
 class EBEvent : public EBObject<EBEvent<args...>>

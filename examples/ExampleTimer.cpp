@@ -21,6 +21,7 @@
  *      Author: Carsten (Tropby)
  */
 
+#include "../src/EBApplication.hpp"
 #include "../src/EBEventLoop.hpp"
 #include "../src/EBTimer.hpp"
 #include "../src/profile/EBLogger.hpp"
@@ -79,14 +80,4 @@ private:
     }
 };
 
-/**
- * @brief Main from the timer example
- *
- * @return int Exit code (0)
- */
-int main()
-{
-    ExampleTimer exampleTimer;
-    EBEventLoop::getInstance()->exec();
-    return 0;
-}
+EB_APPLICATION(ExampleTimer);

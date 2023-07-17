@@ -130,17 +130,4 @@ private:
     EBCpp::EBTcpServer server;
 };
 
-EBPtr<ExampleTcpServer> exampleTcpServer = nullptr;
-
-bool EBInit()
-{
-    // Create example instance
-    exampleTcpServer = EBCreate<ExampleTcpServer>();    
-    return true;
-}
-
-void EBShutdown()
-{
-    // Delete example instace
-    exampleTcpServer = nullptr;
-}
+EB_APPLICATION(ExampleTcpServer);

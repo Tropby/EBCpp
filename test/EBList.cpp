@@ -1,10 +1,8 @@
 
 #include "../src/EBList.hpp"
 #include "../src/profile/EBLogger.hpp"
-
+#include "../src/EBTest.hpp"
 using namespace EBCpp;
-
-#include "EBTest.hpp"
 
 void test1();
 

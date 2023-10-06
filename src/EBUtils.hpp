@@ -118,11 +118,9 @@ public:
      *
      * @param threadName Name of the current thread
      */
-    static void setThreadName(EBString threadName)
+    static void setThreadName(const EBString& threadName)
     {
-        #ifdef PTHREAD_SETNAME
-            pthread_setname_np(pthread_self(), threadName.c_str());
-        #endif
+        pthread_setname_np(pthread_self(), threadName.dataPtr());
     }
 
     /**
@@ -130,15 +128,11 @@ public:
      *
      * @return std::string Name of the current thread
      */
-    static std::string getThreadName()
+    static const EBString getThreadName()
     {
-        #ifdef PTHREAD_SETNAME
-            char buffer[128];
-            pthread_getname_np(pthread_self(), buffer, sizeof buffer);
-            return buffer;
-        #else
-            return "";
-        #endif
+        char buffer[128];
+        pthread_getname_np(pthread_self(), buffer, sizeof buffer);
+        return buffer;
     }
 
     static std::string binToHex(char* data, uint32_t len)

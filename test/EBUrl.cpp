@@ -4,7 +4,7 @@
 
 using namespace EBCpp;
 
-#include "EBTest.hpp"
+#include "../src/EBTest.hpp"
 
 
 int main()

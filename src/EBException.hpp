@@ -48,7 +48,7 @@ public:
      *
      * @param message Message for the exception
      */
-    EBException(std::string message) : std::exception(), message(message)
+    explicit EBException(std::string message) : std::exception(), message(message)
     {
     }
 
@@ -64,10 +64,10 @@ public:
 
     /**
      * @brief Returns the message as String
-     *
+     * @overide
      * @return const char* Exeption message
      */
-    virtual const char* what() const 
+    const char* what() const
     #ifdef _GLIBCXX_TXN_SAFE_DYN
         _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_USE_NOEXCEPT
     #endif
@@ -79,7 +79,7 @@ public:
     }
 
 private:
-    std::string message;
+    const std::string message;
 };
 
 } // namespace EBCpp

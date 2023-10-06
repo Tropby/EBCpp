@@ -49,6 +49,16 @@ class EBObjectBase;
 class EBObjectWatchBase
 {
 public:
+    static int getCount()
+    {
+        return objectListEBObjectWatchBase.size();
+    }
+
+    static int getCountToDelete()
+    {
+        return objectToBeDestroyedEBObjectWatchBase.size();
+    }
+
     static void add(EBObjectBase* ptr)
     {
         mutexEBObjectWatchBase.lock();
@@ -79,6 +89,9 @@ protected:
     static inline std::mutex mutexEBObjectWatchBase;
     static inline std::list<EBObjectBase*> objectListEBObjectWatchBase;
     static inline std::list<EBObjectBase*> objectToBeDestroyedEBObjectWatchBase;
+
+private:
+    EBObjectWatchBase(){}
 };
 
 /**
@@ -175,7 +188,7 @@ public:
      *
      * @param pointer The pointer to the EBObjectBase
      */
-    EBObjectPointerBase(EBObjectBase* pointer) : pointer(pointer)
+    EBObjectPointerBase(EBObjectBase* pointer = nullptr) : pointer(pointer)
     {
         const std::lock_guard<std::mutex> guard(EBObjectPointerBase::mutex);
 
@@ -210,11 +223,6 @@ public:
 
         _counter--;
 
-        bool found = std::find(pointers.begin(), pointers.end(), this) != pointers.end();
-        if (!found)
-        {
-            std::cout << "POINTER NOT IN POINTER LIST?!" << std::endl;
-        }
         pointers.remove(this);
     }
 
@@ -251,7 +259,7 @@ public:
      * @return true
      * @return false
      */
-    virtual bool operator==(const EBObjectPointerBase& other)
+    virtual bool operator==(const EBObjectPointerBase& other) const
     {
         return this->pointer == other.pointer;
     }
@@ -263,7 +271,7 @@ public:
      * @return true
      * @return false
      */
-    virtual bool operator!=(const EBObjectPointerBase& other)
+    virtual bool operator!=(const EBObjectPointerBase& other) const
     {
         return this->pointer != other.pointer;
     }

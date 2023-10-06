@@ -102,7 +102,7 @@ public:
         EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
 
         int nbytes = socket->read(buffer, 1024);
-        std::string s(buffer, nbytes);
+        EBCpp::EBString s(buffer, nbytes);
 
         std::cout << "read Ready: " << s << std::endl;
 

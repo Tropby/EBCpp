@@ -38,12 +38,18 @@ template <class socket = EBTcpSocket>
 class EBHttpClient : public EBObject< EBHttpClient<> >
 {
 public:
-    EBHttpClient() : protocol("HTTP/1.0")
+    EBHttpClient() : protocol("HTTP/1.0"), isFinished(true)
     {
     }
 
     bool get(const EBString& host, uint16_t port, const EBString& path)
     {
+        if( !isFinished )
+        {
+            return false;
+        }
+        isFinished = false;
+
         tcpSocket.readReady.connect(this, &EBHttpClient::tcpReadReady);
         tcpSocket.connected.connect(this, &EBHttpClient::tcpConnected);
         tcpSocket.disconnected.connect(this, &EBHttpClient::tcpDisconnected);
@@ -70,6 +76,12 @@ public:
 
     bool post(const EBString& host, uint16_t port, const EBString& path, EBMultiMap<EBString, EBString>& arguments)
     {
+        if( !isFinished )
+        {
+            return false;
+        }
+        isFinished = false;
+
         tcpSocket.readReady.connect(this, &EBHttpClient::tcpReadReady);
         tcpSocket.connected.connect(this, &EBHttpClient::tcpConnected);
         tcpSocket.disconnected.connect(this, &EBHttpClient::tcpDisconnected);
@@ -125,6 +137,11 @@ public:
         return s;
     }
 
+    bool isRequestFinished()
+    {
+        return isFinished;
+    }
+
     EB_SIGNAL(finished);
 
 private:
@@ -140,6 +157,8 @@ private:
     std::vector<char> receivePayload;
     int64_t receiveSize;
     bool headerReceived;
+
+    bool isFinished;
 
     EB_SLOT(tcpConnected)
     {
@@ -161,6 +180,7 @@ private:
         tcpSocket.connected.disconnect(this, &EBHttpClient::tcpConnected);
         tcpSocket.disconnected.disconnect(this, &EBHttpClient::tcpDisconnected);
 
+        isFinished = true;
         EB_EMIT(finished);
     }
 

@@ -80,21 +80,11 @@ public:
      *
      * @param data Data to send
      */
-    void sendReply(EBString& data)
-    {
-        sendReply(data.toStdString());
-    }
-
-    /**
-     * @brief Sends a reply to the http client and closes the connection
-     *
-     * @param data Data to send
-     */
-    void sendReply(std::string data)
+    void sendReply(const EBString data)
     {
         tcpSocket->write("HTTP/1.0 " + std::to_string(responseCode) + " Okay\r\n");
         tcpSocket->write(replyHeader.getHeader());
-        tcpSocket->write("Content-Length: " + std::to_string(data.size()) + "\r\n");
+        tcpSocket->write("Content-Length: " + std::to_string(data.length()) + "\r\n");
         tcpSocket->write(EBString("\r\n"));
         tcpSocket->write(data);
         tcpSocket->close();

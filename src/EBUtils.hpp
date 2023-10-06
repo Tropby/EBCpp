@@ -337,12 +337,12 @@ public:
         sprintf(c, d, input);
 
         // Remove tailing zeros
-        int i = strlen(c)-1;
         if( strstr(c, ".") )
         {
+            int i = strlen(c)-1;
             while( c[i] == '0' ) i--;
             if( c[i] == '.' ) i--;
-            c[i] = 0x00;
+            c[i+1] = 0x00;
         }
 
         return EBString(c, strlen(c));

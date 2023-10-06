@@ -28,7 +28,7 @@ public:
         if( !isArray )
             EB_EXCEPTION("Can not append to object!");
 
-        set( EBUtils::intToStr(values.size()), value );
+        set( EBUtils::intToHex(values.size()), value );
     }
 
     virtual void append(const EBJsonString& value)
@@ -36,7 +36,7 @@ public:
         if( !isArray )
             EB_EXCEPTION("Can not append to object!");
 
-        set( EBUtils::intToStr(values.size()), value );
+        set( EBUtils::intToHex(values.size()), value );
     }
 
     virtual void append(const EBString& value)
@@ -44,7 +44,7 @@ public:
         if( !isArray )
             EB_EXCEPTION("Can not append to object!");
 
-        set( EBUtils::intToStr(values.size()), value );
+        set( EBUtils::intToHex(values.size()), value );
     }
 
     virtual void append(const double value)
@@ -52,7 +52,7 @@ public:
         if( !isArray )
             EB_EXCEPTION("Can not append to object!");
 
-        set( EBUtils::intToStr(values.size()), value );
+        set( EBUtils::intToHex(values.size()), value );
     }
 
     virtual void append(const int value)
@@ -60,7 +60,7 @@ public:
         if( !isArray )
             EB_EXCEPTION("Can not append to object!");
 
-        set( EBUtils::intToStr(values.size()), value );
+        set( EBUtils::intToHex(values.size()), value );
     }
 
     virtual void append(const EBJsonNumber& value)
@@ -68,7 +68,7 @@ public:
         if( !isArray )
             EB_EXCEPTION("Can not append to object!");
 
-        set( EBUtils::intToStr(values.size()), value );
+        set( EBUtils::intToHex(values.size()), value );
     }
 
     virtual void append(const EBJsonNull& value)
@@ -76,7 +76,7 @@ public:
         if( !isArray )
             EB_EXCEPTION("Can not append to object!");
 
-        set( EBUtils::intToStr(values.size()), value );
+        set( EBUtils::intToHex(values.size()), value );
     }
 
     virtual void append(const EBJsonBoolean& value)
@@ -84,7 +84,7 @@ public:
         if( !isArray )
             EB_EXCEPTION("Can not append to object!");
 
-        set( EBUtils::intToStr(values.size()), value );
+        set( EBUtils::intToHex(values.size()), value );
     }
 
     virtual void set(const EBString& key, const EBJsonObjectBase<false>& value)

@@ -335,10 +335,22 @@ public:
      * @param input The double to convert
      * @return EBString The converted string
      */
-    static EBString doubleToStr(double input)
+    static EBString doubleToStr(double input, int decimalPlaces = 10)
     {
         char c[64];
-        sprintf(c, "%g", input);
+        char d[64];
+        sprintf(d, "%%.%df", decimalPlaces);
+        sprintf(c, d, input);
+
+        // Remove tailing zeros
+        int i = strlen(c)-1;
+        if( strstr(c, ".") )
+        {
+            while( c[i] == '0' ) i--;
+            if( c[i] == '.' ) i--;
+            c[i] = 0x00;
+        }
+
         return EBString(c, strlen(c));
     }
 

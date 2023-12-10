@@ -49,11 +49,9 @@ public:
         socket.error.connect(this, &ExampleTcpClient::error);
         socket.readReady.connect(this, &ExampleTcpClient::readReady);
 
-        socket.setFileName("tcp://127.0.0.1:8958");
-        if( !socket.open(EBCpp::EBIODevice<EBCpp::EBTcpSocket>::READ_WRITE) )
-        {
-            std::cout << "Can not connect!" << std::endl;
-        }
+        timer.timeout.connect(this, &ExampleTcpClient::timeout);
+        
+        reconnect();
     }
 
     /**
@@ -65,7 +63,19 @@ public:
      */
     EB_SLOT(connected)
     {
+        static int id = 0;
         std::cout << "connected" << std::endl;
+
+        if( id % 2 == 0 )
+        {
+            socket.write(EBCpp::EBString("GET /cm?cmnd=status%208 HTTP/1.0\r\n\r\n"));
+        }
+        else
+        {
+            socket.write(EBCpp::EBString("GET /cm?cmnd=power0 HTTP/1.0\r\n\r\n"));
+        }
+
+        id++;
     }
 
     /**
@@ -77,8 +87,32 @@ public:
      */
     EB_SLOT(disconnected)
     {
+        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
+
+        int nbytes;
+        char buffer[1024];
+        while( (nbytes = socket->read(buffer, 1024) ) > 0 )
+        {
+            std::string s(buffer, nbytes);
+            std::cout << s;
+        }
+
+        std::cout << std::endl;
         std::cout << "disconnected" << std::endl;
-        EBCpp::EBEventLoop::getInstance()->exit();
+
+        //EBCpp::EBEventLoop::getInstance()->exit();
+        reconnect();
+    }
+
+    void reconnect()
+    {
+        timer.stop();
+        timer.startSingleShot(2000);
+        socket.setFileName("tcp://192.168.0.204:80");
+        if( !socket.open(EBCpp::EBIODevice<EBCpp::EBTcpSocket>::READ_WRITE) )
+        {
+            std::cout << "Can not connect!" << std::endl;
+        }
     }
 
     /**
@@ -90,17 +124,7 @@ public:
      */
     EB_SLOT(readReady)
     {
-        char buffer[1024];
-        EBCpp::EBObjectPointer<EBCpp::EBTcpSocket> socket = sender->cast<EBCpp::EBTcpSocket>();
-
-        int nbytes = socket->read(buffer, 1024);
-        if (nbytes > 0)
-        {
-            std::string s(buffer, nbytes);
-            std::cout << "read Ready: " << s << std::endl;
-            socket->write(s);
-            socket->close();
-        }
+        // DO NOTHING. WAIT FOR DISCONNECTION TO READ ALL DATA
     }
 
     /**
@@ -114,10 +138,20 @@ public:
     EB_SLOT_WITH_ARGS(error, std::string message)
     {
         std::cout << "ERROR: " << message << std::endl;
+        reconnect();
+    }
+
+    EB_SLOT(timeout)
+    {
+        if( socket.isOpened() )
+        {
+            socket.close();
+        }
     }
 
 private:
     EBCpp::EBTcpSocket socket;
+    EBCpp::EBTimer timer;
 };
 
 /**

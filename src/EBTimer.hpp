@@ -149,6 +149,8 @@ private:
      */
     void run()
     {
+        EBUtils::setThreadName(EBString( "EBTimer " ) + EBUtils::intToHex((long)this, true));
+
         while (timerRunning)
         {
             // Wait for the timer run out or the timer is canceled

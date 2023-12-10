@@ -7,9 +7,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 # Configure and Include EBCpp
 set(EBCPP_USE_GUI On)           # On/Off - Using the windows gui functions (only for testing)
-set(EBCPP_USE_SSL On)           # On/Off - Using openssl for ssl sockets and https
-set(EBCPP_USE_SSL_STATIC On)    # On/Off - Activate static linking of openssl into your application (see openssl license)
-set(EBCPP_USE_SQLITE On)        # On/Off - Using sqlite in your application (static linked)
+set(EBCPP_USE_SSL Off)           # On/Off - Using openssl for ssl sockets and https
+set(EBCPP_USE_SSL_STATIC Off)    # On/Off - Activate static linking of openssl into your application (see openssl license)
+set(EBCPP_USE_SQLITE Off)        # On/Off - Using sqlite in your application (static linked)
 set(EBCPP_STATIC On)            # On/Off - Static linking of libc, libc++ and winpthread
 
 include(ebcpp.cmake)
@@ -80,12 +80,12 @@ endif()
 
 if(WIN32)
     # Compile EBCppExampleHttpClient
-    add_executable(EBCppExampleICMP examples/ExampleICMP.cpp)
-    if(WIN32)
-        target_link_libraries(EBCppExampleICMP iphlpapi wsock32 ws2_32 -Wl,-subsystem,console)
-    else()
-        target_link_libraries(EBCppExampleICMP pthread)        
-    endif()
+    #add_executable(EBCppExampleICMP examples/ExampleICMP.cpp)
+    #if(WIN32)
+    #    target_link_libraries(EBCppExampleICMP iphlpapi wsock32 ws2_32 -Wl,-subsystem,console)
+    #else()
+    #    target_link_libraries(EBCppExampleICMP pthread)        
+    #endif()
 
     # Compile EBCppExampleSerialPort
     add_executable(EBCppExampleSerialPort examples/ExampleSerialPort.cpp)
@@ -172,7 +172,8 @@ endif()
 add_subdirectory(test)
 
 find_package(Doxygen OPTIONAL_COMPONENTS dot)
-if( DOXYGEN_FOUND )
+#if( DOXYGEN_FOUND )
+if( Off )
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "README.md")
     #set(DOXYGEN_PROJECT_LOGO "${CMAKE_SOURCE_DIR}/doc/images/o2_logo.png")
     set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../doc)

@@ -75,7 +75,7 @@ private:
 
     EB_SLOT(buttonClicked)
     {
-        EBCpp::EBString str = "Button Clicked: " + EBCpp::EBUtils::intToStr(++clickCounter);
+        EBCpp::EBString str = EBCpp::EBString( "Button Clicked: " ) + EBCpp::EBUtils::intToStr(++clickCounter);
         label.setText(str);
     }
 };

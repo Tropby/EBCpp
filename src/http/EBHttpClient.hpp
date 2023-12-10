@@ -28,8 +28,12 @@
 #include "../EBUrl.hpp"
 #include "../EBString.hpp"
 #include "../EBMap.hpp"
+#include "../EBTimer.hpp"
 #include "../socket/tcp/EBTcpSocket.hpp"
 #include "EBHttpRequest.hpp"
+
+/// TODO: Make timeout configurable in 100ms
+#define HTTP_TIMEOUT 10
 
 namespace EBCpp
 {
@@ -40,6 +44,7 @@ class EBHttpClient : public EBObject< EBHttpClient<> >
 public:
     EBHttpClient() : protocol("HTTP/1.0"), isFinished(true)
     {
+        timer.timeout.connect(this, &EBHttpClient::timeout);
     }
 
     bool get(const EBString& host, uint16_t port, const EBString& path)
@@ -53,6 +58,7 @@ public:
         tcpSocket.readReady.connect(this, &EBHttpClient::tcpReadReady);
         tcpSocket.connected.connect(this, &EBHttpClient::tcpConnected);
         tcpSocket.disconnected.connect(this, &EBHttpClient::tcpDisconnected);
+        tcpSocket.error.connect(this, &EBHttpClient::tcpError);        
 
         sendHeader["user-agent"] = "EBCppHttpClient";
         sendHeader["accept"] = "*/*";
@@ -68,6 +74,9 @@ public:
         receiveSize = -1;
 
         tcpSocket.setFileName("tcp://" + host.toStdString() + ":" + std::to_string(port));
+
+        timer.start(100);
+        time = 0;
 
         if (!tcpSocket.open(EBTcpSocket::READ_WRITE))
             return false;
@@ -85,6 +94,7 @@ public:
         tcpSocket.readReady.connect(this, &EBHttpClient::tcpReadReady);
         tcpSocket.connected.connect(this, &EBHttpClient::tcpConnected);
         tcpSocket.disconnected.connect(this, &EBHttpClient::tcpDisconnected);
+        tcpSocket.error.connect(this, &EBHttpClient::tcpError);
 
         sendHeader["user-agent"] = "EBCppHttpClient";
         sendHeader["accept"] = "*/*";
@@ -105,6 +115,9 @@ public:
         }
 
         tcpSocket.setFileName("tcp://" + host.toStdString() + ":" + std::to_string(port));
+
+        timer.start(1000);
+        time = 0;
 
         if (!tcpSocket.open(EBTcpSocket::READ_WRITE))
             return false;
@@ -142,7 +155,23 @@ public:
         return isFinished;
     }
 
+    bool isReceivingFinished()
+    {
+        return receivingFinished;
+    }
+
+    bool hasError()
+    {
+        return isError;
+    }
+
+    EBString getErrorMessage()
+    {
+        return errorMessage;
+    }
+
     EB_SIGNAL(finished);
+    EB_SIGNAL(error);
 
 private:
     socket tcpSocket;
@@ -159,10 +188,51 @@ private:
     bool headerReceived;
 
     bool isFinished;
+    bool receivingFinished;
+    bool isError;
+    bool receiveFirstLine;
+    EBString errorMessage;
+
+    EBTimer timer;
+    int time;
+    EB_SLOT(timeout)
+    {
+        time++;
+        if( time >= HTTP_TIMEOUT )
+        {
+            if( tcpSocket.isOpened() )
+            {
+                isError = true;
+                errorMessage = "Receiving timeout!";
+                tcpSocket.close();
+            }
+            timer.stop();
+        }
+    }
+
+    EB_SLOT_WITH_ARGS(tcpError, EBString errorMessage)
+    {
+        timer.stop();
+
+        tcpSocket.readReady.disconnect(this, &EBHttpClient::tcpReadReady);
+        tcpSocket.connected.disconnect(this, &EBHttpClient::tcpConnected);
+        tcpSocket.disconnected.disconnect(this, &EBHttpClient::tcpDisconnected);
+        tcpSocket.error.disconnect(this, &EBHttpClient::tcpError);
+
+        this->errorMessage = errorMessage;
+        isError = true;
+        isFinished = true;
+        tcpSocket.close();
+        EB_EMIT(error);
+    }
 
     EB_SLOT(tcpConnected)
     {
         headerReceived = false;
+        receivingFinished = false;
+        isError = false;
+        receiveFirstLine = true;
+
         receiveSize = -1;
         sendHeader["content-length"] = std::to_string(sendPayload.length());
         tcpSocket.write(method + " " + path + " " + protocol + "\r\n");
@@ -176,18 +246,41 @@ private:
 
     EB_SLOT(tcpDisconnected)
     {
+        timer.stop();
+        
         tcpSocket.readReady.disconnect(this, &EBHttpClient::tcpReadReady);
         tcpSocket.connected.disconnect(this, &EBHttpClient::tcpConnected);
         tcpSocket.disconnected.disconnect(this, &EBHttpClient::tcpDisconnected);
+        tcpSocket.error.disconnect(this, &EBHttpClient::tcpError);
+
+        if(!isReceivingFinished() && !isError)
+        {
+            isError = true;
+            errorMessage = "Disconnected before receiving finished!";
+        }
 
         isFinished = true;
-        EB_EMIT(finished);
+
+        if( isError )
+        {
+            EB_EMIT(error);
+        }
+        else
+        {
+            EB_EMIT(finished);
+        }
     }
 
     EB_SLOT(tcpReadReady)
     {
         if (receivePayload.size() >= receiveSize && receiveSize != -1 && headerReceived)
+        {
+            tcpSocket.close();
             return;
+        }
+
+        // Reset timeout for long time connections
+        time = 0;
 
         if (!headerReceived)
         {
@@ -201,16 +294,40 @@ private:
                     if (contentLength != "")
                         receiveSize = contentLength.toInt();
                     headerReceived = true;
+                    if( receiveSize <= 0 )
+                    {
+                        receivingFinished = true;
+                    }
+
+                    if( !receiveHeader["transfer-encoding"].empty() )
+                    {
+                        errorMessage = EBString("Transfer-Encoding \"") + receiveHeader["transfer-encoding"] + "\" not supported!";
+                        isError = true;
+                        tcpSocket.close();
+                        return;
+                    }
+
                     break;
                 }
                 else
                 {
-                    if(line.contains(":"))
+                    if( receiveFirstLine )
+                    {
+                        /// TODO: Add the method and Status check!
+                    }
+                    else if(line.contains(":"))
                     {
                         EBString key = line.mid(0, line.indexOf(":")).trim().toLower();
                         EBString value = line.mid(line.indexOf(":")+1).trim();
 
                         receiveHeader[key] = value;
+                    }
+                    else
+                    {
+                        errorMessage = EBString("Wrong header received! \"") + line.trim()+ "\" not supported!";
+                        isError = true;
+                        tcpSocket.close();
+                        return;
                     }
                 }
             }
@@ -235,6 +352,7 @@ private:
 
                 if (receivePayload.size() >= receiveSize && receiveSize != -1)
                 {
+                    receivingFinished = true;
                     tcpSocket.close();
                     return;
                 }

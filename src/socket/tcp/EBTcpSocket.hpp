@@ -374,13 +374,59 @@ protected:
             return false;
         }
 
-        // Try to connect to host
-        int descriptor = ::connect(socketId, reinterpret_cast<sockaddr*>(&address), sizeof(address));
-        if (descriptor == -1)
+        int enableKeepAlive = 1;
+        int count = 3;      // number of emergency requests
+        int maxIdle = 1;    // delay (s) between requests, max idle time
+        int interval = 1;   // delay (s) between emergency requests. "count" request are send
+
+        //I read that client inherit server SO_KEEPALIVE option
+        setsockopt(socketId, SOL_SOCKET, SO_KEEPALIVE, (char*)&enableKeepAlive, sizeof(enableKeepAlive));
+        setsockopt(socketId, IPPROTO_TCP, TCP_KEEPIDLE, (char*)&maxIdle, sizeof(maxIdle));
+        setsockopt(socketId, IPPROTO_TCP, TCP_KEEPCNT, (char*)&count, sizeof(count));
+        setsockopt(socketId, IPPROTO_TCP, TCP_KEEPINTVL, (char*)&interval, sizeof(interval));
+
+        //set the socket in non-blocking
+        /// TODO: implement for Linux!!!!!
+        unsigned long mode = 1;
+        int result = ioctlsocket(socketId, FIONBIO, &mode);
+        if (result != NO_ERROR)
         {
-            EB_EMIT_WITH_ARGS(error, "Can not connect to address!");
+            EB_EMIT_WITH_ARGS(error, "ioctlsocket failed with error!");
             return false;
         }
+
+        // Try to connect to host
+        int descriptor = ::connect(socketId, reinterpret_cast<sockaddr*>(&address), sizeof(address));
+
+        // restart the socket mode
+        /// TODO: implement for Linux!!!!!
+        mode = 0;
+        result = ioctlsocket(socketId, FIONBIO, &mode);
+        if (result != NO_ERROR)
+        {	
+            EB_EMIT_WITH_ARGS(error, "ioctlsocket failed with error!");
+            return false;
+        }
+
+        TIMEVAL timeout;
+        timeout.tv_sec = 3;
+        timeout.tv_usec = 0;
+
+        fd_set Write, Err;
+        FD_ZERO(&Write);
+        FD_ZERO(&Err);
+        FD_SET(socketId, &Write);
+        FD_SET(socketId, &Err);
+
+        // check if the socket is ready
+        /// TODO: implement for Linux!!!!!
+        select(0,NULL,&Write,&Err,&timeout);
+        if(!FD_ISSET(socketId, &Write)) 
+        {	
+            EB_EMIT_WITH_ARGS(error, "Can not connect to host!");
+            return false;
+        }
+
         connectionState = true;
         return true;
     }
@@ -395,7 +441,9 @@ protected:
     virtual int receiveData(char* buffer, int size)
     {
         // Read next block of data
-        return ::recv(socketId, buffer, sizeof(buffer), 0);
+        int ret = ::recv(socketId, buffer, sizeof(buffer), 0);
+        
+        return ret;
     }
 
 private:
@@ -419,6 +467,7 @@ private:
         {
             if (!connect())
             {
+                close();
                 return;
             }
 

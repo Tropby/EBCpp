@@ -28,8 +28,18 @@
 
     #include "../../EBOs.hpp"
     
+    #include <winsock2.h>
     #include <ws2def.h>
     #include <ws2tcpip.h>
+    #include <ws2ipdef.h>
+    #include <fcntl.h>
+
+    // Define TCP Keepalive types
+    #ifndef TCP_KEEPCNT
+        #define TCP_KEEPCNT 8
+        #define TCP_KEEPINTVL 150
+        #define TCP_KEEPIDLE 14400
+    #endif
 #else
     #include <arpa/inet.h>
     #include <netdb.h> //hostent
@@ -37,6 +47,7 @@
     #include <sys/socket.h>
     #include <cstring>
     #include <unistd.h>
+    #include <fcntl.h>
     #define SOCKADDR_IN sockaddr_in
     #define SOCKET int32_t
 #endif

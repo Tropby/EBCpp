@@ -36,19 +36,36 @@ public:
     ExampleHttpClient()
     {
         client.finished.connect(this, &ExampleHttpClient::httpRequestFinished);
-        client.get("http://192.168.222.44/cm?cmnd=status%200");
+        client.error.connect(this, &ExampleHttpClient::httpRequestError);
+        get();
+    }
+
+    void get()
+    {
+        if( !client.get("http://192.168.0.204/cm?cmnd=power0") )
+        {
+            EB_LOG_DEBUG("Can not start GET request!");
+        }
     }
 
 private:
     EBCpp::EBHttpClient<> client;
+
+    EB_SLOT(httpRequestError)
+    {
+        EB_LOG_DEBUG("Error! " << client.getErrorMessage());
+        get();
+    }
 
     EB_SLOT(httpRequestFinished)
     {
         EBCpp::EBString strData = client.getResult();
         EB_LOG_DEBUG("Result: " << strData);
         
-        client.finished.disconnect(this, &ExampleHttpClient::httpRequestFinished);
-        EBCpp::EBEventLoop::getInstance()->exit();
+        //client.finished.disconnect(this, &ExampleHttpClient::httpRequestFinished);
+        //EBCpp::EBEventLoop::getInstance()->exit();
+
+        get();
     }
 };
 

@@ -72,5 +72,6 @@
     "C_Cpp.clang_format_style": "file",
     "formatFiles.excludePattern": "[ default: '**/build, **/.vscode, **/bin' ]",
     "C_Cpp.errorSquiggles": "Disabled",
-    "files.encoding": "utf8"
+    "files.encoding": "utf8",
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}\\build\\compile_commands.json"
 }

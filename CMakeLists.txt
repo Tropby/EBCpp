@@ -6,7 +6,6 @@ project(EBCppExamples VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 # Configure and Include EBCpp
-set(EBCPP_USE_GUI On)           # On/Off - Using the windows gui functions (only for testing)
 set(EBCPP_USE_SSL Off)           # On/Off - Using openssl for ssl sockets and https
 set(EBCPP_USE_SSL_STATIC Off)    # On/Off - Activate static linking of openssl into your application (see openssl license)
 set(EBCPP_USE_SQLITE Off)        # On/Off - Using sqlite in your application (static linked)
@@ -94,30 +93,6 @@ if(WIN32)
     else()
         target_link_libraries(EBCppExampleSerialPort pthread)        
     endif()
-
-    # Compile EBCppExampleGui 
-    add_executable(EBCppExampleGui examples/ExampleGui.cpp)
-    if(WIN32)
-        target_link_libraries(EBCppExampleGui gdiplus -Wl,-subsystem,windows)
-    else()
-        target_link_libraries(EBCppExampleGui pthread)        
-    endif()
-
-    # Compile EBCppExampleImage
-    add_executable(EBCppExampleGuiImage examples/ExampleGuiImage.cpp)
-    if(WIN32)
-        target_link_libraries(EBCppExampleGuiImage gdiplus -Wl,-subsystem,windows)
-    else()
-        target_link_libraries(EBCppExampleGui pthread)        
-    endif()
-
-    # Compile EBCppExampleGuiLayout
-    add_executable(EBCppExampleGuiLayout examples/ExampleGuiLayout.cpp)
-    if(WIN32)
-        target_link_libraries(EBCppExampleGuiLayout gdiplus -Wl,-subsystem,windows)
-    else()
-        target_link_libraries(EBCppExampleGuiLayout pthread)        
-    endif()    
 endif()
 
 find_package(OpenSSL)

@@ -22,8 +22,22 @@ jobs:
     steps:            
     - uses: actions/checkout@v3
 
-    - name: Fix MinGW
-      uses: kzrnm/fix-mingw@v1
+    - name: Install MinGW 12.2.0
+      # You may pin to the exact commit or the version.
+      # uses: deevroman/setup-mingw@7f3150ca8452df79a3f5aa31677ea6e84d5520f9
+      uses: deevroman/setup-mingw@0.0.2
+      with:
+        # Target platform
+        platform: x64 # optional, default is x64
+        # Install Cygwin packages
+        cygwin: 0 # optional, default is 0
+        # Enable static linking workaround
+        static: 1 # optional, default is 1
+        # Set up cc/c++ executables
+        cc: 1 # optional, default is 1
+        # On Cygwin, replace executable symlinks with hardlinks
+        hardlinks: 0 # optional, default is 0
+          
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.

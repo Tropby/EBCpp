@@ -10,14 +10,14 @@ EBString:
         ✔ copy @done(21-10-15 21:02)
 
     ✔ substring @done(21-10-24 10:55)
-    ☐ replace
+    ✔ replace @done(24-02-27 20:02)
     ✔ contains @done(21-10-15 22:05)
     ✔ equals @done(21-10-15 22:07)
     ✔ indexOf @done(21-10-24 10:55)
-    ☐ lastIndexOf
+    ✔ lastIndexOf @done(24-02-27 20:02)
 
     ✔ toInt @done(21-10-24 10:55)
-    ☐ toFloat
-    ☐ toDouble
+    ✔ toFloat @done(24-02-27 19:53)
+    ✔ toDouble @done(24-02-27 19:53)
 
     ✔ data (access to the raw data as const pointer) @done(21-10-24 10:55)

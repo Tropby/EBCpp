@@ -27,6 +27,7 @@ int main()
     TEST(test6);
     TEST(test7);
     TEST(test8);
+    TEST(testLastIndexOf);
 }
 
 void test1()
@@ -109,4 +110,14 @@ void test8()
     std::cout << url << std::endl;
     std::cout << url2 << std::endl;
     std::cout << url3 << std::endl;
+}
+
+void testLastIndexOf()
+{
+    EBString s;
+    s = "/Hallo/ein/Test/123";
+    CHECK(s.lastIndexOf("/") == 15);
+    CHECK(s.lastIndexOf("&") == -1);
+    CHECK(s.lastIndexOf("Test") == 11);
+    CHECK(s.lastIndexOf("3") == 18);
 }

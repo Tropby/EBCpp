@@ -234,6 +234,25 @@ public:
         return pos - this->data;
     }
 
+    int32_t lastIndexOf(const EBString& subString, int startIndex = 0) const
+    {
+        if( startIndex >= this->size )
+            return -1;
+
+        char* lastPos = nullptr;
+        while( char* pos = strstr(this->data + startIndex, subString.data) )
+        {            
+            lastPos = pos;
+            startIndex = lastPos - this->data + 1;
+        }
+        if (lastPos == nullptr)
+        {
+            return -1;
+        }
+
+        return lastPos - this->data;
+    }
+
     const EBString trim() const
     {
         int start = 0;

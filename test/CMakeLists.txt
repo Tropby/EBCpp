@@ -35,3 +35,12 @@ if(WIN32)
 else()
     target_link_libraries(EBCppTestEBUrl pthread)
 endif()  
+
+# EBList tests
+add_executable(EBCppTestEBXml EBXml.cpp)
+target_compile_options(EBCppTestEBList PRIVATE --coverage -O0)
+target_link_libraries(EBCppTestEBList gcov)
+if(WIN32)
+else()
+    target_link_libraries(EBCppTestEBList pthread)
+endif()        

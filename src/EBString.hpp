@@ -131,7 +131,7 @@ public:
         return strstr(this->data, other.data) != NULL;
     }
 
-    EBList<EBString> split(const EBString& delimiter) const
+    EBList<EBString> split(const EBString delimiter) const
     {
         EBList<EBString> result;
         EBString data = *this;
@@ -220,9 +220,12 @@ public:
         return std::string(data, size);
     }
 
-    int32_t indexOf(const EBString& other) const
+    int32_t indexOf(const EBString& subString, int startIndex = 0) const
     {
-        char* pos = strstr(this->data, other.data);
+        if( startIndex >= this->size )
+            return -1;
+
+        char* pos = strstr(this->data + startIndex, subString.data);
         if (pos == NULL)
         {
             return -1;
@@ -351,4 +354,10 @@ private:
 inline std::ostream& operator<<(std::ostream& os, const EBCpp::EBString& str)
 {
     return os << str.dataPtr();
+}
+
+inline EBCpp::EBString operator+(const char* other, const EBCpp::EBString& str)
+{
+    EBCpp::EBString res = EBCpp::EBString(other) + str;
+    return res;
 }

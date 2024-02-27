@@ -1,6 +1,6 @@
 # EBCpp
 
-[![CMake](https://github.com/Tropby/EBCpp/actions/workflows/cmake.yml/badge.svg)](https://github.com/Tropby/EBCpp/actions/workflows/cmake.yml)
+[![CMake on Windows (!SSL, !SQLITE)](https://github.com/Tropby/EBCpp/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/Tropby/EBCpp/actions/workflows/cmake-single-platform.yml)
 
 Event Based C++ (EBCpp) will be a framework that uses Events (Signal-Slot) to provide features to the user. This framework is designed to work with C++17 and without a special pre compiler. The framework is a header only framework and designed that it could be used very easily. Just include the header files and use the functionalities provided.
 

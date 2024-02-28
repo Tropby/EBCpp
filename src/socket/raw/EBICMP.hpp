@@ -30,6 +30,12 @@
  *      Author: Carsten (Tropby)
  */
 
+/**
+ * ATTENTION: You need to add the follwoing libs to the target:
+ *      target_link_libraries(TARGET -lws2_32 -liphlpapi)
+ * 
+ */
+
 #pragma once
 
 #include <memory>
@@ -37,11 +43,8 @@
 
 #ifdef __WIN32__
 #include <winsock2.h>
-#endif
-
-#ifdef __WIN32__
-#include <icmpapi.h>
 #include <ipexport.h>
+#include <icmpapi.h>
 #include <iphlpapi.h>
 #else
 #error NOT IMPLEMENTED FOR UNIX
@@ -63,6 +66,17 @@ public:
 
     EBICMP() : destination(""), running(false)
     {
+    }
+
+    ~EBICMP()
+    {
+        if( thread )
+        {
+            if( thread->joinable() )
+            {
+                thread->join();
+            }
+        }
     }
 
     void setDestination(EBUrl destination)
@@ -157,19 +171,39 @@ private:
             result.roundtrip = pEchoReply->RoundTripTime;
             result.status = pEchoReply->Status;
 
-            WCHAR buffer[128];
-            char str[128];
-            long unsigned int size = 128;
-            GetIpErrorString(result.status, buffer, &size);
-            wcstombs(str, buffer, 128);
-            result.resultString = str;
+            if( result.status != IP_SUCCESS )
+            {
+                WCHAR buffer[128];
+                char str[128];
+                long unsigned int size = 128;
+                GetIpErrorString(result.status, buffer, &size);
+                wcstombs(str, buffer, 128);
+                result.resultString = str;
+            }
+            else
+            {
+                result.resultString = "Okay";
+            }
 
             running = false;
             EB_EMIT_WITH_ARGS(finished, result);
         }
         else
         {
-            lastError = EBString() + "Timeout! [Code: " + EBUtils::intToStr(GetLastError()) + "]";
+            DWORD errorMessageID = ::GetLastError();
+            if(errorMessageID != 0) 
+            {
+                LPSTR messageBuffer = nullptr;
+                size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                            NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+                lastError = EBString() + "Timeout! [Code: " + EBString(messageBuffer, size) + "]";
+                LocalFree(messageBuffer);
+            }
+            else
+            {
+                lastError = "NO ERROR? " + EBUtils::intToStr(dwRetVal);
+            }
             running = false;
             EB_EMIT(error);
         }

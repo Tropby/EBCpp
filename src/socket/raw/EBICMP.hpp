@@ -179,6 +179,7 @@ private:
                 GetIpErrorString(result.status, buffer, &size);
                 wcstombs(str, buffer, 128);
                 result.resultString = str;
+                result.roundtrip = -1;
             }
             else
             {

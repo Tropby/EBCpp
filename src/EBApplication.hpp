@@ -72,6 +72,11 @@ public:
         }
     }
 
+    static bool containsArgument( const EBString& argument )
+    {
+        return arguments.contains(argument);
+    }
+
     static EBString getArgument( int index )
     {
         return arguments.get(index);

@@ -47,7 +47,7 @@ namespace EBCpp
 class EBXmlDocument : public EBObject<EBXmlDocument>
 {
 public:
-    EBXmlDocument()
+    EBXmlDocument() : version("1.0")
     {
         root = nullptr;
     }
@@ -132,7 +132,17 @@ public:
     const EBString getStandalone() const
     {
         return standalone;
-    }    
+    }
+
+    void setRootElement(const EBPtr<EBXmlElement> element)
+    {
+        root = element;
+    }
+
+    const EBPtr<EBXmlElement> getRootElement() const
+    {
+        return root;
+    }
 
 private:
     

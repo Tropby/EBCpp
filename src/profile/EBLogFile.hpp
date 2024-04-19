@@ -33,6 +33,7 @@
 #pragma once
 
 #include "../EBObject.hpp"
+#include "../EBString.hpp"
 #include "EBLog.hpp"
 #include <fstream>
 
@@ -50,9 +51,9 @@ public:
      * @brief Construct a new EBLogFile object
      * 
      */
-    EBLogFile()
+    EBLogFile(EBString filename)
     {
-        logfile.open("logfile.log");
+        logfile.open(filename.dataPtr());
     }
 
     /**

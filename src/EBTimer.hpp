@@ -158,7 +158,7 @@ private:
      */
     void run()
     {
-        EBUtils::setThreadName(EBString( "EBTimer " ) + EBUtils::intToHex((long)this, true));
+        EBUtils::setThreadName(EBString( "EBTimer " ) + EBUtils::intToHex((long long)this, true));
 
         while (timerRunning)
         {

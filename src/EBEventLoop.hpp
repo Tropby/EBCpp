@@ -34,6 +34,8 @@
 
 #include <list>
 
+#include "profile/EBLogger.hpp"
+
 #include "EBObject.hpp"
 #include "EBSemaphore.hpp"
 #include "EBSlotCall.hpp"
@@ -63,6 +65,10 @@ public:
      */
     static EBObjectPointer<EBEventLoop>& getInstance()
     {
+        if( instance == nullptr )
+        {
+            instance = EBCreate<EBEventLoop>();
+        }
         return instance;
     }
 
@@ -111,7 +117,7 @@ public:
         while (!closed)
         {
             semaphore->acquire();
-            processEvents();            
+            processEvents();
         }
     }
 
@@ -139,7 +145,8 @@ private:
     std::mutex mutex;
     EBObjectPointer<EBSemaphore> semaphore;
     bool closed;
-    static inline EBObjectPointer<EBEventLoop> instance = createObject<EBEventLoop>();
+
+    static inline EBObjectPointer<EBEventLoop> instance = nullptr;
 };
 
 } // namespace EBCpp

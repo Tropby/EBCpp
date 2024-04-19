@@ -79,8 +79,10 @@ public:
      */
     void release()
     {
-        std::unique_lock<std::mutex> lock(mutex);
-        tokens++;
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            tokens++;
+        }
         condition.notify_one();
     }
 
@@ -90,6 +92,7 @@ public:
      */
     void clear()
     {
+        std::lock_guard<std::mutex> lock(mutex);
         tokens = 0;
     }
 

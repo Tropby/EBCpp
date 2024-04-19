@@ -90,6 +90,11 @@ public:
     {
     }
 
+    operator const T()
+    {
+        return current->get();    
+    }
+
     const T get() const
     {
         return current->get();

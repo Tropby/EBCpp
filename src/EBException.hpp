@@ -45,6 +45,8 @@ namespace EBCpp
 //! Macro for exception with file and line
 #define EB_EXCEPTION(message) throw EBCpp::EBException(std::string(message) + "\n\t in " EB_AT)
 
+#define EB_EXCEPTION_EX(type, message) throw EBCpp::type(message + "\n\t in " EB_AT)
+
 /**
  * @brief Exceptions from EBCpp
  *

@@ -10,8 +10,20 @@
     std::cout << "Start Test: " << STR(x) << std::endl;                                                                \
     x();
 
+#define CHECK_EXCEPTION(x)                                                                                             \
+    std::cout << "Check Exception: " << STR(x) << "\t\t";                                                              \
+    try                                                                                                                \
+    {                                                                                                                  \
+        x;                                                                                                             \
+        std::cout << "ERROR" << std::endl;                                                                             \
+    }                                                                                                                  \
+    catch (...)                                                                                                        \
+    {                                                                                                                  \
+        std::cout << "OKAY" << std::endl;                                                                              \
+    }
+
 #define CHECK(x)                                                                                                       \
-    std::cout << "Result: " << STR(x) << "\t\t";                                                                       \
+    std::cout << "Check: " << STR(x) << "\t\t";                                                                        \
     if (x)                                                                                                             \
     {                                                                                                                  \
         std::cout << "OKAY" << std::endl;                                                                              \

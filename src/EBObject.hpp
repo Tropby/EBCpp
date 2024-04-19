@@ -372,6 +372,8 @@ public:
             this->pointer->use(this);
     }
 
+
+
     T& operator*()
     {
         return (T&)(*this->pointer);
@@ -401,6 +403,12 @@ public:
             EB_EXCEPTION("Can not get pointer from a EBObjectPointer that is null!");
 
         return static_cast<T*>(pointer);
+    }
+
+    template<class NT>
+    operator EBPtr<NT>()
+    {
+        return EBPtr<NT>(pointer);
     }
 
     template<class NT>

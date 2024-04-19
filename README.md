@@ -1,25 +1,22 @@
 # EBCpp
 
-[![CMake](https://github.com/Tropby/EBCpp/actions/workflows/cmake.yml/badge.svg)](https://github.com/Tropby/EBCpp/actions/workflows/cmake.yml)
+[![CMake on Windows (!SSL, !SQLITE)](https://github.com/Tropby/EBCpp/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/Tropby/EBCpp/actions/workflows/cmake-single-platform.yml)
 
 Event Based C++ (EBCpp) will be a framework that uses Events (Signal-Slot) to provide features to the user. This framework is designed to work with C++17 and without a special pre compiler. The framework is a header only framework and designed that it could be used very easily. Just include the header files and use the functionalities provided.
 
 The events are synchronised to one thread. Therefore the events are thread-safe. You can use multible threads by setting up additional `EBEventLoop`s. This should only be used by experienced users.
 
-## Table of Content
-
-* [Installation](#installation)
-* [Example](#example)
-
 ## Usage with CMake
 
 Add EBCpp as submodule to your git project
+
 ```bash
 mkdir dep
 git submodule https://github.com/Tropby/EBCpp.git dep/ebcpp
 ```
 
 Include EBCpp in your `CMakeLists.txt` file:
+
 ```cmake
 # Configure and Include EBCpp
 set(EBCPP_USE_GUI Off)          # On/Off - Using the windows gui functions (only for testing)
@@ -29,15 +26,16 @@ set(EBCPP_USE_SQLITE On)        # On/Off - Using sqlite in your application (sta
 set(EBCPP_STATIC On)            # On/Off - Static linking of libc, libc++ and winpthread
 
 include(dep/ebcpp/ebcpp.cmake)
-``` 
+```
 
-Now you can use EBCpp within your project. 
+Now you can use EBCpp within your project.
 
 ### Using EBCpp the easy way
 
 Create a `main.cpp` that includes `EBApplication.hpp`. The EBApplication provides a makro that creates the EBCpp init and shutdown functions and handels your main class. The follwoing code blocks are showing the usage of this makro.  
 
 `CMakeLists.txt`
+
 ```cmake
 cmake_minimum_required(VERSION 3.10)
 
@@ -64,6 +62,7 @@ target_link_libraries(Example ${EBCPP_LIBS})
 ```
 
 `main.cpp`
+
 ```c++
 // Include EBApplication and the main class header file
 #include <EBApplication.hpp>
@@ -87,6 +86,7 @@ public:
 ```
 
 `Example.cpp`
+
 ```c++
 #include "Example.hpp"
 
@@ -108,11 +108,12 @@ TestBoe::TestBoe()
 ```
 
 ## Examples
+
 See examples direcory for more examples!
 
 ### Example Pointer
 
-With EBCpp you should not use raw C pointer.  You should use `EBCpp::EBObjectBase::createObject<T>()`. The following example shows how to use the pointers. There is an `EBPtr` makro. 
+With EBCpp you should not use raw C pointer.  You should use `EBCpp::EBObjectBase::createObject<T>()`. The following example shows how to use the pointers. There is an `EBPtr` makro.
 
 ```C++
 #include "../src/EBObject.hpp"
@@ -194,11 +195,3 @@ int main()
     return 0;
 }
 ```
-
-## GUI (Example)
-
-Currently working on a GUI implementation. That can render a GUI for Windows (GDI+). Other renderes can be added.
-
-GUI rendering is done in another thread than the event handler.
-
-See ExampleGui.cpp for an example.

@@ -409,6 +409,7 @@ protected:
         // Try to connect to host
         int descriptor = ::connect(socketId, reinterpret_cast<sockaddr*>(&address), sizeof(address));
 
+#ifdef __WIN32__
         // restart the socket mode
         /// TODO: implement for Linux!!!!!
         mode = 0;
@@ -437,6 +438,7 @@ protected:
             EB_EMIT_WITH_ARGS(error, "Can not connect to host!");
             return false;
         }
+#endif
 
         connectionState = true;
         return true;

@@ -21,6 +21,14 @@ else()
     target_link_libraries(EBCppExample pthread)        
 endif()
 
+# Compile EBCppExampleMqttClient
+add_executable(EBCppExampleMqttClient examples/ExampleMqttClient.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleMqttClient wsock32 ws2_32 -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleMqttClient pthread)
+endif()
+
 # Compile EBCppExcampleSignalSlot
 add_executable(EBCppExampleSignalSlot examples/ExampleSignalSlot.cpp)
 if(WIN32)

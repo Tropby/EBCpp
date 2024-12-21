@@ -270,7 +270,7 @@ public:
      * @param sender
      * @param p
      */
-    void emit(EBObjectPointer<EBObject<EBObjectBase>> sender, args... p)
+    void emit(EBObjectPointer<EBObject<EBObjectBase>> sender, const args... p)
     {
         const std::lock_guard<std::mutex> lock(mutex);
         for (EBObjectPointer<EBConnection<args...>>& c : connections)

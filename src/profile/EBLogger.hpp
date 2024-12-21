@@ -53,7 +53,7 @@
         std::stringstream _ss;                                                                                         \
         _ss << msg;                                                                                                    \
         EBCpp::EBLogger::getInstance()->log(type, _ss);                                                                \
-    }
+    }type
 
 namespace EBCpp
 {

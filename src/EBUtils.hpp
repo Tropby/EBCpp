@@ -144,6 +144,11 @@ public:
         return buffer;
     }
 
+    static std::string binToHex(uint8_t* data, uint32_t len)
+    {
+        return binToHex((char*)data, len);
+    }
+
     static std::string binToHex(char* data, uint32_t len)
     {
         std::stringstream stream;

@@ -396,7 +396,6 @@ protected:
         setsockopt(socketId, IPPROTO_TCP, TCP_KEEPINTVL, (char*)&interval, sizeof(interval));
 
         //set the socket in non-blocking
-        /// TODO: implement for Linux!!!!!
         unsigned long mode = 1;
         int result = ioctlsocket(socketId, FIONBIO, &mode);
         if (result != NO_ERROR)
@@ -411,7 +410,6 @@ protected:
 
 #ifdef __WIN32__
         // restart the socket mode
-        /// TODO: implement for Linux!!!!!
         mode = 0;
         result = ioctlsocket(socketId, FIONBIO, &mode);
         if (result != NO_ERROR)
@@ -431,7 +429,6 @@ protected:
         FD_SET(socketId, &Err);
 
         // check if the socket is ready
-        /// TODO: implement for Linux!!!!!
         select(0,NULL,&Write,&Err,&timeout);
         if(!FD_ISSET(socketId, &Write)) 
         {	

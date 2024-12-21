@@ -222,7 +222,6 @@ public:
         const std::lock_guard<std::mutex> lock(mutex);
         for (EBObjectPointer<EBConnection<args...>>& con : connections)
         {
-            /// TODO: Check if the functions are equal.
             auto t = EBCpp::bind(function, receiver);
             auto ct = con->getFunction();
 

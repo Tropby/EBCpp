@@ -6,6 +6,8 @@ Event Based C++ (EBCpp) will be a framework that uses Events (Signal-Slot) to pr
 
 The events are synchronised to one thread. Therefore the events are thread-safe. You can use multible threads by setting up additional `EBEventLoop`s. This should only be used by experienced users.
 
+A gui implementation for EBCpp is located here: [EBCppNuklear](https://github.com/Tropby/EBCppNuklear)
+
 ## Usage with CMake
 
 Add EBCpp as submodule to your git project

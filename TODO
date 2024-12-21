@@ -36,30 +36,3 @@ EBNetwork:
     EBSNMPSender:
         ☐ Send SNMP messages using the EBUdpSocket.
         ☐ SET/GET/TRAP/INFORM
-
-EBGui:
-    Currently EBGui is only defined for windows applications.
-
-    ☐ Renderer should use a static list of render items 
-        The render should not create the list at every update call
-
-    ☐ Rendering needs a rework
-        Currently all widgets are drawing on the same canvas. 
-        Therefore the widgets can destroy the design and scrolling can not be 
-        implemented in an easy way. We need to rethink about the rendering
-        and recreate all Gui-Classes.
-
-    ☐ All GDI-Plus Renderer should only once create its Brushes, Colors and Pens
-
-    EBGuiImage:
-        ✔ Load an image from file (BMP, JPG, PNG) @done(21-09-18 16:56)
-            Use the operating system if possible
-            Maybe use an external library?
-
-        ✔ Show the image for gdi+ (windows) in an widget @done(21-09-18 16:56)
-        ✔ Scale image to fit the widget @done(21-09-18 16:56)
-        ☐ Scale with keep aspect ratio
-
-    ☐ POC use Direct2D to render the windows GUI
-    ☐ POC use OpenGL to render the windows GUI
-    ☐ POC use OpenGL to render a linux GUI

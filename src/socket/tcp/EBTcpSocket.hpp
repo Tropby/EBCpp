@@ -383,6 +383,7 @@ protected:
             return false;
         }
 
+#ifdef __WIN32__
         int enableKeepAlive = 1;
         int count = 3;      // number of emergency requests
         int maxIdle = 1;    // delay (s) between requests, max idle time
@@ -403,10 +404,12 @@ protected:
             EB_EMIT_WITH_ARGS(error, "ioctlsocket failed with error!");
             return false;
         }
+#endif
 
         // Try to connect to host
         int descriptor = ::connect(socketId, reinterpret_cast<sockaddr*>(&address), sizeof(address));
 
+#ifdef __WIN32__
         // restart the socket mode
         /// TODO: implement for Linux!!!!!
         mode = 0;
@@ -435,6 +438,7 @@ protected:
             EB_EMIT_WITH_ARGS(error, "Can not connect to host!");
             return false;
         }
+#endif
 
         connectionState = true;
         return true;

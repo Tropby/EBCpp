@@ -138,11 +138,26 @@ if(OPENSSL_FOUND)
     if(WIN32)
         target_link_libraries(EBCppExampleHttpsClient OpenSSL::Crypto OpenSSL::SSL wsock32 ws2_32 -Wl,-subsystem,console)
     else()
-        target_link_libraries(EBCppExampleHttpsClient OpenSSL::Crypto OpenSSL::SSL pthread)        
+        target_link_libraries(EBCppExampleHttpsClient OpenSSL::Crypto OpenSSL::SSL pthread)
     endif()
         
 endif()
 
+# Compile EBCppExampleJSON
+add_executable(EBCppExampleJSON examples/ExampleJSON.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleJSON -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleJSON pthread)
+endif()
+
+# Compile EBCppExampleJSONParse
+add_executable(EBCppExampleJSONParse examples/ExampleJSONParse.cpp)
+if(WIN32)
+    target_link_libraries(EBCppExampleJSONParse -Wl,-subsystem,console)
+else()
+    target_link_libraries(EBCppExampleJSONParse pthread)
+endif()
 
 add_subdirectory(test)
 

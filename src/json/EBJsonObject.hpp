@@ -47,6 +47,14 @@ public:
         set( EBUtils::intToHex(values.size()), value );
     }
 
+    virtual void append(const char* value)
+    {
+        if( !isArray )
+            EB_EXCEPTION("Can not append to object!");
+
+        set( EBUtils::intToHex(values.size()), value );
+    }
+
     virtual void append(const double value)
     {
         if( !isArray )
@@ -107,6 +115,11 @@ public:
         values[key] = EBCreate<EBJsonString>(value).cast<EBJsonValue>();
     }
 
+    virtual void set(const EBString& key, const char* value)
+    {
+        values[key] = EBCreate<EBJsonString>(value).cast<EBJsonValue>();
+    }
+
     virtual void set(const EBString& key, const EBJsonNumber& value)
     {
         values[key] = EBCreate<EBJsonNumber>(value).cast<EBJsonValue>();
@@ -137,12 +150,12 @@ public:
         values[key] = EBCreate<EBJsonBoolean>(value).cast<EBJsonValue>();
     }
 
-    EBPtr<EBJsonValue> get(EBString key)
+    EBPtr<EBJsonValue> get(const EBString& key)
     {
         return values[key];
     }
 
-    const int size() const
+    int size() const
     {
         return values.size();
     }
@@ -263,7 +276,7 @@ public:
                     {
                         state = VALUE_START;
                     }
-                    break;                    
+                    break;
             }
         }
 
@@ -277,7 +290,7 @@ public:
             KEY_END,
             SEPERATOR,
             VALUE_START,
-            VALUE_END            
+            VALUE_END
         }state = KEY_START;
 
         bool escape = false;
@@ -393,28 +406,28 @@ public:
                     {
                         state = KEY_START;
                     }
-                    break;                    
+                    break;
             }
         }
 
         return i;
     }
 
-    virtual const int parse( EBString data)
+    virtual const int parse(const EBString& data)
     {
         // Trim white spaces
-        data = data.trim();
+        EBString d = data.trim();
 
-        if( !( data.startsWith("{") && !isArray ) && !( data.startsWith("[") && isArray ) )
+        if( !( d.startsWith("{") && !isArray ) && !( d.startsWith("[") && isArray ) )
             EB_EXCEPTION("Can not interpret EBJsonArray!");
 
-        data = data.mid(1);
+        d = d.mid(1);
 
         if( isArray )
         {
-            return parseArray(data);
+            return parseArray(d);
         }
-        return parseObject(data);
+        return parseObject(d);
     }
 
 private:

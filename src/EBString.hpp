@@ -205,7 +205,7 @@ public:
         return std::strtod(data, NULL);
     }
 
-    int32_t toInt(uint8_t base = 10)
+    int32_t toInt(uint8_t base = 10) const 
     {
         return std::strtol(data, NULL, base);
     }

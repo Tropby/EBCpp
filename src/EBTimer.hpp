@@ -171,8 +171,13 @@ private:
                 /// INFO: condition variable wait_for uses system clock and not steady clock for GCC < 10
                 // cvWait.wait_for(lock, std::chrono::milliseconds(time), [&] { return !timerRunning; });
 
-                cvWait.wait_until(lock, std::chrono::steady_clock::now() + std::chrono::milliseconds(time),
-                                  [&] { return !timerRunning; });
+                //cvWait.wait_until(lock, std::chrono::steady_clock::now() + std::chrono::milliseconds(time),
+                                  //[&] { return !timerRunning; });
+
+                //std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::milliseconds(time));
+
+                // C++ Sleep was not working correctly with older GCC <= 9 Versions on Embedded Systems
+                usleep(time * 1000UL);
             }
 
             // Emit the timeout event if the timer is still running and the thead should not end
